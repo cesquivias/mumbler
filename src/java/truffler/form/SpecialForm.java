@@ -84,6 +84,17 @@ public abstract class SpecialForm extends Form {
         }
     }
 
+    private static class QuoteSpecialForm extends SpecialForm {
+        public QuoteSpecialForm(ListForm form) {
+            super(form);
+        }
+
+        @Override
+        public Object eval(Environment env) {
+            return this.form.cdr.car;
+        }
+    }
+
     protected final ListForm form;
 
     private SpecialForm(ListForm form) {
@@ -99,6 +110,8 @@ public abstract class SpecialForm extends Form {
             return new LambdaSpecialForm(l);
         } else if (l.car.equals(new SymbolForm("if"))) {
             return new IfSpecialForm(l);
+        } else if (l.car.equals(new SymbolForm("quote"))) {
+            return new QuoteSpecialForm(l);
         }
         return l;
     }
