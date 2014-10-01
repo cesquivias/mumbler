@@ -9,6 +9,12 @@ import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import truffler.form.Form;
+import truffler.form.ListForm;
+import truffler.form.NumberForm;
+import truffler.form.SymbolForm;
+
+
 public class Reader {
     public static ListForm read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));

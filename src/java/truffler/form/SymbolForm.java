@@ -1,5 +1,7 @@
 package truffler.form;
 
+import truffler.Environment;
+
 public class SymbolForm implements Form {
     private final String name;
 
@@ -19,7 +21,7 @@ public class SymbolForm implements Form {
     }
 
     @Override
-    public Object eval() {
-        return null;
+    public Object eval(Environment env) {
+        return env.getValue(this);
     }
 }

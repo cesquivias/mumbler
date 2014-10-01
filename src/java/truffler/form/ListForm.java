@@ -1,7 +1,11 @@
 package truffler.form;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import truffler.Environment;
+import truffler.Fn;
 
 public class ListForm implements Form, Iterable<Form> {
     public static final ListForm EMPTY = new ListForm();
@@ -29,6 +33,20 @@ public class ListForm implements Form, Iterable<Form> {
 
     public ListForm cons(Form form) {
         return new ListForm(form, this);
+    }
+
+    public long length() {
+        if (this == EMPTY) {
+            return 0;
+        }
+
+        long len = 1;
+        ListForm l = this.cdr;
+        while (l != EMPTY) {
+            len++;
+            l = l.cdr;
+        }
+        return len;
     }
 
     public Iterator<Form> iterator() {
@@ -97,7 +115,13 @@ public class ListForm implements Form, Iterable<Form> {
     }
 
     @Override
-    public Object eval() {
-        return null;
+    public Object eval(Environment env) {
+        Fn fn = (Fn) this.car.eval(env);
+
+        List<Object> args = new ArrayList<Object>();
+        for (Form form : this.cdr) {
+            args.add(form.eval(env));
+        }
+        return fn.apply(args.toArray());
     }
 }

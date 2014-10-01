@@ -1,5 +1,7 @@
 package truffler.form;
 
+import truffler.Environment;
+
 public class NumberForm implements Form {
     private final long num;
 
@@ -19,7 +21,7 @@ public class NumberForm implements Form {
     }
 
     @Override
-    public Object eval() {
+    public Object eval(Environment env) {
         return new Long(this.num);
     }
 }
