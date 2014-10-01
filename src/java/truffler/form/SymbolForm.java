@@ -3,7 +3,7 @@ package truffler.form;
 import truffler.env.Environment;
 
 public class SymbolForm extends Form {
-    private final String name;
+    public final String name;
 
     public SymbolForm(String name) {
         this.name = name;

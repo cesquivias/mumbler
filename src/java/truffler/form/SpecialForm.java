@@ -72,14 +72,14 @@ public abstract class SpecialForm extends Form {
         @Override
         public Object eval(Environment env) {
             Form test = this.form.cdr.car;
-            Form ifForm = this.form.cdr.cdr.car;
+            Form thenForm = this.form.cdr.cdr.car;
             Form elseForm = this.form.cdr.cdr.cdr.car;
 
             Object result = test.eval(env);
-            if (result == ListForm.EMPTY || result == Boolean.FALSE) {
+            if (result == ListForm.EMPTY || Boolean.FALSE == result) {
                 return elseForm.eval(env);
             } else {
-                return ifForm.eval(env);
+                return thenForm.eval(env);
             }
         }
     }

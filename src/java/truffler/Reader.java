@@ -9,6 +9,7 @@ import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import truffler.form.BooleanForm;
 import truffler.form.Form;
 import truffler.form.ListForm;
 import truffler.form.NumberForm;
@@ -43,6 +44,8 @@ public class Reader {
         } else if (Character.isDigit(c)) {
             pstream.unread(c);
             return readNumber(pstream);
+        } else if (c == '#') {
+            return readBoolean(pstream);
         } else if (c == ')') {
             throw new IllegalArgumentException("Unmatched close paren");
         } else {
@@ -106,5 +109,20 @@ public class Reader {
         }
         pstream.unread(c);
         return new NumberForm(Long.valueOf(b.toString(), 10));
+    }
+
+    private static final SymbolForm TRUE_SYM = new SymbolForm("t");
+    private static final SymbolForm FALSE_SYM = new SymbolForm("f");
+    private static BooleanForm readBoolean(PushbackReader pstream)
+            throws IOException {
+        // '#' already read
+        SymbolForm sym = readSymbol(pstream);
+        if (TRUE_SYM.equals(sym)) {
+            return BooleanForm.TRUE;
+        } else if (FALSE_SYM.equals(sym)) {
+            return BooleanForm.FALSE;
+        } else {
+            throw new IllegalArgumentException("Unknown value: #" + sym.name);
+        }
     }
 }

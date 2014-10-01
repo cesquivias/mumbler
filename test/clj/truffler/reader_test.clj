@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all])
   (:import [java.io ByteArrayInputStream]
            [truffler Reader]
-           [truffler.form ListForm NumberForm SymbolForm]))
+           [truffler.form BooleanForm ListForm NumberForm SymbolForm]))
 
 (defn str->istream [s]
   (ByteArrayInputStream. (.getBytes s)))
@@ -35,3 +35,8 @@
 (deftest read-unmatched-end-paren
   (is (thrown? IllegalArgumentException
                (Reader/read (str->istream ")")))))
+
+(deftest read-true-false
+  (is (= (ListForm/list [(BooleanForm/TRUE)
+                         (BooleanForm/FALSE)])
+         (Reader/read (str->istream "#t #f")))))
