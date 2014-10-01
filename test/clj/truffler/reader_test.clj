@@ -1,7 +1,7 @@
 (ns truffler.reader-test
   (:require [clojure.test :refer :all])
   (:import [java.io ByteArrayInputStream]
-           [truffler ListForm NumberForm Reader]))
+           [truffler ListForm NumberForm Reader SymbolForm]))
 
 (defn str->istream [s]
   (ByteArrayInputStream. (.getBytes s)))
@@ -21,3 +21,7 @@
 (deftest read-whitespace
   (is (= ListForm/EMPTY
          (Reader/read (str->istream "   (    )    ")))))
+
+(deftest read-symbol
+  (is (= (SymbolForm. "foo")
+         (Reader/read (str->istream "foo")))))

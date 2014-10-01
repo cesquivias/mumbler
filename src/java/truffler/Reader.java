@@ -19,7 +19,8 @@ public class Reader {
             pstream.unread(c);
             return readNumber(pstream);
         } else {
-            throw new IllegalArgumentException("Illegal character: " + c);
+            pstream.unread(c);
+            return readSymbol(pstream);
         }
     }
 
@@ -32,7 +33,20 @@ public class Reader {
         pstream.unread(c);
     }
 
-    private static Form readList(PushbackReader pstream)
+    private static SymbolForm readSymbol(PushbackReader pstream)
+            throws IOException {
+        StringBuilder b = new StringBuilder();
+        char c = (char) pstream.read();
+        while (!(Character.isWhitespace(c) || (byte) c == -1
+                        || c == '(' || c == ')')) {
+            b.append(c);
+            c = (char) pstream.read();
+        }
+        pstream.unread(c);
+        return new SymbolForm(b.toString());
+    }
+
+    private static ListForm readList(PushbackReader pstream)
             throws IOException {
         // open paren is already read
         ListForm list = ListForm.EMPTY;
@@ -53,7 +67,7 @@ public class Reader {
         return list;
     }
 
-    private static Form readNumber(PushbackReader pstream)
+    private static NumberForm readNumber(PushbackReader pstream)
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
