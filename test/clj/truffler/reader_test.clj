@@ -31,3 +31,7 @@
   (is (= (ListForm/list [(SymbolForm. "foo")
                          (ListForm/list [(NumberForm. 12) (NumberForm. 3)])])
          (Reader/read (str->istream "foo (12 3)")))))
+
+(deftest read-unmatched-end-paren
+  (is (thrown? IllegalArgumentException
+               (Reader/read (str->istream ")")))))

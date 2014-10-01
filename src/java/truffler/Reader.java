@@ -42,6 +42,8 @@ public class Reader {
         } else if (Character.isDigit(c)) {
             pstream.unread(c);
             return readNumber(pstream);
+        } else if (c == ')') {
+            throw new IllegalArgumentException("Unmatched close paren");
         } else {
             pstream.unread(c);
             return readSymbol(pstream);
