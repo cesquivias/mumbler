@@ -13,7 +13,7 @@ public class BaseEnvironment {
 
         @Override
         public Object eval(Environment env) {
-            return this.toString();
+            return this;
         }
 
         @Override
