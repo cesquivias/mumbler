@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.EOFException;
 import java.io.IOException;
 
+import truffler.env.BaseEnvironment;
+import truffler.env.Environment;
 import truffler.form.Form;
 import truffler.form.ListForm;
 
@@ -26,7 +28,7 @@ public class REPL {
     }
 
     public static void main(String[] args) {
-        Environment env = new Environment();
+        Environment env = BaseEnvironment.getBaseEnvironment();
         while (true) {
             try {
                 ListForm forms = read();
@@ -38,7 +40,7 @@ public class REPL {
             } catch (EOFException e) {
                 return;
             } catch (Exception e) {
-                System.err.println(e);
+                e.printStackTrace();
             }
         }
     }

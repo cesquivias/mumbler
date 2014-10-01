@@ -1,4 +1,4 @@
-package truffler;
+package truffler.env;
 
 import java.util.HashMap;
 

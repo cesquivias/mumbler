@@ -1,7 +1,6 @@
 package truffler.form;
 
-import truffler.Environment;
+import truffler.Evaluatable;
 
-public interface Form {
-    public Object eval(Environment env);
+public abstract class Form implements Evaluatable  {
 }

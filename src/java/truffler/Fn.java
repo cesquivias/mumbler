@@ -1,5 +1,5 @@
 package truffler;
 
-public interface Fn {
+public interface Fn extends Evaluatable {
     public Object apply(Object... args);
 }

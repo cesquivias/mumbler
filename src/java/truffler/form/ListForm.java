@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import truffler.Environment;
 import truffler.Fn;
+import truffler.env.Environment;
 
-public class ListForm implements Form, Iterable<Form> {
+public class ListForm extends Form implements Iterable<Form> {
     public static final ListForm EMPTY = new ListForm();
 
     private final Form car;

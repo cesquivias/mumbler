@@ -1,8 +1,8 @@
 package truffler.form;
 
-import truffler.Environment;
+import truffler.env.Environment;
 
-public class SymbolForm implements Form {
+public class SymbolForm extends Form {
     private final String name;
 
     public SymbolForm(String name) {
@@ -18,6 +18,11 @@ public class SymbolForm implements Form {
     public boolean equals(Object other) {
         return other instanceof SymbolForm &&
             this.name.equals(((SymbolForm) other).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
     }
 
     @Override

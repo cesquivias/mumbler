@@ -1,8 +1,8 @@
 package truffler.form;
 
-import truffler.Environment;
+import truffler.env.Environment;
 
-public class NumberForm implements Form {
+public class NumberForm extends Form {
     private final long num;
 
     public NumberForm(long num) {
