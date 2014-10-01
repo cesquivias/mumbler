@@ -1,19 +1,20 @@
-package truffler;
+package truffler.form;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class ListForm implements Form {
+public class ListForm implements Form, Iterable<Form> {
     public static final ListForm EMPTY = new ListForm();
 
     private final Form car;
-    private final Form cdr;
+    private final ListForm cdr;
 
     private ListForm() {
         this.car = null;
         this.cdr = null;
     }
 
-    private ListForm(Form car, Form cdr) {
+    private ListForm(Form car, ListForm cdr) {
         this.car = car;
         this.cdr = cdr;
     }
@@ -28,6 +29,32 @@ public class ListForm implements Form {
 
     public ListForm cons(Form form) {
         return new ListForm(form, this);
+    }
+
+    public Iterator<Form> iterator() {
+        return new Iterator<Form>() {
+            private ListForm l = ListForm.this;
+
+            @Override
+            public boolean hasNext() {
+                return this.l != EMPTY;
+            }
+
+            @Override
+            public Form next() {
+                if (this.l == EMPTY) {
+                    throw new IllegalStateException("At end of list");
+                }
+                Form car = this.l.car;
+                this.l = this.l.cdr;
+                return car;
+            }
+
+            @Override
+            public void remove() {
+                throw new IllegalStateException("Iterator is immutable");
+            }
+        };
     }
 
     @Override

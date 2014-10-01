@@ -1,4 +1,4 @@
-package truffler;
+package truffler.form;
 
 public class SymbolForm implements Form {
     private final String name;

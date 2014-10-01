@@ -1,4 +1,4 @@
-package truffler;
+package truffler.form;
 
 public class NumberForm implements Form {
     private final long num;
