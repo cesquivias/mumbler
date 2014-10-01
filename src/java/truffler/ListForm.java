@@ -1,5 +1,7 @@
 package truffler;
 
+import java.util.List;
+
 public class ListForm implements Form {
     public static final ListForm EMPTY = new ListForm();
 
@@ -16,6 +18,14 @@ public class ListForm implements Form {
         this.cdr = cdr;
     }
 
+    public static ListForm list(List<Form> forms) {
+        ListForm l = EMPTY;
+        for (int i=forms.size()-1; i>=0; i--) {
+            l = l.cons(forms.get(i));
+        }
+        return l;
+    }
+
     public ListForm cons(Form form) {
         return new ListForm(form, this);
     }
@@ -29,8 +39,11 @@ public class ListForm implements Form {
             return true;
         }
 
-        ListForm l = (ListForm) other;
-        return this.car.equals(l.car) && this.cdr.equals(l.cdr);
+        ListForm that = (ListForm) other;
+        if (this.cdr == EMPTY && that.cdr != EMPTY) {
+            return false;
+        }
+        return this.car.equals(that.car) && this.cdr.equals(that.cdr);
     }
     
     @Override

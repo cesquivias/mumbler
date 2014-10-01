@@ -7,21 +7,26 @@
   (ByteArrayInputStream. (.getBytes s)))
 
 (deftest read-number
-  (is (= (NumberForm. 1234)
+  (is (= (ListForm/list [(NumberForm. 1234)])
          (Reader/read (str->istream "1234")))))
 
 (deftest read-empty-list
-  (is (= ListForm/EMPTY
+  (is (= (ListForm/list [ListForm/EMPTY])
          (Reader/read (str->istream "()")))))
 
 (deftest read-list
-  (is (= (.cons ListForm/EMPTY (NumberForm. 123))
-         (Reader/read (str->istream "(123)")))))
+  (is (= (ListForm/list [(ListForm/list [(NumberForm. 123) (NumberForm. 5)])])
+         (Reader/read (str->istream "(123 5)")))))
 
 (deftest read-whitespace
-  (is (= ListForm/EMPTY
+  (is (= (ListForm/list [ListForm/EMPTY])
          (Reader/read (str->istream "   (    )    ")))))
 
 (deftest read-symbol
-  (is (= (SymbolForm. "foo")
+  (is (= (ListForm/list [(SymbolForm. "foo")])
          (Reader/read (str->istream "foo")))))
+
+(deftest read-multiple-forms
+  (is (= (ListForm/list [(SymbolForm. "foo")
+                         (ListForm/list [(NumberForm. 12) (NumberForm. 3)])])
+         (Reader/read (str->istream "foo (12 3)")))))

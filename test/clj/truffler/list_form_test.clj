@@ -18,3 +18,7 @@
                   (cons ListForm/EMPTY)
                   (cons (.. ListForm/EMPTY
                             (cons (NumberForm. 1)))))))))
+
+(deftest equals-different-lengths
+  (is (false? (= (ListForm/list (map #(NumberForm. %) [1 2]))
+                 (ListForm/list [(NumberForm. 1)])))))
