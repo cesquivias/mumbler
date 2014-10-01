@@ -1,6 +1,6 @@
 (ns truffler.list-form-test
   (:require [clojure.test :refer :all])
-  (:import [truffler ListForm NumberForm]))
+  (:import [truffler.form ListForm NumberForm]))
 
 (deftest toString-empty
   (is (= "()"
