@@ -118,6 +118,11 @@ public class ListForm extends Form implements Iterable<Form> {
     public Object eval(Environment env) {
         Fn fn = (Fn) this.car.eval(env);
 
+        if (fn == null) {
+            throw new UnsupportedOperationException("Undefined value: " +
+                    this.car);
+        }
+
         List<Object> args = new ArrayList<Object>();
         for (Form form : this.cdr) {
             args.add(form.eval(env));

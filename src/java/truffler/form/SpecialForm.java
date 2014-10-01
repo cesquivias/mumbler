@@ -26,8 +26,7 @@ public abstract class SpecialForm extends Form {
         }
 
         @Override
-        public Object eval(Environment env) {
-            final Environment lambdaEnv = new Environment(env);
+        public Object eval(final Environment env) {
             final ListForm formalParams = (ListForm) this.form.cdr.car;
             final ListForm body = this.form.cdr.cdr;
             return new Fn() {
@@ -38,6 +37,7 @@ public abstract class SpecialForm extends Form {
 
                 @Override
                 public Object apply(Object... args) {
+                    Environment lambdaEnv = new Environment(env);
                     if (args.length != formalParams.length()) {
                         throw new IllegalArgumentException(
                                 "Wrong number of arguments. Expected: " +
