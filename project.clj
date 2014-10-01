@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]]
   :main ^:skip-aot truffler.core
-  :source-paths ["src/clj", "test/clj"]
-  :java-source-paths ["src/java", "test/java"]
+  :source-paths ["src/clj" "test/clj"]
+  :java-source-paths ["src/java" "test/java"]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

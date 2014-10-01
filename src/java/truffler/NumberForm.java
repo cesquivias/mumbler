@@ -1,3 +1,5 @@
+package truffler;
+
 public class NumberForm implements Form {
     private final long num;
 
@@ -6,13 +8,18 @@ public class NumberForm implements Form {
     }
 
     @Override
-    public Object eval() {
-        return new Long(this.num);
+    public String toString() {
+        return Long.toString(this.num);
     }
 
     @Override
     public boolean equals(Object other) {
         return other instanceof NumberForm &&
             this.num == ((NumberForm) other).num;
+    }
+
+    @Override
+    public Object eval() {
+        return new Long(this.num);
     }
 }
