@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :main ^:skip-aot truffler.core
+  :main truffler.REPL
   :source-paths ["src/clj" "test/clj"]
   :java-source-paths ["src/java" "test/java"]
   :target-path "target/%s"

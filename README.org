@@ -1,3 +1,6 @@
+* Usage
+Truffler uses [[https://github.com/technomancy/leiningen][Leiningen]] as its build system. [[https://github.com/technomancy/leiningen#installation][Install Leiningen]] first then you can run ~lein jar~ then ~java -jar target/truffler-0.1.0-SNAPSHOT.jar~.
+
 * License
 
 Copyright © 2014 Cristian Esquivias
