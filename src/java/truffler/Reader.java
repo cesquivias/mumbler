@@ -14,7 +14,7 @@ public class Reader {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
 
-    public static ListForm read(PushbackReader pstream) throws IOException {
+    private static ListForm read(PushbackReader pstream) throws IOException {
         List<Form> forms = new ArrayList<Form>();
 
         readWhitespace(pstream);
