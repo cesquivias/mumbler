@@ -10,8 +10,8 @@ import truffler.env.Environment;
 public class ListForm extends Form implements Iterable<Form> {
     public static final ListForm EMPTY = new ListForm();
 
-    private final Form car;
-    private final ListForm cdr;
+    public final Form car;
+    public final ListForm cdr;
 
     private ListForm() {
         this.car = null;

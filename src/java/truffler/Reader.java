@@ -12,6 +12,7 @@ import java.util.List;
 import truffler.form.Form;
 import truffler.form.ListForm;
 import truffler.form.NumberForm;
+import truffler.form.SpecialForm;
 import truffler.form.SymbolForm;
 
 
@@ -72,7 +73,7 @@ public class Reader {
         return new SymbolForm(b.toString());
     }
 
-    private static ListForm readList(PushbackReader pstream)
+    private static Form readList(PushbackReader pstream)
             throws IOException {
         // open paren is already read
         List<Form> list = new ArrayList<Form>();
@@ -92,7 +93,7 @@ public class Reader {
             }
             c = (char) pstream.read();
         }
-        return ListForm.list(list);
+        return SpecialForm.check(ListForm.list(list));
     }
 
     private static NumberForm readNumber(PushbackReader pstream)
