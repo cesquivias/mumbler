@@ -4,13 +4,17 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Console;
 import java.io.InputStreamReader;
+import java.io.EOFException;
 import java.io.IOException;
 
 public class REPL {
-    private static Form read() throws Exception {
+    private static ListForm read() throws Exception {
         Console console = System.console();
+        String data = data = console.readLine("~> ");
+        if (data == null) {
+            throw new EOFException();
+        }
         try {
-            String data = console.readLine("~> ");
             return Reader.read(new ByteArrayInputStream(data.getBytes()));
         } catch (IOException e) {
             System.err.println("IO error trying to read: " + e);
@@ -21,9 +25,14 @@ public class REPL {
     public static void main(String[] args) {
         while (true) {
             try {
-                Form form = read();
-                Object output = form.eval();
+                ListForm forms = read();
+                Object output = null;
+                for (Form form : forms) {
+                    output = form.eval();
+                }
                 System.out.println(output);
+            } catch (EOFException e) {
+                return;
             } catch (Exception e) {
                 System.err.println(e);
             }
