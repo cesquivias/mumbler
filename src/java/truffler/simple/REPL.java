@@ -1,4 +1,4 @@
-package truffler;
+package truffler.simple;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -7,10 +7,10 @@ import java.io.InputStreamReader;
 import java.io.EOFException;
 import java.io.IOException;
 
-import truffler.env.BaseEnvironment;
-import truffler.env.Environment;
-import truffler.form.Form;
-import truffler.form.ListForm;
+import truffler.simple.env.BaseEnvironment;
+import truffler.simple.env.Environment;
+import truffler.simple.form.Form;
+import truffler.simple.form.ListForm;
 
 public class REPL {
     private static ListForm read() throws Exception {

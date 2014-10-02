@@ -1,11 +1,11 @@
-package truffler.form;
+package truffler.simple.form;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import truffler.Fn;
-import truffler.env.Environment;
+import truffler.simple.Fn;
+import truffler.simple.env.Environment;
 
 public class ListForm extends Form implements Iterable<Form> {
     public static final ListForm EMPTY = new ListForm();

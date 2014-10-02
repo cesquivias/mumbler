@@ -1,7 +1,7 @@
-package truffler.env;
+package truffler.simple.env;
 
-import truffler.Fn;
-import truffler.form.SymbolForm;
+import truffler.simple.Fn;
+import truffler.simple.form.SymbolForm;
 
 public class BaseEnvironment {
     private static abstract class BuiltinFn implements Fn {

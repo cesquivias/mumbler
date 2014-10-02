@@ -1,4 +1,4 @@
-package truffler;
+package truffler.simple;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -9,12 +9,12 @@ import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import truffler.form.BooleanForm;
-import truffler.form.Form;
-import truffler.form.ListForm;
-import truffler.form.NumberForm;
-import truffler.form.SpecialForm;
-import truffler.form.SymbolForm;
+import truffler.simple.form.BooleanForm;
+import truffler.simple.form.Form;
+import truffler.simple.form.ListForm;
+import truffler.simple.form.NumberForm;
+import truffler.simple.form.SpecialForm;
+import truffler.simple.form.SymbolForm;
 
 
 public class Reader {

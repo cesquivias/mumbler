@@ -1,8 +1,8 @@
 (ns truffler.reader-test
   (:require [clojure.test :refer :all])
   (:import [java.io ByteArrayInputStream]
-           [truffler Reader]
-           [truffler.form BooleanForm ListForm NumberForm SymbolForm]))
+           [truffler.simple Reader]
+           [truffler.simple.form BooleanForm ListForm NumberForm SymbolForm]))
 
 (defn str->istream [s]
   (ByteArrayInputStream. (.getBytes s)))

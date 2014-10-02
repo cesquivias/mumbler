@@ -1,6 +1,6 @@
-package truffler.form;
+package truffler.graal.form;
 
-import truffler.env.Environment;
+import truffler.graal.env.Environment;
 
 public class NumberForm extends Form {
     private final long num;

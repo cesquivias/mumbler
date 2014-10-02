@@ -1,7 +1,7 @@
 (ns truffler.environment-test
     (:require [clojure.test :refer :all])
-    (:import [truffler.env Environment]
-             [truffler.form SymbolForm]))
+    (:import [truffler.simple.env Environment]
+             [truffler.simple.form SymbolForm]))
 
 (deftest put-and-get
   (let [env (Environment.)]

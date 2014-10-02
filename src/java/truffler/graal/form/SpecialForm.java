@@ -1,10 +1,10 @@
-package truffler.form;
+package truffler.graal.form;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import truffler.Fn;
-import truffler.env.Environment;
+import truffler.graal.Fn;
+import truffler.graal.env.Environment;
 
 public abstract class SpecialForm extends Form {
     private static class DefineSpecialForm extends SpecialForm {

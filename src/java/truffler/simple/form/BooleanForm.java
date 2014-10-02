@@ -1,6 +1,6 @@
-package truffler.form;
+package truffler.simple.form;
 
-import truffler.env.Environment;
+import truffler.simple.env.Environment;
 
 public class BooleanForm extends Form {
 

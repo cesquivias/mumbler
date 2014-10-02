@@ -1,6 +1,6 @@
-package truffler;
+package truffler.simple;
 
-import truffler.env.Environment;
+import truffler.simple.env.Environment;
 
 public interface Evaluatable {
     public Object eval(Environment env);
