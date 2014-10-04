@@ -39,4 +39,8 @@ public class Context extends ExecutionContext {
     public PrintStream getOutput() {
         return this.out;
     }
+
+    public FileRootNode getMainNode() {
+        return new FileRootNode(this, null);
+    }
 }
