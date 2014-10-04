@@ -1,10 +1,9 @@
 package truffler.graal.form;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import truffler.graal.Fn;
 import truffler.graal.env.Environment;
+
+import com.oracle.truffle.api.RootCallTarget;
 
 public abstract class SpecialForm extends Form {
     private static class DefineSpecialForm extends SpecialForm {
@@ -19,8 +18,8 @@ public abstract class SpecialForm extends Form {
             return null;
         }
     }
-    
-    private static class LambdaSpecialForm extends SpecialForm {
+
+    public static class LambdaSpecialForm extends SpecialForm {
         public LambdaSpecialForm(ListForm form) {
             super(form);
         }
@@ -40,9 +39,9 @@ public abstract class SpecialForm extends Form {
                     Environment lambdaEnv = new Environment(env);
                     if (args.length != formalParams.length()) {
                         throw new IllegalArgumentException(
-                                "Wrong number of arguments. Expected: " +
-                                formalParams.length() + ". Got: " +
-                                args.length);
+                                "Wrong number of arguments. Expected: "
+                                        + formalParams.length() + ". Got: "
+                                        + args.length);
                     }
                     // map parameter values to formal parameter names
                     int i = 0;
@@ -61,6 +60,11 @@ public abstract class SpecialForm extends Form {
                     return output;
                 }
             };
+        }
+
+        public RootCallTarget getCallTarget() {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 

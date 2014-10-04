@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import truffler.graal.form.NumberForm;
 import truffler.graal.form.SpecialForm;
 import truffler.graal.form.SymbolForm;
 
+import com.oracle.truffle.api.source.Source;
 
 public class Reader {
     public static ListForm read(InputStream istream) throws IOException {
@@ -67,8 +67,7 @@ public class Reader {
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
-        while (!(Character.isWhitespace(c) || (byte) c == -1
-                        || c == '(' || c == ')')) {
+        while (!(Character.isWhitespace(c) || (byte) c == -1 || c == '(' || c == ')')) {
             b.append(c);
             c = (char) pstream.read();
         }
@@ -76,8 +75,7 @@ public class Reader {
         return new SymbolForm(b.toString());
     }
 
-    private static Form readList(PushbackReader pstream)
-            throws IOException {
+    private static Form readList(PushbackReader pstream) throws IOException {
         // open paren is already read
         List<Form> list = new ArrayList<Form>();
         readWhitespace(pstream);
@@ -113,6 +111,7 @@ public class Reader {
 
     private static final SymbolForm TRUE_SYM = new SymbolForm("t");
     private static final SymbolForm FALSE_SYM = new SymbolForm("f");
+
     private static BooleanForm readBoolean(PushbackReader pstream)
             throws IOException {
         // '#' already read
@@ -124,5 +123,10 @@ public class Reader {
         } else {
             throw new IllegalArgumentException("Unknown value: #" + sym.name);
         }
+    }
+
+    public static void readSource(Context context, Source source) {
+        // TODO Auto-generated method stub
+
     }
 }
