@@ -3,8 +3,8 @@ package truffler.graal;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 
-import truffler.graal.form.ListForm;
-import truffler.graal.form.SpecialForm.LambdaSpecialForm;
+import truffler.graal.node.AddNode;
+import truffler.graal.node.NumberNode;
 
 import com.oracle.truffle.api.ExecutionContext;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -35,22 +35,20 @@ public class Context extends ExecutionContext {
         return this.sourceCallback;
     }
 
-    public LambdaSpecialForm getFunctionRegistry() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public PrintStream getOutput() {
         return this.out;
     }
 
     public FileRootNode getMainNode() {
+        final AddNode adding = new AddNode(new NumberNode[] {
+                new NumberNode(3),
+                new NumberNode(4),
+        });
         FrameDescriptor frameDescriptor = new FrameDescriptor();
         RootNode rootNode = new RootNode(null, frameDescriptor) {
             @Override
             public Object execute(VirtualFrame frame) {
-                System.out.println("Hello world!");
-                return ListForm.EMPTY;
+                return adding.execute(frame);
             }
         };
         return new FileRootNode(this, rootNode);
