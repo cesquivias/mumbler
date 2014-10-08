@@ -4,7 +4,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class AddNode extends BaseNode {
     @Children
-    private final NumberNode[] args;
+    private NumberNode[] args;
 
     public AddNode(NumberNode[] args) {
         this.args = args;
@@ -19,4 +19,7 @@ public class AddNode extends BaseNode {
         return total;
     }
 
+    protected void preventFinal() {
+        this.args = null;
+    }
 }
