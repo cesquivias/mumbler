@@ -1,5 +1,6 @@
 package truffler.graal.node;
 
+import com.oracle.truffle.api.ExactMath;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class AddNode extends BaseNode {
@@ -14,7 +15,7 @@ public class AddNode extends BaseNode {
     public Object execute(VirtualFrame virtualFrame) {
         long total = 0;
         for (NumberNode num : this.args) {
-            total += (Long) num.execute(virtualFrame);
+            total = ExactMath.addExact(total, (Long) num.execute(virtualFrame));
         }
         return total;
     }
