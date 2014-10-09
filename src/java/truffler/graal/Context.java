@@ -3,8 +3,10 @@ package truffler.graal;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 
-import truffler.graal.node.AddNode;
-import truffler.graal.node.NumberNode;
+import truffler.graal.node.ExpressionNode;
+import truffler.graal.node.expression.AddNode;
+import truffler.graal.node.expression.AddNodeFactory;
+import truffler.graal.node.expression.NumberNode;
 
 import com.oracle.truffle.api.ExecutionContext;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -40,12 +42,13 @@ public class Context extends ExecutionContext {
     }
 
     public FileRootNode getMainNode() {
-        final AddNode adding = new AddNode(new NumberNode[] {
-                new NumberNode(3),
-                new NumberNode(4),
-        });
+        final AddNode adding =  AddNodeFactory.create(
+                new NumberNode(2),
+                new NumberNode(3));
         FrameDescriptor frameDescriptor = new FrameDescriptor();
         RootNode rootNode = new RootNode(null, frameDescriptor) {
+            @Child private ExpressionNode bodyNode = adding;
+
             @Override
             public Object execute(VirtualFrame frame) {
                 return adding.execute(frame);
