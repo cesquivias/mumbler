@@ -1,0 +1,3 @@
+<factorypath>
+    <factorypathentry kind="EXTJAR" id="/home/sgtpepper/dev/graal/graal/com.oracle.truffle.dsl.processor/ap/com.oracle.truffle.dsl.processor.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
