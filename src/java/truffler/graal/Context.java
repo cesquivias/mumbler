@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.PrintStream;
 
 import truffler.graal.node.ExpressionNode;
+import truffler.graal.node.Function;
 import truffler.graal.node.expression.AddNode;
 import truffler.graal.node.expression.AddNodeFactory;
 import truffler.graal.node.expression.NumberNode;
+import truffler.graal.node.expression.call.InvocationNode;
 
 import com.oracle.truffle.api.ExecutionContext;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -54,6 +56,25 @@ public class Context extends ExecutionContext {
                 return adding.execute(frame);
             }
         };
-        return new FileRootNode(this, rootNode);
+        Function addFn = new Function(rootNode);
+        ExpressionNode fnExpression = new ExpressionNode() {
+            @Override
+            public Object execute(VirtualFrame virtualFrame) {
+                return addFn;
+            }
+
+        };
+        InvocationNode invoke = new InvocationNode(fnExpression,
+                new ExpressionNode[] {});
+
+        return new FileRootNode(this, new RootNode(null,
+                new FrameDescriptor()) {
+            @Child private ExpressionNode bodyNode = invoke;
+
+            @Override
+            public Object execute(VirtualFrame virtualFrame) {
+                return invoke.execute(virtualFrame);
+            }
+        });
     }
 }
