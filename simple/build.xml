@@ -2,6 +2,7 @@
     <property name="srcdir" location="src" />
     <property name="builddir" location="build" />
     <property name="distdir" location="dist" />
+    <property name="jarfile" location="${distdir}/truffler.jar" />
 
     <presetdef name="javac">
         <javac includeantruntime="false" />
@@ -17,23 +18,13 @@
     </target>
 
     <target name="jar" depends="build">
-        <jar destfile="${distdir}/truffler.jar"
+        <jar destfile="${jarfile}"
              basedir="${builddir}">
             <manifest>
                 <attribute name="Main-Class"
                            value="truffler.simple.REPL"/>
             </manifest>
         </jar>
-    </target>
-
-    <target name="repl" depends="build">
-        <java classname="truffler.simple.REPL"
-              fork="yes"
-              spawn="yes">
-            <classpath>
-                <pathelement path="${builddir}" />
-            </classpath>
-        </java>
     </target>
 
     <target name="clean">
