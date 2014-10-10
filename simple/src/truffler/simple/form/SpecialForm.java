@@ -1,8 +1,5 @@
 package truffler.simple.form;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import truffler.simple.Fn;
 import truffler.simple.env.Environment;
 

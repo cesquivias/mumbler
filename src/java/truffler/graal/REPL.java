@@ -1,9 +1,7 @@
 package truffler.graal;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Console;
-import java.io.InputStreamReader;
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -15,7 +13,7 @@ import truffler.graal.form.ListForm;
 public class REPL {
     private static ListForm read() throws Exception {
         Console console = System.console();
-        String data = data = console.readLine("~> ");
+        String data = console.readLine("~> ");
         if (data == null) {
             throw new EOFException();
         }
