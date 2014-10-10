@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import truffler.graal.node.ExpressionNode;
 import truffler.graal.node.Function;
+import truffler.graal.node.FunctionRootNode;
 import truffler.graal.node.expression.AddNode;
 import truffler.graal.node.expression.AddNodeFactory;
 import truffler.graal.node.expression.NumberNode;
@@ -14,7 +15,6 @@ import com.oracle.truffle.api.ExecutionContext;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.instrument.SourceCallback;
-import com.oracle.truffle.api.nodes.RootNode;
 
 public class Context extends ExecutionContext {
 
@@ -48,14 +48,9 @@ public class Context extends ExecutionContext {
                 new NumberNode(2),
                 new NumberNode(3));
         FrameDescriptor frameDescriptor = new FrameDescriptor();
-        RootNode rootNode = new RootNode(null, frameDescriptor) {
-            @Child private ExpressionNode bodyNode = adding;
+        FunctionRootNode rootNode = new FunctionRootNode(
+                null, frameDescriptor, adding);
 
-            @Override
-            public Object execute(VirtualFrame frame) {
-                return adding.execute(frame);
-            }
-        };
         Function addFn = new Function(rootNode);
         ExpressionNode fnExpression = new ExpressionNode() {
             @Override
@@ -67,14 +62,7 @@ public class Context extends ExecutionContext {
         InvocationNode invoke = new InvocationNode(fnExpression,
                 new ExpressionNode[] {});
 
-        return new FileRootNode(this, new RootNode(null,
-                new FrameDescriptor()) {
-            @Child private ExpressionNode bodyNode = invoke;
-
-            @Override
-            public Object execute(VirtualFrame virtualFrame) {
-                return invoke.execute(virtualFrame);
-            }
-        });
+        return new FileRootNode(this, new FunctionRootNode(
+                null, new FrameDescriptor(), invoke));
     }
 }
