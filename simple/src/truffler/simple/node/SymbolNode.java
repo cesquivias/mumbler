@@ -1,11 +1,11 @@
-package truffler.simple.form;
+package truffler.simple.node;
 
 import truffler.simple.env.Environment;
 
-public class SymbolForm extends Form {
+public class SymbolNode extends Node {
     public final String name;
 
-    public SymbolForm(String name) {
+    public SymbolNode(String name) {
         this.name = name;
     }
 
@@ -16,8 +16,8 @@ public class SymbolForm extends Form {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof SymbolForm &&
-            this.name.equals(((SymbolForm) other).name);
+        return other instanceof SymbolNode &&
+            this.name.equals(((SymbolNode) other).name);
     }
 
     @Override

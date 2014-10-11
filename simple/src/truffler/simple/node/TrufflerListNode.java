@@ -1,4 +1,4 @@
-package truffler.simple.form;
+package truffler.simple.node;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,32 +7,32 @@ import java.util.List;
 import truffler.simple.Fn;
 import truffler.simple.env.Environment;
 
-public class ListForm extends Form implements Iterable<Form> {
-    public static final ListForm EMPTY = new ListForm();
+public class TrufflerListNode extends Node implements Iterable<Node> {
+    public static final TrufflerListNode EMPTY = new TrufflerListNode();
 
-    public final Form car;
-    public final ListForm cdr;
+    public final Node car;
+    public final TrufflerListNode cdr;
 
-    private ListForm() {
+    private TrufflerListNode() {
         this.car = null;
         this.cdr = null;
     }
 
-    private ListForm(Form car, ListForm cdr) {
+    private TrufflerListNode(Node car, TrufflerListNode cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
-    public static ListForm list(List<Form> forms) {
-        ListForm l = EMPTY;
-        for (int i=forms.size()-1; i>=0; i--) {
-            l = l.cons(forms.get(i));
+    public static TrufflerListNode list(List<Node> nodes) {
+        TrufflerListNode l = EMPTY;
+        for (int i=nodes.size()-1; i>=0; i--) {
+            l = l.cons(nodes.get(i));
         }
         return l;
     }
 
-    public ListForm cons(Form form) {
-        return new ListForm(form, this);
+    public TrufflerListNode cons(Node node) {
+        return new TrufflerListNode(node, this);
     }
 
     public long length() {
@@ -41,7 +41,7 @@ public class ListForm extends Form implements Iterable<Form> {
         }
 
         long len = 1;
-        ListForm l = this.cdr;
+        TrufflerListNode l = this.cdr;
         while (l != EMPTY) {
             len++;
             l = l.cdr;
@@ -49,9 +49,9 @@ public class ListForm extends Form implements Iterable<Form> {
         return len;
     }
 
-    public Iterator<Form> iterator() {
-        return new Iterator<Form>() {
-            private ListForm l = ListForm.this;
+    public Iterator<Node> iterator() {
+        return new Iterator<Node>() {
+            private TrufflerListNode l = TrufflerListNode.this;
 
             @Override
             public boolean hasNext() {
@@ -59,11 +59,11 @@ public class ListForm extends Form implements Iterable<Form> {
             }
 
             @Override
-            public Form next() {
+            public Node next() {
                 if (this.l == EMPTY) {
                     throw new IllegalStateException("At end of list");
                 }
-                Form car = this.l.car;
+                Node car = this.l.car;
                 this.l = this.l.cdr;
                 return car;
             }
@@ -77,14 +77,14 @@ public class ListForm extends Form implements Iterable<Form> {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ListForm)) {
+        if (!(other instanceof TrufflerListNode)) {
             return false;
         }
         if (this == EMPTY && other == EMPTY) {
             return true;
         }
 
-        ListForm that = (ListForm) other;
+        TrufflerListNode that = (TrufflerListNode) other;
         if (this.cdr == EMPTY && that.cdr != EMPTY) {
             return false;
         }
@@ -98,11 +98,11 @@ public class ListForm extends Form implements Iterable<Form> {
         }
 
         StringBuilder b = new StringBuilder("(" + this.car);
-        Form rest = this.cdr;
+        Node rest = this.cdr;
         while (rest != null && rest != EMPTY) {
             b.append(" ");
-            if (rest instanceof ListForm) {
-                ListForm l = (ListForm) rest;
+            if (rest instanceof TrufflerListNode) {
+                TrufflerListNode l = (TrufflerListNode) rest;
                 b.append(l.car);
                 rest = l.cdr;
             } else {
@@ -124,8 +124,8 @@ public class ListForm extends Form implements Iterable<Form> {
         }
 
         List<Object> args = new ArrayList<Object>();
-        for (Form form : this.cdr) {
-            args.add(form.eval(env));
+        for (Node node : this.cdr) {
+            args.add(node.eval(env));
         }
         return fn.apply(args.toArray());
     }

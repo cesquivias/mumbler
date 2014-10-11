@@ -5,51 +5,49 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import truffler.simple.form.BooleanForm;
-import truffler.simple.form.Form;
-import truffler.simple.form.ListForm;
-import truffler.simple.form.NumberForm;
-import truffler.simple.form.SpecialForm;
-import truffler.simple.form.SymbolForm;
-
+import truffler.simple.node.BooleanNode;
+import truffler.simple.node.Node;
+import truffler.simple.node.NumberNode;
+import truffler.simple.node.SpecialNode;
+import truffler.simple.node.SymbolNode;
+import truffler.simple.node.TrufflerListNode;
 
 public class Reader {
-    public static ListForm read(InputStream istream) throws IOException {
+    public static TrufflerListNode read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
 
-    private static ListForm read(PushbackReader pstream) throws IOException {
-        List<Form> forms = new ArrayList<Form>();
+    private static TrufflerListNode read(PushbackReader pstream)
+            throws IOException {
+        List<Node> nodes = new ArrayList<Node>();
 
         readWhitespace(pstream);
         char c = (char) pstream.read();
         while ((byte) c != -1) {
             pstream.unread(c);
-            forms.add(readForm(pstream));
+            nodes.add(readNode(pstream));
             readWhitespace(pstream);
             c = (char) pstream.read();
         }
 
-        return ListForm.list(forms);
+        return TrufflerListNode.list(nodes);
     }
 
-    public static Form readForm(PushbackReader pstream) throws IOException {
+    public static Node readNode(PushbackReader pstream) throws IOException {
         char c = (char) pstream.read();
+        pstream.unread(c);
         if (c == '(') {
             return readList(pstream);
         } else if (Character.isDigit(c)) {
-            pstream.unread(c);
             return readNumber(pstream);
         } else if (c == '#') {
             return readBoolean(pstream);
         } else if (c == ')') {
             throw new IllegalArgumentException("Unmatched close paren");
         } else {
-            pstream.unread(c);
             return readSymbol(pstream);
         }
     }
@@ -63,23 +61,22 @@ public class Reader {
         pstream.unread(c);
     }
 
-    private static SymbolForm readSymbol(PushbackReader pstream)
+    private static SymbolNode readSymbol(PushbackReader pstream)
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
-        while (!(Character.isWhitespace(c) || (byte) c == -1
-                        || c == '(' || c == ')')) {
+        while (!(Character.isWhitespace(c) || (byte) c == -1 || c == '(' || c == ')')) {
             b.append(c);
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        return new SymbolForm(b.toString());
+        return new SymbolNode(b.toString());
     }
 
-    private static Form readList(PushbackReader pstream)
-            throws IOException {
-        // open paren is already read
-        List<Form> list = new ArrayList<Form>();
+    private static Node readList(PushbackReader pstream) throws IOException {
+        assert (char) pstream.read() == '(' :
+            "Reading a list must start with '('";
+        List<Node> list = new ArrayList<Node>();
         readWhitespace(pstream);
         char c = (char) pstream.read();
         while (true) {
@@ -92,14 +89,14 @@ public class Reader {
                 throw new EOFException("EOF reached before closing of list");
             } else {
                 pstream.unread(c);
-                list.add(readForm(pstream));
+                list.add(readNode(pstream));
             }
             c = (char) pstream.read();
         }
-        return SpecialForm.check(ListForm.list(list));
+        return SpecialNode.check(TrufflerListNode.list(list));
     }
 
-    private static NumberForm readNumber(PushbackReader pstream)
+    private static NumberNode readNumber(PushbackReader pstream)
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
@@ -108,19 +105,21 @@ public class Reader {
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        return new NumberForm(Long.valueOf(b.toString(), 10));
+        return new NumberNode(Long.valueOf(b.toString(), 10));
     }
 
-    private static final SymbolForm TRUE_SYM = new SymbolForm("t");
-    private static final SymbolForm FALSE_SYM = new SymbolForm("f");
-    private static BooleanForm readBoolean(PushbackReader pstream)
+    private static final SymbolNode TRUE_SYM = new SymbolNode("t");
+    private static final SymbolNode FALSE_SYM = new SymbolNode("f");
+
+    private static BooleanNode readBoolean(PushbackReader pstream)
             throws IOException {
-        // '#' already read
-        SymbolForm sym = readSymbol(pstream);
+        assert (char) pstream.read() == '#' :
+            "Reading a boolean must start with '#'";
+        SymbolNode sym = readSymbol(pstream);
         if (TRUE_SYM.equals(sym)) {
-            return BooleanForm.TRUE;
+            return BooleanNode.TRUE;
         } else if (FALSE_SYM.equals(sym)) {
-            return BooleanForm.FALSE;
+            return BooleanNode.FALSE;
         } else {
             throw new IllegalArgumentException("Unknown value: #" + sym.name);
         }

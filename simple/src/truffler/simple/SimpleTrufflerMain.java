@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import truffler.simple.env.Environment;
-import truffler.simple.form.Form;
-import truffler.simple.form.ListForm;
+import truffler.simple.node.Node;
+import truffler.simple.node.TrufflerListNode;
 
 public class SimpleTrufflerMain {
     public static void main(String[] args) throws IOException {
@@ -30,11 +30,11 @@ public class SimpleTrufflerMain {
                 // EOF sent
                 break;
             }
-            ListForm nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
+            TrufflerListNode nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
 
             // EVAL
-            Object result = ListForm.EMPTY;
-            for (Form node : nodes) {
+            Object result = TrufflerListNode.EMPTY;
+            for (Node node : nodes) {
                 result = node.eval(topEnv);
             }
 
@@ -46,8 +46,8 @@ public class SimpleTrufflerMain {
     private static void runTruffler(String filename) throws IOException {
         Environment topEnv = Environment.getBaseEnvironment();
 
-        ListForm nodes = Reader.read(new FileInputStream(filename));
-        for (Form node : nodes) {
+        TrufflerListNode nodes = Reader.read(new FileInputStream(filename));
+        for (Node node : nodes) {
             node.eval(topEnv);
         }
     }
