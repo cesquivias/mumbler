@@ -3,8 +3,8 @@ package truffler.simple.node;
 import truffler.simple.Fn;
 import truffler.simple.env.Environment;
 
-public abstract class SpecialNode extends Node {
-    private static class DefineSpecialForm extends SpecialNode {
+public abstract class SpecialForm extends Node {
+    private static class DefineSpecialForm extends SpecialForm {
         public DefineSpecialForm(TrufflerListNode listNode) {
             super(listNode);
         }
@@ -16,8 +16,8 @@ public abstract class SpecialNode extends Node {
             return null;
         }
     }
-    
-    private static class LambdaSpecialForm extends SpecialNode {
+
+    private static class LambdaSpecialForm extends SpecialForm {
         public LambdaSpecialForm(TrufflerListNode listNode) {
             super(listNode);
         }
@@ -38,8 +38,8 @@ public abstract class SpecialNode extends Node {
                     if (args.length != formalParams.length()) {
                         throw new IllegalArgumentException(
                                 "Wrong number of arguments. Expected: " +
-                                formalParams.length() + ". Got: " +
-                                args.length);
+                                        formalParams.length() + ". Got: " +
+                                        args.length);
                     }
                     // map parameter values to formal parameter names
                     int i = 0;
@@ -61,7 +61,7 @@ public abstract class SpecialNode extends Node {
         }
     }
 
-    private static class IfSpecialForm extends SpecialNode {
+    private static class IfSpecialForm extends SpecialForm {
         public IfSpecialForm(TrufflerListNode listNode) {
             super(listNode);
         }
@@ -81,7 +81,7 @@ public abstract class SpecialNode extends Node {
         }
     }
 
-    private static class QuoteSpecialForm extends SpecialNode {
+    private static class QuoteSpecialForm extends SpecialForm {
         public QuoteSpecialForm(TrufflerListNode listNode) {
             super(listNode);
         }
@@ -94,20 +94,25 @@ public abstract class SpecialNode extends Node {
 
     protected final TrufflerListNode node;
 
-    private SpecialNode(TrufflerListNode listNode) {
+    private SpecialForm(TrufflerListNode listNode) {
         this.node = listNode;
     }
+
+    private static final SymbolNode DEFINE = new SymbolNode("define");
+    private static final SymbolNode LAMBDA = new SymbolNode("lambda");
+    private static final SymbolNode IF = new SymbolNode("if");
+    private static final SymbolNode QUOTE = new SymbolNode("quote");
 
     public static Node check(TrufflerListNode l) {
         if (l == TrufflerListNode.EMPTY) {
             return l;
-        } else if (l.car.equals(new SymbolNode("define"))) {
+        } else if (l.car.equals(DEFINE)) {
             return new DefineSpecialForm(l);
-        } else if (l.car.equals(new SymbolNode("lambda"))) {
+        } else if (l.car.equals(LAMBDA)) {
             return new LambdaSpecialForm(l);
-        } else if (l.car.equals(new SymbolNode("if"))) {
+        } else if (l.car.equals(IF)) {
             return new IfSpecialForm(l);
-        } else if (l.car.equals(new SymbolNode("quote"))) {
+        } else if (l.car.equals(QUOTE)) {
             return new QuoteSpecialForm(l);
         }
         return l;

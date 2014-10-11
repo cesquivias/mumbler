@@ -11,7 +11,7 @@ import java.util.List;
 import truffler.simple.node.BooleanNode;
 import truffler.simple.node.Node;
 import truffler.simple.node.NumberNode;
-import truffler.simple.node.SpecialNode;
+import truffler.simple.node.SpecialForm;
 import truffler.simple.node.SymbolNode;
 import truffler.simple.node.TrufflerListNode;
 
@@ -91,7 +91,7 @@ public class Reader {
                 list.add(readNode(pstream));
             }
         } while (true);
-        return SpecialNode.check(TrufflerListNode.list(list));
+        return SpecialForm.check(TrufflerListNode.list(list));
     }
 
     private static NumberNode readNumber(PushbackReader pstream)
