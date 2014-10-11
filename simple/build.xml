@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <project name="SimpleTruffler" default="dist" basedir=".">
     <property name="srcdir" location="src" />
     <property name="builddir" location="build" />
@@ -22,7 +23,7 @@
              basedir="${builddir}">
             <manifest>
                 <attribute name="Main-Class"
-                           value="truffler.simple.REPL"/>
+                           value="truffler.simple.SimpleTrufflerMain"/>
             </manifest>
         </jar>
     </target>

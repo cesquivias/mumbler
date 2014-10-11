@@ -31,4 +31,14 @@ public class Environment {
     public void putValue(SymbolForm sym, Object value) {
         this.env.put(sym, value);
     }
+
+    public static Environment getBaseEnvironment() {
+        Environment env = new Environment();
+        env.putValue(new SymbolForm("+"), BuiltinFn.PLUS);
+        env.putValue(new SymbolForm("-"), BuiltinFn.MINUS);
+        env.putValue(new SymbolForm("*"), BuiltinFn.MULT);
+        env.putValue(new SymbolForm("/"), BuiltinFn.DIV);
+        env.putValue(new SymbolForm("="), BuiltinFn.EQUALS);
+        return env;
+    }
 }
