@@ -74,15 +74,14 @@ public class Reader {
     }
 
     private static Node readList(PushbackReader pstream) throws IOException {
-        assert (char) pstream.read() == '(' :
-            "Reading a list must start with '('";
+        char paren = (char) pstream.read();
+        assert paren == '(' : "Reading a list must start with '('";
         List<Node> list = new ArrayList<Node>();
-        readWhitespace(pstream);
-        char c = (char) pstream.read();
-        while (true) {
-            if (Character.isWhitespace(c)) {
-                // pass
-            } else if (c == ')') {
+        do {
+            readWhitespace(pstream);
+            char c = (char) pstream.read();
+
+            if (c == ')') {
                 // end of list
                 break;
             } else if ((byte) c == -1) {
@@ -91,8 +90,7 @@ public class Reader {
                 pstream.unread(c);
                 list.add(readNode(pstream));
             }
-            c = (char) pstream.read();
-        }
+        } while (true);
         return SpecialNode.check(TrufflerListNode.list(list));
     }
 
@@ -113,8 +111,9 @@ public class Reader {
 
     private static BooleanNode readBoolean(PushbackReader pstream)
             throws IOException {
-        assert (char) pstream.read() == '#' :
-            "Reading a boolean must start with '#'";
+        char hash = (char) pstream.read();
+        assert hash == '#' : "Reading a boolean must start with '#'";
+
         SymbolNode sym = readSymbol(pstream);
         if (TRUE_SYM.equals(sym)) {
             return BooleanNode.TRUE;
