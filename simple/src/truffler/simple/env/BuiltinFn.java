@@ -3,7 +3,6 @@ package truffler.simple.env;
 import truffler.simple.Function;
 
 abstract class BuiltinFn extends Function {
-    private final String name;
     static final Function EQUALS = new BuiltinFn("EQUALS") {
         @Override
         public Object apply(Object... args) {
@@ -45,6 +44,9 @@ abstract class BuiltinFn extends Function {
     static final Function MINUS = new BuiltinFn("MINUS") {
         @Override
         public Object apply(Object... args) {
+            if (args.length < 1) {
+                throw new RuntimeException(this.name + " requires an argument");
+            }
             switch (args.length) {
             case 1:
                 return -((Long) args[0]);
@@ -67,6 +69,8 @@ abstract class BuiltinFn extends Function {
             return sum;
         }
     };
+
+    protected final String name;
 
     public BuiltinFn(String name) {
         this.name = name;
