@@ -11,8 +11,9 @@ public abstract class SpecialForm extends Node {
 
         @Override
         public Object eval(Environment env) {
-            SymbolNode name = (SymbolNode) this.node.cdr.car; // 2nd element
-            env.putValue(name, this.node.cdr.cdr.car.eval(env)); // 3rd element
+            SymbolNode sym = (SymbolNode) this.node.cdr.car; // 2nd element
+            env.putValue(sym.name,
+                    this.node.cdr.cdr.car.eval(env)); // 3rd element
             return null;
         }
     }
@@ -44,8 +45,8 @@ public abstract class SpecialForm extends Node {
                     // map parameter values to formal parameter names
                     int i = 0;
                     for (Node param : formalParams) {
-                        SymbolNode paramName = (SymbolNode) param;
-                        lambdaEnv.putValue(paramName, args[i]);
+                        SymbolNode paramSymbol = (SymbolNode) param;
+                        lambdaEnv.putValue(paramSymbol.name, args[i]);
                         i++;
                     }
 

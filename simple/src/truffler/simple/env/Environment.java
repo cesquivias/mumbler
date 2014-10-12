@@ -2,11 +2,8 @@ package truffler.simple.env;
 
 import java.util.HashMap;
 
-import truffler.simple.node.SymbolNode;
-
 public class Environment {
-    private final HashMap<SymbolNode, Object> env =
-        new HashMap<SymbolNode, Object>();
+    private final HashMap<String, Object> env = new HashMap<String, Object>();
 
     private final Environment parent;
 
@@ -18,27 +15,27 @@ public class Environment {
         this.parent = parent;
     }
 
-    public Object getValue(SymbolNode sym) {
-        if (this.env.containsKey(sym)) {
-            return this.env.get(sym);
+    public Object getValue(String name) {
+        if (this.env.containsKey(name)) {
+            return this.env.get(name);
         } else if (this.parent != null) {
-            return this.parent.getValue(sym);
+            return this.parent.getValue(name);
         } else {
-            return null;
+            throw new RuntimeException("No variable: " + name);
         }
     }
 
-    public void putValue(SymbolNode sym, Object value) {
-        this.env.put(sym, value);
+    public void putValue(String name, Object value) {
+        this.env.put(name, value);
     }
 
     public static Environment getBaseEnvironment() {
         Environment env = new Environment();
-        env.putValue(new SymbolNode("+"), BuiltinFn.PLUS);
-        env.putValue(new SymbolNode("-"), BuiltinFn.MINUS);
-        env.putValue(new SymbolNode("*"), BuiltinFn.MULT);
-        env.putValue(new SymbolNode("/"), BuiltinFn.DIV);
-        env.putValue(new SymbolNode("="), BuiltinFn.EQUALS);
+        env.putValue("+", BuiltinFn.PLUS);
+        env.putValue("-", BuiltinFn.MINUS);
+        env.putValue("*", BuiltinFn.MULT);
+        env.putValue("/", BuiltinFn.DIV);
+        env.putValue("=", BuiltinFn.EQUALS);
         return env;
     }
 }

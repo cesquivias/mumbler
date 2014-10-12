@@ -49,6 +49,7 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
         return len;
     }
 
+    @Override
     public Iterator<Node> iterator() {
         return new Iterator<Node>() {
             private TrufflerListNode l = TrufflerListNode.this;
@@ -90,7 +91,7 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
         }
         return this.car.equals(that.car) && this.cdr.equals(that.cdr);
     }
-    
+
     @Override
     public String toString() {
         if (this == EMPTY) {
@@ -117,11 +118,6 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
     @Override
     public Object eval(Environment env) {
         Fn fn = (Fn) this.car.eval(env);
-
-        if (fn == null) {
-            throw new UnsupportedOperationException("Undefined value: " +
-                    this.car);
-        }
 
         List<Object> args = new ArrayList<Object>();
         for (Node node : this.cdr) {

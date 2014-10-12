@@ -16,8 +16,7 @@ public class SymbolNode extends Node {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof SymbolNode &&
-            this.name.equals(((SymbolNode) other).name);
+        return this.name.equals(other);
     }
 
     @Override
@@ -27,6 +26,6 @@ public class SymbolNode extends Node {
 
     @Override
     public Object eval(Environment env) {
-        return env.getValue(this);
+        return env.getValue(this.name);
     }
 }
