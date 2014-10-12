@@ -2,7 +2,7 @@ package truffler.simple.env;
 
 import truffler.simple.Function;
 
-abstract class BuiltinFn implements Function {
+abstract class BuiltinFn extends Function {
     private final String name;
     static final Function EQUALS = new BuiltinFn("EQUALS") {
         @Override
@@ -70,11 +70,6 @@ abstract class BuiltinFn implements Function {
 
     public BuiltinFn(String name) {
         this.name = name;
-    }
-
-    @Override
-    public Object eval(Environment env) {
-        return this;
     }
 
     @Override

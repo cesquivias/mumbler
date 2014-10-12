@@ -24,25 +24,21 @@ public abstract class SpecialForm extends Node {
         }
 
         @Override
-        public Object eval(final Environment env) {
+        public Object eval(final Environment parentEnv) {
             final TrufflerListNode formalParams = (TrufflerListNode) this.node.cdr.car;
             final TrufflerListNode body = this.node.cdr.cdr;
             return new Function() {
                 @Override
-                public Object eval(Environment env) {
-                    return this;
-                }
-
-                @Override
                 public Object apply(Object... args) {
-                    Environment lambdaEnv = new Environment(env);
+                    Environment lambdaEnv = new Environment(parentEnv);
                     if (args.length != formalParams.length()) {
-                        throw new IllegalArgumentException(
+                        throw new RuntimeException(
                                 "Wrong number of arguments. Expected: " +
                                         formalParams.length() + ". Got: " +
                                         args.length);
                     }
-                    // map parameter values to formal parameter names
+
+                    // Map parameter values to formal parameter names
                     int i = 0;
                     for (Node param : formalParams) {
                         SymbolNode paramSymbol = (SymbolNode) param;
@@ -50,7 +46,7 @@ public abstract class SpecialForm extends Node {
                         i++;
                     }
 
-                    // execute body
+                    // Evaluate body
                     Object output = null;
                     for (Node node : body) {
                         output = node.eval(lambdaEnv);
