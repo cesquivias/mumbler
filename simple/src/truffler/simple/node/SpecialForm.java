@@ -1,6 +1,6 @@
 package truffler.simple.node;
 
-import truffler.simple.Fn;
+import truffler.simple.Function;
 import truffler.simple.env.Environment;
 
 public abstract class SpecialForm extends Node {
@@ -27,7 +27,7 @@ public abstract class SpecialForm extends Node {
         public Object eval(final Environment env) {
             final TrufflerListNode formalParams = (TrufflerListNode) this.node.cdr.car;
             final TrufflerListNode body = this.node.cdr.cdr;
-            return new Fn() {
+            return new Function() {
                 @Override
                 public Object eval(Environment env) {
                     return this;

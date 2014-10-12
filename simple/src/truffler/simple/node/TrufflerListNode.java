@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import truffler.simple.Fn;
+import truffler.simple.Function;
 import truffler.simple.env.Environment;
 
 public class TrufflerListNode extends Node implements Iterable<Node> {
@@ -117,12 +117,12 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
 
     @Override
     public Object eval(Environment env) {
-        Fn fn = (Fn) this.car.eval(env);
+        Function function = (Function) this.car.eval(env);
 
         List<Object> args = new ArrayList<Object>();
         for (Node node : this.cdr) {
             args.add(node.eval(env));
         }
-        return fn.apply(args.toArray());
+        return function.apply(args.toArray());
     }
 }

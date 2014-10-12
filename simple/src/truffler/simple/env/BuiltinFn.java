@@ -1,10 +1,10 @@
 package truffler.simple.env;
 
-import truffler.simple.Fn;
+import truffler.simple.Function;
 
-abstract class BuiltinFn implements Fn {
+abstract class BuiltinFn implements Function {
     private final String name;
-    static final Fn EQUALS = new BuiltinFn("EQUALS") {
+    static final Function EQUALS = new BuiltinFn("EQUALS") {
         @Override
         public Object apply(Object... args) {
             Long last = (Long) args[0];
@@ -19,7 +19,7 @@ abstract class BuiltinFn implements Fn {
             return true;
         }
     };
-    static final Fn DIV = new BuiltinFn("DIV") {
+    static final Function DIV = new BuiltinFn("DIV") {
         @Override
         public Object apply(Object... args) {
             if (args.length == 1) {
@@ -32,7 +32,7 @@ abstract class BuiltinFn implements Fn {
             return quotient;
         }
     };
-    static final Fn MULT = new BuiltinFn("MULT") {
+    static final Function MULT = new BuiltinFn("MULT") {
         @Override
         public Object apply(Object... args) {
             long product = 1;
@@ -42,7 +42,7 @@ abstract class BuiltinFn implements Fn {
             return product;
         }
     };
-    static final Fn MINUS = new BuiltinFn("MINUS") {
+    static final Function MINUS = new BuiltinFn("MINUS") {
         @Override
         public Object apply(Object... args) {
             switch (args.length) {
@@ -57,7 +57,7 @@ abstract class BuiltinFn implements Fn {
             }
         }
     };
-    static final Fn PLUS = new BuiltinFn("PLUS") {
+    static final Function PLUS = new BuiltinFn("PLUS") {
         @Override
         public Object apply(Object... args) {
             long sum = 0;
