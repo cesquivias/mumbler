@@ -39,7 +39,9 @@ public class SimpleTrufflerMain {
             }
 
             // PRINT
-            System.out.println(result);
+            if (result != TrufflerListNode.EMPTY) {
+                System.out.println(result);
+            }
         }
     }
 

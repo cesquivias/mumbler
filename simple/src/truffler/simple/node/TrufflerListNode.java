@@ -1,5 +1,7 @@
 package truffler.simple.node;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +23,10 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
     private TrufflerListNode(Node car, TrufflerListNode cdr) {
         this.car = car;
         this.cdr = cdr;
+    }
+
+    public static TrufflerListNode list(Node... nodes) {
+        return list(asList(nodes));
     }
 
     public static TrufflerListNode list(List<Node> nodes) {

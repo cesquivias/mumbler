@@ -16,7 +16,8 @@ public class SymbolNode extends Node {
 
     @Override
     public boolean equals(Object other) {
-        return this.name.equals(other);
+        return other instanceof SymbolNode &&
+                this.name.equals(((SymbolNode) other).name);
     }
 
     @Override
