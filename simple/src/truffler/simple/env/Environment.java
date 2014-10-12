@@ -36,6 +36,7 @@ public class Environment {
         env.putValue("*", BuiltinFn.MULT);
         env.putValue("/", BuiltinFn.DIV);
         env.putValue("=", BuiltinFn.EQUALS);
+        env.putValue("println", BuiltinFn.PRINTLN);
         return env;
     }
 }

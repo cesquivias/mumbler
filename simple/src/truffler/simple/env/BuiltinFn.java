@@ -1,6 +1,7 @@
 package truffler.simple.env;
 
 import truffler.simple.Function;
+import truffler.simple.node.TrufflerListNode;
 
 abstract class BuiltinFn extends Function {
     static final Function EQUALS = new BuiltinFn("EQUALS") {
@@ -18,6 +19,7 @@ abstract class BuiltinFn extends Function {
             return true;
         }
     };
+
     static final Function DIV = new BuiltinFn("DIV") {
         @Override
         public Object apply(Object... args) {
@@ -31,6 +33,7 @@ abstract class BuiltinFn extends Function {
             return quotient;
         }
     };
+
     static final Function MULT = new BuiltinFn("MULT") {
         @Override
         public Object apply(Object... args) {
@@ -41,6 +44,7 @@ abstract class BuiltinFn extends Function {
             return product;
         }
     };
+
     static final Function MINUS = new BuiltinFn("MINUS") {
         @Override
         public Object apply(Object... args) {
@@ -59,6 +63,7 @@ abstract class BuiltinFn extends Function {
             }
         }
     };
+
     static final Function PLUS = new BuiltinFn("PLUS") {
         @Override
         public Object apply(Object... args) {
@@ -67,6 +72,16 @@ abstract class BuiltinFn extends Function {
                 sum += (Long) arg;
             }
             return sum;
+        }
+    };
+
+    static final Function PRINTLN = new BuiltinFn("println") {
+        @Override
+        public Object apply(Object... args) {
+            for (Object arg : args) {
+                System.out.println(arg);
+            }
+            return TrufflerListNode.EMPTY;
         }
     };
 
