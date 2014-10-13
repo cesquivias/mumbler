@@ -30,7 +30,7 @@ public class SimpleTrufflerMain {
                 // EOF sent
                 break;
             }
-            TrufflerListNode nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
+            TrufflerListNode<Node> nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
 
             // EVAL
             Object result = TrufflerListNode.EMPTY;
@@ -48,7 +48,7 @@ public class SimpleTrufflerMain {
     private static void runTruffler(String filename) throws IOException {
         Environment topEnv = Environment.getBaseEnvironment();
 
-        TrufflerListNode nodes = Reader.read(new FileInputStream(filename));
+        TrufflerListNode<Node> nodes = Reader.read(new FileInputStream(filename));
         for (Node node : nodes) {
             node.eval(topEnv);
         }

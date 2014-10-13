@@ -9,36 +9,39 @@ import java.util.List;
 import truffler.simple.Function;
 import truffler.simple.env.Environment;
 
-public class TrufflerListNode extends Node implements Iterable<Node> {
-    public static final TrufflerListNode EMPTY = new TrufflerListNode();
+public class TrufflerListNode<T extends Object> extends Node implements Iterable<T> {
+    public static final TrufflerListNode<?> EMPTY =
+            new TrufflerListNode<>();
 
-    public final Node car;
-    public final TrufflerListNode cdr;
+    public final T car;
+    public final TrufflerListNode<T> cdr;
 
     private TrufflerListNode() {
         this.car = null;
         this.cdr = null;
     }
 
-    private TrufflerListNode(Node car, TrufflerListNode cdr) {
+    private TrufflerListNode(T car, TrufflerListNode<T> cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
-    public static TrufflerListNode list(Node... nodes) {
-        return list(asList(nodes));
+    @SafeVarargs
+    public static <T> TrufflerListNode<T> list(T... objs) {
+        return list(asList(objs));
     }
 
-    public static TrufflerListNode list(List<Node> nodes) {
-        TrufflerListNode l = EMPTY;
-        for (int i=nodes.size()-1; i>=0; i--) {
-            l = l.cons(nodes.get(i));
+    public static <T> TrufflerListNode<T> list(List<T> objs) {
+        @SuppressWarnings("unchecked")
+        TrufflerListNode<T> l = (TrufflerListNode<T>) EMPTY;
+        for (int i=objs.size()-1; i>=0; i--) {
+            l = l.cons(objs.get(i));
         }
         return l;
     }
 
-    public TrufflerListNode cons(Node node) {
-        return new TrufflerListNode(node, this);
+    public TrufflerListNode<T> cons(T node) {
+        return new TrufflerListNode<T>(node, this);
     }
 
     public long length() {
@@ -47,7 +50,7 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
         }
 
         long len = 1;
-        TrufflerListNode l = this.cdr;
+        TrufflerListNode<T> l = this.cdr;
         while (l != EMPTY) {
             len++;
             l = l.cdr;
@@ -56,9 +59,9 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
     }
 
     @Override
-    public Iterator<Node> iterator() {
-        return new Iterator<Node>() {
-            private TrufflerListNode l = TrufflerListNode.this;
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private TrufflerListNode<T> l = TrufflerListNode.this;
 
             @Override
             public boolean hasNext() {
@@ -66,11 +69,11 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
             }
 
             @Override
-            public Node next() {
+            public T next() {
                 if (this.l == EMPTY) {
                     throw new IllegalStateException("At end of list");
                 }
-                Node car = this.l.car;
+                T car = this.l.car;
                 this.l = this.l.cdr;
                 return car;
             }
@@ -91,7 +94,7 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
             return true;
         }
 
-        TrufflerListNode that = (TrufflerListNode) other;
+        TrufflerListNode<?> that = (TrufflerListNode<?>) other;
         if (this.cdr == EMPTY && that.cdr != EMPTY) {
             return false;
         }
@@ -105,17 +108,11 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
         }
 
         StringBuilder b = new StringBuilder("(" + this.car);
-        Node rest = this.cdr;
+        TrufflerListNode<T> rest = this.cdr;
         while (rest != null && rest != EMPTY) {
             b.append(" ");
-            if (rest instanceof TrufflerListNode) {
-                TrufflerListNode l = (TrufflerListNode) rest;
-                b.append(l.car);
-                rest = l.cdr;
-            } else {
-                b.append(rest);
-                rest = null;
-            }
+            b.append(rest.car);
+            rest = rest.cdr;
         }
         b.append(")");
         return b.toString();
@@ -123,10 +120,12 @@ public class TrufflerListNode extends Node implements Iterable<Node> {
 
     @Override
     public Object eval(Environment env) {
-        Function function = (Function) this.car.eval(env);
+        Function function = (Function) ((Node) this.car).eval(env);
 
+        @SuppressWarnings("unchecked")
+        TrufflerListNode<Node> nodes = (TrufflerListNode<Node>) this;
         List<Object> args = new ArrayList<Object>();
-        for (Node node : this.cdr) {
+        for (Node node : nodes.cdr) {
             args.add(node.eval(env));
         }
         return function.apply(args.toArray());

@@ -5,7 +5,7 @@ import truffler.simple.env.Environment;
 
 public abstract class SpecialForm extends Node {
     private static class DefineSpecialForm extends SpecialForm {
-        public DefineSpecialForm(TrufflerListNode listNode) {
+        public DefineSpecialForm(TrufflerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -19,14 +19,16 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class LambdaSpecialForm extends SpecialForm {
-        public LambdaSpecialForm(TrufflerListNode listNode) {
+        public LambdaSpecialForm(TrufflerListNode<Node> listNode) {
             super(listNode);
         }
 
         @Override
         public Object eval(final Environment parentEnv) {
-            final TrufflerListNode formalParams = (TrufflerListNode) this.node.cdr.car;
-            final TrufflerListNode body = this.node.cdr.cdr;
+            @SuppressWarnings("unchecked")
+            final TrufflerListNode<Node> formalParams =
+            (TrufflerListNode<Node>) this.node.cdr.car;
+            final TrufflerListNode<Node> body = this.node.cdr.cdr;
             return new Function() {
                 @Override
                 public Object apply(Object... args) {
@@ -59,7 +61,7 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class IfSpecialForm extends SpecialForm {
-        public IfSpecialForm(TrufflerListNode listNode) {
+        public IfSpecialForm(TrufflerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -79,7 +81,7 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class QuoteSpecialForm extends SpecialForm {
-        public QuoteSpecialForm(TrufflerListNode listNode) {
+        public QuoteSpecialForm(TrufflerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -89,9 +91,9 @@ public abstract class SpecialForm extends Node {
         }
     }
 
-    protected final TrufflerListNode node;
+    protected final TrufflerListNode<Node> node;
 
-    private SpecialForm(TrufflerListNode listNode) {
+    private SpecialForm(TrufflerListNode<Node> listNode) {
         this.node = listNode;
     }
 
@@ -100,7 +102,7 @@ public abstract class SpecialForm extends Node {
     private static final SymbolNode IF = new SymbolNode("if");
     private static final SymbolNode QUOTE = new SymbolNode("quote");
 
-    public static Node check(TrufflerListNode l) {
+    public static Node check(TrufflerListNode<Node> l) {
         if (l == TrufflerListNode.EMPTY) {
             return l;
         } else if (l.car.equals(DEFINE)) {

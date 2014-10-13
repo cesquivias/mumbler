@@ -16,11 +16,11 @@ import truffler.simple.node.SymbolNode;
 import truffler.simple.node.TrufflerListNode;
 
 public class Reader {
-    public static TrufflerListNode read(InputStream istream) throws IOException {
+    public static TrufflerListNode<Node> read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
 
-    private static TrufflerListNode read(PushbackReader pstream)
+    private static TrufflerListNode<Node> read(PushbackReader pstream)
             throws IOException {
         List<Node> nodes = new ArrayList<Node>();
 
