@@ -31,6 +31,12 @@ def run_truffler(name):
 def run_racket(name):
     run(name, ['racket'], 'rkt')
 
+def run_node(name):
+    run(name, ['nodejs'], 'js')
+
+def run_python(name):
+    run(name, ['python'], 'py')
+
 parser = ArgumentParser(description='Take benchmark measurements')
 parser.add_argument('benchmark', type=str,
                     help='directory name with benchmark')
@@ -38,4 +44,6 @@ parser.add_argument('benchmark', type=str,
 args = parser.parse_args()
 
 run_racket(args.benchmark)
+run_node(args.benchmark)
+run_python(args.benchmark)
 run_truffler(args.benchmark)
