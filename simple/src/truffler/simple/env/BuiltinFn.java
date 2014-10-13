@@ -75,6 +75,29 @@ abstract class BuiltinFn extends Function {
         }
     };
 
+    static final Function LIST = new BuiltinFn("list") {
+        @Override
+        public Object apply(Object... args) {
+            return TrufflerListNode.list(args);
+        }
+    };
+
+    static final Function CAR = new BuiltinFn("car") {
+        @Override
+        public Object apply(Object... args) {
+            assert args.length == 1;
+            return ((TrufflerListNode<?>) args[0]).car;
+        }
+    };
+
+    static final Function CDR = new BuiltinFn("cdr") {
+        @Override
+        public Object apply(Object... args) {
+            assert args.length == 1;
+            return ((TrufflerListNode<?>) args[0]).cdr;
+        }
+    };
+
     static final Function PRINTLN = new BuiltinFn("println") {
         @Override
         public Object apply(Object... args) {
