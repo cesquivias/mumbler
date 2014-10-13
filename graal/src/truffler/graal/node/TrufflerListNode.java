@@ -1,38 +1,47 @@
-package truffler.graal.form;
+package truffler.graal.node;
+
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import truffler.graal.Fn;
+import truffler.graal.Function;
 import truffler.graal.env.Environment;
 
-public class ListForm extends Form implements Iterable<Form> {
-    public static final ListForm EMPTY = new ListForm();
+public class TrufflerListNode<T extends Object> extends Node implements Iterable<T> {
+    public static final TrufflerListNode<?> EMPTY =
+            new TrufflerListNode<>();
 
-    public final Form car;
-    public final ListForm cdr;
+    public final T car;
+    public final TrufflerListNode<T> cdr;
 
-    private ListForm() {
+    private TrufflerListNode() {
         this.car = null;
         this.cdr = null;
     }
 
-    private ListForm(Form car, ListForm cdr) {
+    private TrufflerListNode(T car, TrufflerListNode<T> cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
-    public static ListForm list(List<Form> forms) {
-        ListForm l = EMPTY;
-        for (int i=forms.size()-1; i>=0; i--) {
-            l = l.cons(forms.get(i));
+    @SafeVarargs
+    public static <T> TrufflerListNode<T> list(T... objs) {
+        return list(asList(objs));
+    }
+
+    public static <T> TrufflerListNode<T> list(List<T> objs) {
+        @SuppressWarnings("unchecked")
+        TrufflerListNode<T> l = (TrufflerListNode<T>) EMPTY;
+        for (int i=objs.size()-1; i>=0; i--) {
+            l = l.cons(objs.get(i));
         }
         return l;
     }
 
-    public ListForm cons(Form form) {
-        return new ListForm(form, this);
+    public TrufflerListNode<T> cons(T node) {
+        return new TrufflerListNode<T>(node, this);
     }
 
     public long length() {
@@ -41,7 +50,7 @@ public class ListForm extends Form implements Iterable<Form> {
         }
 
         long len = 1;
-        ListForm l = this.cdr;
+        TrufflerListNode<T> l = this.cdr;
         while (l != EMPTY) {
             len++;
             l = l.cdr;
@@ -49,9 +58,10 @@ public class ListForm extends Form implements Iterable<Form> {
         return len;
     }
 
-    public Iterator<Form> iterator() {
-        return new Iterator<Form>() {
-            private ListForm l = ListForm.this;
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private TrufflerListNode<T> l = TrufflerListNode.this;
 
             @Override
             public boolean hasNext() {
@@ -59,11 +69,11 @@ public class ListForm extends Form implements Iterable<Form> {
             }
 
             @Override
-            public Form next() {
+            public T next() {
                 if (this.l == EMPTY) {
                     throw new IllegalStateException("At end of list");
                 }
-                Form car = this.l.car;
+                T car = this.l.car;
                 this.l = this.l.cdr;
                 return car;
             }
@@ -77,20 +87,20 @@ public class ListForm extends Form implements Iterable<Form> {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof ListForm)) {
+        if (!(other instanceof TrufflerListNode)) {
             return false;
         }
         if (this == EMPTY && other == EMPTY) {
             return true;
         }
 
-        ListForm that = (ListForm) other;
+        TrufflerListNode<?> that = (TrufflerListNode<?>) other;
         if (this.cdr == EMPTY && that.cdr != EMPTY) {
             return false;
         }
         return this.car.equals(that.car) && this.cdr.equals(that.cdr);
     }
-    
+
     @Override
     public String toString() {
         if (this == EMPTY) {
@@ -98,17 +108,11 @@ public class ListForm extends Form implements Iterable<Form> {
         }
 
         StringBuilder b = new StringBuilder("(" + this.car);
-        Form rest = this.cdr;
+        TrufflerListNode<T> rest = this.cdr;
         while (rest != null && rest != EMPTY) {
             b.append(" ");
-            if (rest instanceof ListForm) {
-                ListForm l = (ListForm) rest;
-                b.append(l.car);
-                rest = l.cdr;
-            } else {
-                b.append(rest);
-                rest = null;
-            }
+            b.append(rest.car);
+            rest = rest.cdr;
         }
         b.append(")");
         return b.toString();
@@ -116,17 +120,14 @@ public class ListForm extends Form implements Iterable<Form> {
 
     @Override
     public Object eval(Environment env) {
-        Fn fn = (Fn) this.car.eval(env);
+        Function function = (Function) ((Node) this.car).eval(env);
 
-        if (fn == null) {
-            throw new UnsupportedOperationException("Undefined value: " +
-                    this.car);
-        }
-
+        @SuppressWarnings("unchecked")
+        TrufflerListNode<Node> nodes = (TrufflerListNode<Node>) this;
         List<Object> args = new ArrayList<Object>();
-        for (Form form : this.cdr) {
-            args.add(form.eval(env));
+        for (Node node : nodes.cdr) {
+            args.add(node.eval(env));
         }
-        return fn.apply(args.toArray());
+        return function.apply(args.toArray());
     }
 }

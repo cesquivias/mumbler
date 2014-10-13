@@ -1,11 +1,11 @@
-package truffler.graal.form;
+package truffler.graal.node;
 
 import truffler.graal.env.Environment;
 
-public class NumberForm extends Form {
+public class NumberNode extends Node {
     private final long num;
 
-    public NumberForm(long num) {
+    public NumberNode(long num) {
         this.num = num;
     }
 
@@ -16,8 +16,8 @@ public class NumberForm extends Form {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof NumberForm &&
-            this.num == ((NumberForm) other).num;
+        return other instanceof NumberNode &&
+            this.num == ((NumberNode) other).num;
     }
 
     @Override

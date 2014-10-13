@@ -1,11 +1,11 @@
-package truffler.graal.form;
+package truffler.graal.node;
 
 import truffler.graal.env.Environment;
 
-public class SymbolForm extends Form {
+public class SymbolNode extends Node {
     public final String name;
 
-    public SymbolForm(String name) {
+    public SymbolNode(String name) {
         this.name = name;
     }
 
@@ -16,8 +16,8 @@ public class SymbolForm extends Form {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof SymbolForm &&
-            this.name.equals(((SymbolForm) other).name);
+        return other instanceof SymbolNode &&
+                this.name.equals(((SymbolNode) other).name);
     }
 
     @Override
@@ -27,6 +27,6 @@ public class SymbolForm extends Form {
 
     @Override
     public Object eval(Environment env) {
-        return env.getValue(this);
+        return env.getValue(this.name);
     }
 }
