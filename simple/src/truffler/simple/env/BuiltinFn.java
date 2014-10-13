@@ -140,6 +140,13 @@ abstract class BuiltinFn extends Function {
         }
     };
 
+    static final Function NOW = new BuiltinFn("now") {
+        @Override
+        public Object apply(Object... args) {
+            return System.currentTimeMillis();
+        }
+    };
+
     protected final String name;
 
     public BuiltinFn(String name) {

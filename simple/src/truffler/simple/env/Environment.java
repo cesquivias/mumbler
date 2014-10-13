@@ -42,6 +42,7 @@ public class Environment {
         env.putValue("car", BuiltinFn.CAR);
         env.putValue("cdr", BuiltinFn.CDR);
         env.putValue("println", BuiltinFn.PRINTLN);
+        env.putValue("now", BuiltinFn.NOW);
         return env;
     }
 }
