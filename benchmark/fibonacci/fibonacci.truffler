@@ -1,0 +1,13 @@
+(define start (now))
+
+(define fibonacci
+  (lambda (n)
+    (if (< n 2)
+        1
+        (+ (fibonacci (- n 1))
+           (fibonacci (- n 2))))))
+
+(println (fibonacci 30))
+
+(define end (now))
+(println (list (quote computation-time:) (- end start)))

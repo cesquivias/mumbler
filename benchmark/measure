@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+import subprocess
+import sys
+import time
+
+from argparse import ArgumentParser
+from os.path import dirname, join, normpath, realpath
+
+
+def run(name, lang_args, suffix):
+    print suffix
+    print '--------------'
+    filename = join(name, name + '.' + suffix)
+    start = int(time.time() * 1000)
+    subprocess.call(lang_args + [filename])
+    end = int(time.time() * 1000)
+    print 'total time: %s\n' % (end - start)
+
+def run_truffler(name):
+    simple_truffler_dir = normpath(join(dirname(realpath(__file__)),
+                                        '../simple'))
+    p = subprocess.Popen(['ant', '-f', join(simple_truffler_dir, 'build.xml'),
+                          'jar'],
+                         stdout=subprocess.PIPE)
+    p.communicate()
+    
+    run(name, ['java', '-jar', join(simple_truffler_dir, 'dist/truffler.jar')],
+        'truffler')
+
+def run_racket(name):
+    run(name, ['racket'], 'rkt')
+
+parser = ArgumentParser(description='Take benchmark measurements')
+parser.add_argument('benchmark', type=str,
+                    help='directory name with benchmark')
+
+args = parser.parse_args()
+
+run_racket(args.benchmark)
+run_truffler(args.benchmark)
