@@ -36,6 +36,8 @@ public class Environment {
         env.putValue("*", BuiltinFn.MULT);
         env.putValue("/", BuiltinFn.DIV);
         env.putValue("=", BuiltinFn.EQUALS);
+        env.putValue("<", BuiltinFn.LESS_THAN);
+        env.putValue(">", BuiltinFn.GREATER_THAN);
         env.putValue("list", BuiltinFn.LIST);
         env.putValue("car", BuiltinFn.CAR);
         env.putValue("cdr", BuiltinFn.CDR);

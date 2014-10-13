@@ -20,6 +20,38 @@ abstract class BuiltinFn extends Function {
         }
     };
 
+    static final Function LESS_THAN = new BuiltinFn("LESS-THAN") {
+        @Override
+        public Object apply(Object... args) {
+            assert args.length > 1;
+            long num = (Long) args[args.length - 1];
+            for (int i=args.length - 2; i>=0; i--) {
+                long n = (Long) args[i];
+                if (n >= num) {
+                    return false;
+                }
+                num = n;
+            }
+            return true;
+        }
+    };
+
+    static final Function GREATER_THAN = new BuiltinFn("GREATER-THAN") {
+        @Override
+        public Object apply(Object... args) {
+            assert args.length > 1;
+            long num = (Long) args[args.length - 1];
+            for (int i=args.length - 2; i>=0; i--) {
+                long n = (Long) args[i];
+                if (n <= num) {
+                    return false;
+                }
+                num = n;
+            }
+            return true;
+        }
+    };
+
     static final Function DIV = new BuiltinFn("DIV") {
         @Override
         public Object apply(Object... args) {
