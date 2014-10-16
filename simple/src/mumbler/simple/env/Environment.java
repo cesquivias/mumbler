@@ -1,4 +1,4 @@
-package truffler.simple.env;
+package mumbler.simple.env;
 
 import java.util.HashMap;
 

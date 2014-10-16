@@ -1,6 +1,6 @@
-package truffler.simple.node;
+package mumbler.simple.node;
 
-import truffler.simple.env.Environment;
+import mumbler.simple.env.Environment;
 
 public class SymbolNode extends Node {
     public final String name;

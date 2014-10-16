@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="SimpleTruffler" default="dist" basedir=".">
+<project name="SimpleMumbler" default="dist" basedir=".">
     <property name="srcdir" location="src" />
     <property name="builddir" location="build" />
     <property name="distdir" location="dist" />
-    <property name="jarfile" location="${distdir}/truffler.jar" />
+    <property name="jarfile" location="${distdir}/mumbler.jar" />
 
     <presetdef name="javac">
         <javac includeantruntime="false" />
@@ -23,7 +23,7 @@
              basedir="${builddir}">
             <manifest>
                 <attribute name="Main-Class"
-                           value="truffler.simple.SimpleTrufflerMain"/>
+                           value="mumbler.simple.SimpleMumblerMain"/>
             </manifest>
         </jar>
     </target>

@@ -1,6 +1,6 @@
-package truffler.simple;
+package mumbler.simple;
 
-import truffler.simple.env.Environment;
+import mumbler.simple.env.Environment;
 
 public abstract class Function implements Evaluatable {
     @Override

@@ -1,28 +1,28 @@
-package truffler.simple.node;
+package mumbler.simple.node;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static truffler.simple.node.TrufflerListNode.EMPTY;
-import static truffler.simple.node.TrufflerListNode.list;
+import static mumbler.simple.node.MumblerListNode.EMPTY;
+import static mumbler.simple.node.MumblerListNode.list;
 
 import org.junit.Test;
 
-import truffler.simple.node.Node;
-import truffler.simple.node.NumberNode;
-import truffler.simple.node.SymbolNode;
-import truffler.simple.node.TrufflerListNode;
+import mumbler.simple.node.Node;
+import mumbler.simple.node.NumberNode;
+import mumbler.simple.node.SymbolNode;
+import mumbler.simple.node.MumblerListNode;
 
-public class TrufflerListNodeTest {
+public class MumblerListNodeTest {
     @Test
     public void emptyToString() {
         String expected = "()";
-        assertEquals(expected, TrufflerListNode.EMPTY.toString());
+        assertEquals(expected, MumblerListNode.EMPTY.toString());
     }
 
     @Test
     public void nonEmptyToString() {
         String expected = "(1 'foo)";
-        TrufflerListNode<Node> nodes = list(
+        MumblerListNode<Node> nodes = list(
                 new NumberNode(1),
                 new SymbolNode("foo"));
         assertEquals(expected, nodes.toString());
