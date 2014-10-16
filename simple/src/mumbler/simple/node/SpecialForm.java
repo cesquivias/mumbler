@@ -1,11 +1,11 @@
-package truffler.simple.node;
+package mumbler.simple.node;
 
-import truffler.simple.Function;
-import truffler.simple.env.Environment;
+import mumbler.simple.Function;
+import mumbler.simple.env.Environment;
 
 public abstract class SpecialForm extends Node {
     private static class DefineSpecialForm extends SpecialForm {
-        public DefineSpecialForm(TrufflerListNode<Node> listNode) {
+        public DefineSpecialForm(MumblerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -19,16 +19,16 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class LambdaSpecialForm extends SpecialForm {
-        public LambdaSpecialForm(TrufflerListNode<Node> listNode) {
+        public LambdaSpecialForm(MumblerListNode<Node> listNode) {
             super(listNode);
         }
 
         @Override
         public Object eval(final Environment parentEnv) {
             @SuppressWarnings("unchecked")
-            final TrufflerListNode<Node> formalParams =
-            (TrufflerListNode<Node>) this.node.cdr.car;
-            final TrufflerListNode<Node> body = this.node.cdr.cdr;
+            final MumblerListNode<Node> formalParams =
+            (MumblerListNode<Node>) this.node.cdr.car;
+            final MumblerListNode<Node> body = this.node.cdr.cdr;
             return new Function() {
                 @Override
                 public Object apply(Object... args) {
@@ -61,7 +61,7 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class IfSpecialForm extends SpecialForm {
-        public IfSpecialForm(TrufflerListNode<Node> listNode) {
+        public IfSpecialForm(MumblerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -72,7 +72,7 @@ public abstract class SpecialForm extends Node {
             Node elseNode = this.node.cdr.cdr.cdr.car;
 
             Object result = testNode.eval(env);
-            if (result == TrufflerListNode.EMPTY || Boolean.FALSE == result) {
+            if (result == MumblerListNode.EMPTY || Boolean.FALSE == result) {
                 return elseNode.eval(env);
             } else {
                 return thenNode.eval(env);
@@ -81,7 +81,7 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class QuoteSpecialForm extends SpecialForm {
-        public QuoteSpecialForm(TrufflerListNode<Node> listNode) {
+        public QuoteSpecialForm(MumblerListNode<Node> listNode) {
             super(listNode);
         }
 
@@ -91,9 +91,9 @@ public abstract class SpecialForm extends Node {
         }
     }
 
-    protected final TrufflerListNode<Node> node;
+    protected final MumblerListNode<Node> node;
 
-    private SpecialForm(TrufflerListNode<Node> listNode) {
+    private SpecialForm(MumblerListNode<Node> listNode) {
         this.node = listNode;
     }
 
@@ -102,8 +102,8 @@ public abstract class SpecialForm extends Node {
     private static final SymbolNode IF = new SymbolNode("if");
     private static final SymbolNode QUOTE = new SymbolNode("quote");
 
-    public static Node check(TrufflerListNode<Node> l) {
-        if (l == TrufflerListNode.EMPTY) {
+    public static Node check(MumblerListNode<Node> l) {
+        if (l == MumblerListNode.EMPTY) {
             return l;
         } else if (l.car.equals(DEFINE)) {
             return new DefineSpecialForm(l);

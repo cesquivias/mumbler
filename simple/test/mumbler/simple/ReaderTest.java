@@ -1,10 +1,10 @@
-package truffler.simple;
+package mumbler.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static truffler.simple.Reader.read;
-import static truffler.simple.node.TrufflerListNode.EMPTY;
-import static truffler.simple.node.TrufflerListNode.list;
+import static mumbler.simple.Reader.read;
+import static mumbler.simple.node.MumblerListNode.EMPTY;
+import static mumbler.simple.node.MumblerListNode.list;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,11 +12,11 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import truffler.simple.node.BooleanNode;
-import truffler.simple.node.NumberNode;
-import truffler.simple.node.SpecialForm;
-import truffler.simple.node.SymbolNode;
-import truffler.simple.node.TrufflerListNode;
+import mumbler.simple.node.BooleanNode;
+import mumbler.simple.node.NumberNode;
+import mumbler.simple.node.SpecialForm;
+import mumbler.simple.node.SymbolNode;
+import mumbler.simple.node.MumblerListNode;
 
 public class ReaderTest {
 
@@ -27,18 +27,18 @@ public class ReaderTest {
     @Test
     public void testReadListWithWhitespace() throws IOException {
         // a list of one element (a list)
-        TrufflerListNode<?> expected = list(list(
+        MumblerListNode<?> expected = list(list(
                 new SymbolNode("foo"),
                 new SymbolNode("bar")));
 
-        TrufflerListNode<?> actual = read(
+        MumblerListNode<?> actual = read(
                 toInputStream("   ( foo  bar  )   "));
         assertEquals(expected, actual);
     }
 
     @Test
     public void testSpecialFormIsConverted() throws IOException {
-        TrufflerListNode<?> actual = read(
+        MumblerListNode<?> actual = read(
                 toInputStream("(define x 1)"));
 
         assert actual.car instanceof SpecialForm;
@@ -46,46 +46,46 @@ public class ReaderTest {
     
     @Test
     public void readNumber() throws IOException {
-        TrufflerListNode<?> expect = list(new NumberNode(1234));
-        TrufflerListNode<?> actual = read(toInputStream("1234"));
+        MumblerListNode<?> expect = list(new NumberNode(1234));
+        MumblerListNode<?> actual = read(toInputStream("1234"));
         assertEquals(expect, actual);
     }
 
     @Test
     public void readEmptyList() throws IOException {
-        TrufflerListNode<?> expect = list(EMPTY);
-        TrufflerListNode<?> actual = read(toInputStream("()"));
+        MumblerListNode<?> expect = list(EMPTY);
+        MumblerListNode<?> actual = read(toInputStream("()"));
         assertEquals(expect, actual);
     }
     
     @Test
     public void readList() throws IOException {
-        TrufflerListNode<?> expect = list(list(
+        MumblerListNode<?> expect = list(list(
                 new NumberNode(123),
                 new NumberNode(5)));
-        TrufflerListNode<?> actual = read(toInputStream("(123 5)"));
+        MumblerListNode<?> actual = read(toInputStream("(123 5)"));
         assertEquals(expect, actual);
     }
     
     @Test
     public void readWhitespace() throws IOException {
-        TrufflerListNode<?> expect = list(EMPTY);
-        TrufflerListNode<?> actual = read(toInputStream("   (    )    "));
+        MumblerListNode<?> expect = list(EMPTY);
+        MumblerListNode<?> actual = read(toInputStream("   (    )    "));
         assertEquals(expect, actual);
     }
     
     @Test
     public void readSymbol() throws IOException {
-        TrufflerListNode<?> expect = list(new SymbolNode("foo"));
-        TrufflerListNode<?> actual = read(toInputStream("foo"));
+        MumblerListNode<?> expect = list(new SymbolNode("foo"));
+        MumblerListNode<?> actual = read(toInputStream("foo"));
         assertEquals(expect, actual);
     }
     
     @Test
     public void readMultipleForms() throws IOException {
-        TrufflerListNode<?> expect = list(new SymbolNode("foo"),
+        MumblerListNode<?> expect = list(new SymbolNode("foo"),
                 list(new NumberNode(12), new NumberNode(3)));
-        TrufflerListNode<?> actual = read(toInputStream("foo (12 3)"));
+        MumblerListNode<?> actual = read(toInputStream("foo (12 3)"));
         assertEquals(expect, actual);
     }
     
@@ -103,8 +103,8 @@ public class ReaderTest {
     
     @Test
     public void readTrueFalse() throws IOException {
-        TrufflerListNode<?> expect = list(BooleanNode.TRUE, BooleanNode.FALSE);
-        TrufflerListNode<?> actual = read(toInputStream("#t #f"));
+        MumblerListNode<?> expect = list(BooleanNode.TRUE, BooleanNode.FALSE);
+        MumblerListNode<?> actual = read(toInputStream("#t #f"));
         assertEquals(expect, actual);
     }
 }
