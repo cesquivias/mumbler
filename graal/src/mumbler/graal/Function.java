@@ -1,6 +1,6 @@
-package truffler.graal;
+package mumbler.graal;
 
-import truffler.graal.env.Environment;
+import mumbler.graal.env.Environment;
 
 public abstract class Function implements Evaluatable {
     @Override

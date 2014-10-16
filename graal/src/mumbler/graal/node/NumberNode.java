@@ -1,6 +1,6 @@
-package truffler.graal.node;
+package mumbler.graal.node;
 
-import truffler.graal.env.Environment;
+import mumbler.graal.env.Environment;
 
 public class NumberNode extends Node {
     private final long num;

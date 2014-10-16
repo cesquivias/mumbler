@@ -1,4 +1,4 @@
-package truffler.graal;
+package mumbler.graal;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -8,19 +8,19 @@ import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import truffler.graal.node.BooleanNode;
-import truffler.graal.node.Node;
-import truffler.graal.node.NumberNode;
-import truffler.graal.node.SpecialForm;
-import truffler.graal.node.SymbolNode;
-import truffler.graal.node.TrufflerListNode;
+import mumbler.graal.node.BooleanNode;
+import mumbler.graal.node.Node;
+import mumbler.graal.node.NumberNode;
+import mumbler.graal.node.SpecialForm;
+import mumbler.graal.node.SymbolNode;
+import mumbler.graal.node.MumblerListNode;
 
 public class Reader {
-    public static TrufflerListNode<Node> read(InputStream istream) throws IOException {
+    public static MumblerListNode<Node> read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
 
-    private static TrufflerListNode<Node> read(PushbackReader pstream)
+    private static MumblerListNode<Node> read(PushbackReader pstream)
             throws IOException {
         List<Node> nodes = new ArrayList<Node>();
 
@@ -33,7 +33,7 @@ public class Reader {
             c = (char) pstream.read();
         }
 
-        return TrufflerListNode.list(nodes);
+        return MumblerListNode.list(nodes);
     }
 
     public static Node readNode(PushbackReader pstream) throws IOException {
@@ -91,7 +91,7 @@ public class Reader {
                 list.add(readNode(pstream));
             }
         } while (true);
-        return SpecialForm.check(TrufflerListNode.list(list));
+        return SpecialForm.check(MumblerListNode.list(list));
     }
 
     private static NumberNode readNumber(PushbackReader pstream)

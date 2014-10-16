@@ -1,7 +1,7 @@
-package truffler.graal.env;
+package mumbler.graal.env;
 
-import truffler.graal.Function;
-import truffler.graal.node.TrufflerListNode;
+import mumbler.graal.Function;
+import mumbler.graal.node.MumblerListNode;
 
 abstract class BuiltinFn extends Function {
     static final Function EQUALS = new BuiltinFn("EQUALS") {
@@ -110,7 +110,7 @@ abstract class BuiltinFn extends Function {
     static final Function LIST = new BuiltinFn("list") {
         @Override
         public Object apply(Object... args) {
-            return TrufflerListNode.list(args);
+            return MumblerListNode.list(args);
         }
     };
 
@@ -118,7 +118,7 @@ abstract class BuiltinFn extends Function {
         @Override
         public Object apply(Object... args) {
             assert args.length == 1;
-            return ((TrufflerListNode<?>) args[0]).car;
+            return ((MumblerListNode<?>) args[0]).car;
         }
     };
 
@@ -126,7 +126,7 @@ abstract class BuiltinFn extends Function {
         @Override
         public Object apply(Object... args) {
             assert args.length == 1;
-            return ((TrufflerListNode<?>) args[0]).cdr;
+            return ((MumblerListNode<?>) args[0]).cdr;
         }
     };
 
@@ -136,7 +136,7 @@ abstract class BuiltinFn extends Function {
             for (Object arg : args) {
                 System.out.println(arg);
             }
-            return TrufflerListNode.EMPTY;
+            return MumblerListNode.EMPTY;
         }
     };
 

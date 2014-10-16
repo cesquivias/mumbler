@@ -1,6 +1,6 @@
-package truffler.graal.node;
+package mumbler.graal.node;
 
-import truffler.graal.env.Environment;
+import mumbler.graal.env.Environment;
 
 public class SymbolNode extends Node {
     public final String name;

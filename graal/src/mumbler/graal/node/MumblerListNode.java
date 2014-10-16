@@ -1,4 +1,4 @@
-package truffler.graal.node;
+package mumbler.graal.node;
 
 import static java.util.Arrays.asList;
 
@@ -6,42 +6,42 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import truffler.graal.Function;
-import truffler.graal.env.Environment;
+import mumbler.graal.Function;
+import mumbler.graal.env.Environment;
 
-public class TrufflerListNode<T extends Object> extends Node implements Iterable<T> {
-    public static final TrufflerListNode<?> EMPTY =
-            new TrufflerListNode<>();
+public class MumblerListNode<T extends Object> extends Node implements Iterable<T> {
+    public static final MumblerListNode<?> EMPTY =
+            new MumblerListNode<>();
 
     public final T car;
-    public final TrufflerListNode<T> cdr;
+    public final MumblerListNode<T> cdr;
 
-    private TrufflerListNode() {
+    private MumblerListNode() {
         this.car = null;
         this.cdr = null;
     }
 
-    private TrufflerListNode(T car, TrufflerListNode<T> cdr) {
+    private MumblerListNode(T car, MumblerListNode<T> cdr) {
         this.car = car;
         this.cdr = cdr;
     }
 
     @SafeVarargs
-    public static <T> TrufflerListNode<T> list(T... objs) {
+    public static <T> MumblerListNode<T> list(T... objs) {
         return list(asList(objs));
     }
 
-    public static <T> TrufflerListNode<T> list(List<T> objs) {
+    public static <T> MumblerListNode<T> list(List<T> objs) {
         @SuppressWarnings("unchecked")
-        TrufflerListNode<T> l = (TrufflerListNode<T>) EMPTY;
+        MumblerListNode<T> l = (MumblerListNode<T>) EMPTY;
         for (int i=objs.size()-1; i>=0; i--) {
             l = l.cons(objs.get(i));
         }
         return l;
     }
 
-    public TrufflerListNode<T> cons(T node) {
-        return new TrufflerListNode<T>(node, this);
+    public MumblerListNode<T> cons(T node) {
+        return new MumblerListNode<T>(node, this);
     }
 
     public long length() {
@@ -50,7 +50,7 @@ public class TrufflerListNode<T extends Object> extends Node implements Iterable
         }
 
         long len = 1;
-        TrufflerListNode<T> l = this.cdr;
+        MumblerListNode<T> l = this.cdr;
         while (l != EMPTY) {
             len++;
             l = l.cdr;
@@ -61,7 +61,7 @@ public class TrufflerListNode<T extends Object> extends Node implements Iterable
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private TrufflerListNode<T> l = TrufflerListNode.this;
+            private MumblerListNode<T> l = MumblerListNode.this;
 
             @Override
             public boolean hasNext() {
@@ -87,14 +87,14 @@ public class TrufflerListNode<T extends Object> extends Node implements Iterable
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof TrufflerListNode)) {
+        if (!(other instanceof MumblerListNode)) {
             return false;
         }
         if (this == EMPTY && other == EMPTY) {
             return true;
         }
 
-        TrufflerListNode<?> that = (TrufflerListNode<?>) other;
+        MumblerListNode<?> that = (MumblerListNode<?>) other;
         if (this.cdr == EMPTY && that.cdr != EMPTY) {
             return false;
         }
@@ -108,7 +108,7 @@ public class TrufflerListNode<T extends Object> extends Node implements Iterable
         }
 
         StringBuilder b = new StringBuilder("(" + this.car);
-        TrufflerListNode<T> rest = this.cdr;
+        MumblerListNode<T> rest = this.cdr;
         while (rest != null && rest != EMPTY) {
             b.append(" ");
             b.append(rest.car);
@@ -123,7 +123,7 @@ public class TrufflerListNode<T extends Object> extends Node implements Iterable
         Function function = (Function) ((Node) this.car).eval(env);
 
         @SuppressWarnings("unchecked")
-        TrufflerListNode<Node> nodes = (TrufflerListNode<Node>) this;
+        MumblerListNode<Node> nodes = (MumblerListNode<Node>) this;
         List<Object> args = new ArrayList<Object>();
         for (Node node : nodes.cdr) {
             args.add(node.eval(env));
