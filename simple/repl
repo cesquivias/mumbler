@@ -1,4 +1,7 @@
 #!/bin/sh
 
+DIR=$( cd "$( dirname "$0" )" && pwd )
+cd $DIR
+
 ant jar > /dev/null
-java -jar dist/mumbler.jar
+java -jar dist/mumbler.jar $@

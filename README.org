@@ -1,8 +1,17 @@
 * Usage
 
-Simple Mumbler can be built using ~ant~: ~$ cd simple && ant~.
+To run SimpleMumbler:
 
-Then run it as any jar: ~$ java -jar dist/mumbler.jar~.
+#+begin_src shell-script
+    ./simple/repl [mumbler script]
+#+end_src
+
+The REPL is started with no argument.
+
+Requires:
+  - java
+  - javac
+  - ant
 
 * License
 
