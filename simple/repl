@@ -1,4 +1,4 @@
 #!/bin/sh
 
 ant jar > /dev/null
-java -jar dist/truffler.jar
+java -jar dist/mumbler.jar
