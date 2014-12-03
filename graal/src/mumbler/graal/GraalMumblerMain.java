@@ -1,13 +1,7 @@
 package mumbler.graal;
 
-import java.io.ByteArrayInputStream;
 import java.io.Console;
-import java.io.FileInputStream;
 import java.io.IOException;
-
-import mumbler.graal.env.Environment;
-import mumbler.graal.node.MumblerListNode;
-import mumbler.graal.node.MumblerNode;
 
 public class GraalMumblerMain {
     public static void main(String[] args) throws IOException {
@@ -20,7 +14,7 @@ public class GraalMumblerMain {
     }
 
     private static void startREPL() throws IOException {
-        Environment topEnv = Environment.getBaseEnvironment();
+        //Environment topEnv = Environment.getBaseEnvironment();
 
         Console console = System.console();
         while (true) {
@@ -30,27 +24,27 @@ public class GraalMumblerMain {
                 // EOF sent
                 break;
             }
-            MumblerListNode<MumblerNode> nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
+            // MumblerListNode<MumblerNode> nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
 
             // EVAL
-            Object result = MumblerListNode.EMPTY;
-            for (MumblerNode node : nodes) {
-                result = node.eval(topEnv);
-            }
-
-            // PRINT
-            if (result != MumblerListNode.EMPTY) {
-                System.out.println(result);
-            }
+            //            Object result = MumblerListNode.EMPTY;
+            //            for (MumblerNode node : nodes) {
+            //                result = node.eval(topEnv);
+            //            }
+            //
+            //            // PRINT
+            //            if (result != MumblerListNode.EMPTY) {
+            //                System.out.println(result);
+            //            }
         }
     }
 
     private static void runMumbler(String filename) throws IOException {
-        Environment topEnv = Environment.getBaseEnvironment();
-
-        MumblerListNode<MumblerNode> nodes = Reader.read(new FileInputStream(filename));
-        for (MumblerNode node : nodes) {
-            node.eval(topEnv);
-        }
+        //        Environment topEnv = Environment.getBaseEnvironment();
+        //
+        //        MumblerListNode<MumblerNode> nodes = Reader.read(new FileInputStream(filename));
+        //        for (MumblerNode node : nodes) {
+        //            node.eval(topEnv);
+        //        }
     }
 }
