@@ -9,7 +9,7 @@ import java.util.List;
 import mumbler.graal.Function;
 import mumbler.graal.env.Environment;
 
-public class MumblerListNode<T extends Object> extends Node implements Iterable<T> {
+public class MumblerListNode<T extends Object> extends MumblerNode implements Iterable<T> {
     public static final MumblerListNode<?> EMPTY =
             new MumblerListNode<>();
 
@@ -120,12 +120,12 @@ public class MumblerListNode<T extends Object> extends Node implements Iterable<
 
     @Override
     public Object eval(Environment env) {
-        Function function = (Function) ((Node) this.car).eval(env);
+        Function function = (Function) ((MumblerNode) this.car).eval(env);
 
         @SuppressWarnings("unchecked")
-        MumblerListNode<Node> nodes = (MumblerListNode<Node>) this;
+        MumblerListNode<MumblerNode> nodes = (MumblerListNode<MumblerNode>) this;
         List<Object> args = new ArrayList<Object>();
-        for (Node node : nodes.cdr) {
+        for (MumblerNode node : nodes.cdr) {
             args.add(node.eval(env));
         }
         return function.apply(args.toArray());

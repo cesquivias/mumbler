@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mumbler.graal.node.BooleanNode;
-import mumbler.graal.node.Node;
+import mumbler.graal.node.MumblerNode;
 import mumbler.graal.node.NumberNode;
 import mumbler.graal.node.SpecialForm;
 import mumbler.graal.node.SymbolNode;
 import mumbler.graal.node.MumblerListNode;
 
 public class Reader {
-    public static MumblerListNode<Node> read(InputStream istream) throws IOException {
+    public static MumblerListNode<MumblerNode> read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
 
-    private static MumblerListNode<Node> read(PushbackReader pstream)
+    private static MumblerListNode<MumblerNode> read(PushbackReader pstream)
             throws IOException {
-        List<Node> nodes = new ArrayList<Node>();
+        List<MumblerNode> nodes = new ArrayList<MumblerNode>();
 
         readWhitespace(pstream);
         char c = (char) pstream.read();
@@ -36,7 +36,7 @@ public class Reader {
         return MumblerListNode.list(nodes);
     }
 
-    public static Node readNode(PushbackReader pstream) throws IOException {
+    public static MumblerNode readNode(PushbackReader pstream) throws IOException {
         char c = (char) pstream.read();
         pstream.unread(c);
         if (c == '(') {
@@ -73,10 +73,10 @@ public class Reader {
         return new SymbolNode(b.toString());
     }
 
-    private static Node readList(PushbackReader pstream) throws IOException {
+    private static MumblerNode readList(PushbackReader pstream) throws IOException {
         char paren = (char) pstream.read();
         assert paren == '(' : "Reading a list must start with '('";
-        List<Node> list = new ArrayList<Node>();
+        List<MumblerNode> list = new ArrayList<MumblerNode>();
         do {
             readWhitespace(pstream);
             char c = (char) pstream.read();

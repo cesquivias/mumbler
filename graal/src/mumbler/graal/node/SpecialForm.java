@@ -3,9 +3,9 @@ package mumbler.graal.node;
 import mumbler.graal.Function;
 import mumbler.graal.env.Environment;
 
-public abstract class SpecialForm extends Node {
+public abstract class SpecialForm extends MumblerNode {
     private static class DefineSpecialForm extends SpecialForm {
-        public DefineSpecialForm(MumblerListNode<Node> listNode) {
+        public DefineSpecialForm(MumblerListNode<MumblerNode> listNode) {
             super(listNode);
         }
 
@@ -19,16 +19,16 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class LambdaSpecialForm extends SpecialForm {
-        public LambdaSpecialForm(MumblerListNode<Node> listNode) {
+        public LambdaSpecialForm(MumblerListNode<MumblerNode> listNode) {
             super(listNode);
         }
 
         @Override
         public Object eval(final Environment parentEnv) {
             @SuppressWarnings("unchecked")
-            final MumblerListNode<Node> formalParams =
-            (MumblerListNode<Node>) this.node.cdr.car;
-            final MumblerListNode<Node> body = this.node.cdr.cdr;
+            final MumblerListNode<MumblerNode> formalParams =
+            (MumblerListNode<MumblerNode>) this.node.cdr.car;
+            final MumblerListNode<MumblerNode> body = this.node.cdr.cdr;
             return new Function() {
                 @Override
                 public Object apply(Object... args) {
@@ -42,7 +42,7 @@ public abstract class SpecialForm extends Node {
 
                     // Map parameter values to formal parameter names
                     int i = 0;
-                    for (Node param : formalParams) {
+                    for (MumblerNode param : formalParams) {
                         SymbolNode paramSymbol = (SymbolNode) param;
                         lambdaEnv.putValue(paramSymbol.name, args[i]);
                         i++;
@@ -50,7 +50,7 @@ public abstract class SpecialForm extends Node {
 
                     // Evaluate body
                     Object output = null;
-                    for (Node node : body) {
+                    for (MumblerNode node : body) {
                         output = node.eval(lambdaEnv);
                     }
 
@@ -61,15 +61,15 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class IfSpecialForm extends SpecialForm {
-        public IfSpecialForm(MumblerListNode<Node> listNode) {
+        public IfSpecialForm(MumblerListNode<MumblerNode> listNode) {
             super(listNode);
         }
 
         @Override
         public Object eval(Environment env) {
-            Node testNode = this.node.cdr.car;
-            Node thenNode = this.node.cdr.cdr.car;
-            Node elseNode = this.node.cdr.cdr.cdr.car;
+            MumblerNode testNode = this.node.cdr.car;
+            MumblerNode thenNode = this.node.cdr.cdr.car;
+            MumblerNode elseNode = this.node.cdr.cdr.cdr.car;
 
             Object result = testNode.eval(env);
             if (result == MumblerListNode.EMPTY || Boolean.FALSE == result) {
@@ -81,7 +81,7 @@ public abstract class SpecialForm extends Node {
     }
 
     private static class QuoteSpecialForm extends SpecialForm {
-        public QuoteSpecialForm(MumblerListNode<Node> listNode) {
+        public QuoteSpecialForm(MumblerListNode<MumblerNode> listNode) {
             super(listNode);
         }
 
@@ -91,9 +91,9 @@ public abstract class SpecialForm extends Node {
         }
     }
 
-    protected final MumblerListNode<Node> node;
+    protected final MumblerListNode<MumblerNode> node;
 
-    private SpecialForm(MumblerListNode<Node> listNode) {
+    private SpecialForm(MumblerListNode<MumblerNode> listNode) {
         this.node = listNode;
     }
 
@@ -102,7 +102,7 @@ public abstract class SpecialForm extends Node {
     private static final SymbolNode IF = new SymbolNode("if");
     private static final SymbolNode QUOTE = new SymbolNode("quote");
 
-    public static Node check(MumblerListNode<Node> l) {
+    public static MumblerNode check(MumblerListNode<MumblerNode> l) {
         if (l == MumblerListNode.EMPTY) {
             return l;
         } else if (l.car.equals(DEFINE)) {

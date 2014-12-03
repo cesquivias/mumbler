@@ -2,7 +2,7 @@ package mumbler.graal.node;
 
 import mumbler.graal.env.Environment;
 
-public class NumberNode extends Node {
+public class NumberNode extends MumblerNode {
     private final long num;
 
     public NumberNode(long num) {

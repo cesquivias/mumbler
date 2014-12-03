@@ -2,7 +2,7 @@ package mumbler.graal.node;
 
 import mumbler.graal.env.Environment;
 
-public class SymbolNode extends Node {
+public class SymbolNode extends MumblerNode {
     public final String name;
 
     public SymbolNode(String name) {

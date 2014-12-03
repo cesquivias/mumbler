@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import mumbler.graal.env.Environment;
 import mumbler.graal.node.MumblerListNode;
-import mumbler.graal.node.Node;
+import mumbler.graal.node.MumblerNode;
 
 public class GraalMumblerMain {
     public static void main(String[] args) throws IOException {
@@ -30,11 +30,11 @@ public class GraalMumblerMain {
                 // EOF sent
                 break;
             }
-            MumblerListNode<Node> nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
+            MumblerListNode<MumblerNode> nodes = Reader.read(new ByteArrayInputStream(data.getBytes()));
 
             // EVAL
             Object result = MumblerListNode.EMPTY;
-            for (Node node : nodes) {
+            for (MumblerNode node : nodes) {
                 result = node.eval(topEnv);
             }
 
@@ -48,8 +48,8 @@ public class GraalMumblerMain {
     private static void runMumbler(String filename) throws IOException {
         Environment topEnv = Environment.getBaseEnvironment();
 
-        MumblerListNode<Node> nodes = Reader.read(new FileInputStream(filename));
-        for (Node node : nodes) {
+        MumblerListNode<MumblerNode> nodes = Reader.read(new FileInputStream(filename));
+        for (MumblerNode node : nodes) {
             node.eval(topEnv);
         }
     }
