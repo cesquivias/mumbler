@@ -1,18 +1,20 @@
 package mumbler.graal.node;
 
+import mumbler.graal.MumblerTypes;
 import mumbler.graal.MumblerTypesGen;
 import mumbler.graal.type.MumblerFunction;
 import mumbler.graal.type.MumblerList;
 import mumbler.graal.type.MumblerSymbol;
 
+import com.oracle.truffle.api.dsl.TypeSystemReference;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 
+@TypeSystemReference(MumblerTypes.class)
 @NodeInfo(language = "Mumbler Language", description = "The abstract base node for all expressions")
 public abstract class MumblerNode extends Node {
-
     public abstract Object execute(VirtualFrame virtualFrame);
 
     public long executeLong(VirtualFrame virtualFrame)
