@@ -29,6 +29,7 @@ public class InvokeNode extends MumblerNode {
         CompilerAsserts.compilationConstant(this.argumentNodes.length);
 
         Object[] argumentValues = new Object[this.argumentNodes.length + 1];
+        argumentValues[0] = function.getLexicalScope();
         for (int i=1; i<=argumentValues.length; i++) {
             argumentValues[i] = this.argumentNodes[i-1].execute(virtualFrame);
         }
