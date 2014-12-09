@@ -1,6 +1,5 @@
 package mumbler.graal.node.builtin;
 
-import com.oracle.truffle.api.CompilerDirectives.TruffleBoundary;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
@@ -8,23 +7,19 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 public abstract class PrintlnBuiltinNode extends BuiltinNode {
     @Specialization
     public long println(long value) {
-        doPrint(value);
+        System.out.println(value);
         return value;
     }
 
-    @TruffleBoundary
-    private static void doPrint(long value) {
+    @Specialization
+    public boolean println(boolean value) {
         System.out.println(value);
+        return value;
     }
 
     @Specialization
     public Object println(Object value) {
-        doPrint(value);
-        return value;
-    }
-
-    @TruffleBoundary
-    private static void doPrint(Object value) {
         System.out.println(value);
+        return value;
     }
 }
