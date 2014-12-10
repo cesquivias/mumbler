@@ -77,8 +77,10 @@ public class Reader {
                 return this.toSpecialForm();
             }
             return new InvokeNode(this.list.get(0).convert(),
-                    this.list.subList(1, this.list.size()).toArray(
-                            new MumblerNode[] {}));
+                    this.list.subList(1, this.list.size())
+                    .stream()
+                    .map(Convertible::convert)
+                    .toArray(size -> new MumblerNode[size]));
         }
 
         private boolean isSpecialForm(SymbolConvertible symbol) {
@@ -119,7 +121,8 @@ public class Reader {
                 frameDescriptors.pop();
                 MumblerFunction function = MumblerFunction.create(
                         formalParameters.toArray(new FrameSlot[] {}),
-                        bodyNodes.toArray(new MumblerNode[] {}));
+                        bodyNodes.toArray(new MumblerNode[] {}),
+                        frameDescriptors.peek());
                 return LambdaNodeFactory.create(function);
             default:
                 throw new IllegalStateException("Unknown special form");

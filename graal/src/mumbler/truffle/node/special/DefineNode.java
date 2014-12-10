@@ -9,11 +9,13 @@ import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotKind;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.Node;
 
 @NodeChild("valueNode")
 @NodeField(name = "slot", type = FrameSlot.class)
 public abstract class DefineNode extends MumblerNode {
     protected abstract FrameSlot getSlot();
+    protected abstract Node getValueNode();
 
     @Specialization(guards = "isLongKind")
     protected long writeLong(VirtualFrame virtualFrame, long value) {
@@ -44,6 +46,12 @@ public abstract class DefineNode extends MumblerNode {
 
     protected boolean isBooleanKind() {
         return this.getSlot().getKind() == FrameSlotKind.Boolean;
+    }
+
+    @Override
+    public String toString() {
+        return "(define " + this.getSlot().getIdentifier() + " "
+                + this.getValueNode() + ")";
     }
 }
 

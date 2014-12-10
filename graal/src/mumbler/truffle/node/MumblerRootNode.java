@@ -1,8 +1,11 @@
 package mumbler.truffle.node;
 
+import java.util.Arrays;
+
 import mumbler.truffle.node.special.DefineNodeFactory;
 
 import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
@@ -11,7 +14,9 @@ import com.oracle.truffle.api.nodes.RootNode;
 public class MumblerRootNode extends RootNode {
     @Children private final MumblerNode[] bodyNodes;
 
-    public MumblerRootNode(MumblerNode[] bodyNodes) {
+    public MumblerRootNode(MumblerNode[] bodyNodes,
+            FrameDescriptor frameDescriptor) {
+        super(null, frameDescriptor);
         this.bodyNodes = bodyNodes;
     }
 
@@ -27,15 +32,20 @@ public class MumblerRootNode extends RootNode {
     }
 
     public static MumblerRootNode create(FrameSlot[] argumentNames,
-            MumblerNode[] bodyNodes) {
+            MumblerNode[] bodyNodes, FrameDescriptor frameDescriptor) {
         MumblerNode[] allNodes = new MumblerNode[argumentNames.length
                                                  + bodyNodes.length];
         for (int i=0; i<argumentNames.length; i++) {
             allNodes[i] = DefineNodeFactory.create(
                     new ReadArgumentNode(i), argumentNames[i]);
         }
-        System.arraycopy(bodyNodes, bodyNodes.length, allNodes,
+        System.arraycopy(bodyNodes, 0, allNodes,
                 argumentNames.length, bodyNodes.length);
-        return new MumblerRootNode(bodyNodes);
+        return new MumblerRootNode(allNodes, frameDescriptor);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(this.bodyNodes);
     }
 }

@@ -5,6 +5,7 @@ import mumbler.truffle.node.MumblerRootNode;
 
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.MaterializedFrame;
 
@@ -25,9 +26,9 @@ public class MumblerFunction {
     }
 
     public static MumblerFunction create(FrameSlot[] arguments,
-            MumblerNode[] bodyNodes) {
+            MumblerNode[] bodyNodes, FrameDescriptor frameDescriptor) {
         return new MumblerFunction(
                 Truffle.getRuntime().createCallTarget(
-                        MumblerRootNode.create(arguments, bodyNodes)));
+                        MumblerRootNode.create(arguments, bodyNodes, frameDescriptor)));
     }
 }

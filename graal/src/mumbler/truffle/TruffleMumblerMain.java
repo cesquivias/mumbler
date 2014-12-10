@@ -32,7 +32,7 @@ public class TruffleMumblerMain {
     }
 
     private static void startREPL() throws IOException {
-        //Environment topEnv = Environment.getBaseEnvironment();
+        VirtualFrame topFrame = createTopFrame(Reader.frameDescriptors.peek());
 
         Console console = System.console();
         while (true) {
@@ -46,7 +46,7 @@ public class TruffleMumblerMain {
                     new ByteArrayInputStream(data.getBytes()));
 
             // EVAL
-            Object result = execute(nodes);
+            Object result = execute(nodes, topFrame);
 
             // PRINT
             if (result != MumblerList.EMPTY) {
@@ -56,31 +56,38 @@ public class TruffleMumblerMain {
     }
 
     private static void runMumbler(String filename) throws IOException {
+        VirtualFrame topFrame = createTopFrame(Reader.frameDescriptors.peek());
         MumblerList<MumblerNode> nodes = Reader.read(new FileInputStream(filename));
-        execute(nodes);
+        execute(nodes, topFrame);
     }
 
-    private static Object execute(MumblerList<MumblerNode> nodes) {
+    private static Object execute(MumblerList<MumblerNode> nodes,
+            VirtualFrame topFrame) {
+        FrameDescriptor frameDescriptor = topFrame.getFrameDescriptor();
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
                 StreamSupport.stream(nodes.spliterator(), false)
-                .toArray(size -> new MumblerNode[size]));
+                .toArray(size -> new MumblerNode[size]),
+                frameDescriptor);
         DirectCallNode directCallNode = Truffle.getRuntime()
                 .createDirectCallNode(function.callTarget);
         return directCallNode.call(
-                createTopFrame(Reader.frameDescriptors.peek()),
-                new Object[] {});
+                topFrame,
+                new Object[] {topFrame.materialize()});
     }
 
     private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
         VirtualFrame virtualFrame = Truffle.getRuntime().createVirtualFrame(
                 new Object[] {}, frameDescriptor);
         virtualFrame.setObject(frameDescriptor.addFrameSlot("+"),
-                createBuiltinFunction(AddBuiltinNodeFactory.getInstance()));
+                createBuiltinFunction(AddBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
         // more buitins ...
         virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
-                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance()));
+                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
-                createBuiltinFunction(NowBuiltinNodeFactory.getInstance()));
+                createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
         return virtualFrame;
     }
 }

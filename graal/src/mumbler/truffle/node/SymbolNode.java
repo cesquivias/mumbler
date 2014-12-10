@@ -3,6 +3,7 @@ package mumbler.truffle.node;
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.Frame;
+import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.VirtualFrame;
@@ -17,14 +18,20 @@ public abstract class SymbolNode extends MumblerNode {
 
     public <T> T readUpStack(FrameGet<T> getter, Frame frame)
             throws FrameSlotTypeException {
-        T value = getter.get(frame, this.getSlot());
+        FrameSlot slot = this.getSlot();
+        Object identifier = slot.getIdentifier();
+        T value = getter.get(frame, slot);
         while (value == null) {
             frame = this.getLexicalScope(frame);
             if (frame == null) {
                 throw new RuntimeException("Unknown variable: " +
                         this.getSlot().getIdentifier());
             }
-            value = getter.get(frame, this.getSlot());
+            FrameDescriptor desc = frame.getFrameDescriptor();
+            slot = desc.findFrameSlot(identifier);
+            if (slot != null) {
+                value = getter.get(frame, slot);
+            }
         }
         return value;
     }
@@ -58,6 +65,16 @@ public abstract class SymbolNode extends MumblerNode {
     }
 
     protected Frame getLexicalScope(Frame frame) {
-        return (Frame) frame.getArguments()[0];
+        Object[] args = frame.getArguments();
+        if (args.length > 0) {
+            return (Frame) frame.getArguments()[0];
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "'" + this.getSlot().getIdentifier();
     }
 }
