@@ -1,7 +1,7 @@
-package mumbler.graal.node.special;
+package mumbler.truffle.node.special;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.node.special.QuoteNode.QuoteKind;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.node.special.QuoteNode.QuoteKind;
 
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.NodeField;

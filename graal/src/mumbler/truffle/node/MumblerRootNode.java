@@ -1,6 +1,6 @@
-package mumbler.graal.node;
+package mumbler.truffle.node;
 
-import mumbler.graal.node.special.DefineNodeFactory;
+import mumbler.truffle.node.special.DefineNodeFactory;
 
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.FrameSlot;

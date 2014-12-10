@@ -1,7 +1,7 @@
-package mumbler.graal.type;
+package mumbler.truffle.type;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.node.MumblerRootNode;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.node.MumblerRootNode;
 
 import com.oracle.truffle.api.RootCallTarget;
 import com.oracle.truffle.api.Truffle;

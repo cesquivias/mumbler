@@ -1,4 +1,4 @@
-package mumbler.graal.node;
+package mumbler.truffle.node;
 
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;

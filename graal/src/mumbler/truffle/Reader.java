@@ -1,4 +1,4 @@
-package mumbler.graal;
+package mumbler.truffle;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -9,20 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.node.SymbolNode;
-import mumbler.graal.node.SymbolNodeFactory;
-import mumbler.graal.node.call.InvokeNode;
-import mumbler.graal.node.literal.BooleanNode;
-import mumbler.graal.node.literal.LiteralListNode;
-import mumbler.graal.node.literal.LiteralSymbolNode;
-import mumbler.graal.node.literal.NumberNode;
-import mumbler.graal.node.special.DefineNodeFactory;
-import mumbler.graal.node.special.IfNode;
-import mumbler.graal.node.special.LambdaNodeFactory;
-import mumbler.graal.type.MumblerFunction;
-import mumbler.graal.type.MumblerList;
-import mumbler.graal.type.MumblerSymbol;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.node.SymbolNode;
+import mumbler.truffle.node.SymbolNodeFactory;
+import mumbler.truffle.node.call.InvokeNode;
+import mumbler.truffle.node.literal.BooleanNode;
+import mumbler.truffle.node.literal.LiteralListNode;
+import mumbler.truffle.node.literal.LiteralSymbolNode;
+import mumbler.truffle.node.literal.NumberNode;
+import mumbler.truffle.node.special.DefineNodeFactory;
+import mumbler.truffle.node.special.IfNode;
+import mumbler.truffle.node.special.LambdaNodeFactory;
+import mumbler.truffle.type.MumblerFunction;
+import mumbler.truffle.type.MumblerList;
+import mumbler.truffle.type.MumblerSymbol;
 
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;

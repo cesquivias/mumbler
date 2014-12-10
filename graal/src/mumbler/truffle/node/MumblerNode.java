@@ -1,10 +1,10 @@
-package mumbler.graal.node;
+package mumbler.truffle.node;
 
-import mumbler.graal.MumblerTypes;
-import mumbler.graal.MumblerTypesGen;
-import mumbler.graal.type.MumblerFunction;
-import mumbler.graal.type.MumblerList;
-import mumbler.graal.type.MumblerSymbol;
+import mumbler.truffle.MumblerTypes;
+import mumbler.truffle.MumblerTypesGen;
+import mumbler.truffle.type.MumblerFunction;
+import mumbler.truffle.type.MumblerList;
+import mumbler.truffle.type.MumblerSymbol;
 
 import com.oracle.truffle.api.dsl.TypeSystemReference;
 import com.oracle.truffle.api.frame.VirtualFrame;

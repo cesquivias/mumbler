@@ -1,9 +1,9 @@
-package mumbler.graal;
+package mumbler.truffle;
 
 import java.io.Console;
 import java.io.IOException;
 
-public class GraalMumblerMain {
+public class TruffleMumblerMain {
     public static void main(String[] args) throws IOException {
         assert args.length < 2 : "Mumbler only accepts 1 or 0 files";
         if (args.length == 0) {

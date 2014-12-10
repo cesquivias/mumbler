@@ -1,9 +1,9 @@
-package mumbler.graal.node.builtin;
+package mumbler.truffle.node.builtin;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.node.MumblerRootNode;
-import mumbler.graal.node.ReadArgumentNode;
-import mumbler.graal.type.MumblerFunction;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.node.MumblerRootNode;
+import mumbler.truffle.node.ReadArgumentNode;
+import mumbler.truffle.type.MumblerFunction;
 
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.NodeChild;

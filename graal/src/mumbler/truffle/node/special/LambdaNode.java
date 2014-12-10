@@ -1,7 +1,7 @@
-package mumbler.graal.node.special;
+package mumbler.truffle.node.special;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.type.MumblerFunction;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.type.MumblerFunction;
 
 import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;

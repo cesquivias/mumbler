@@ -1,4 +1,4 @@
-package mumbler.graal.type;
+package mumbler.truffle.type;
 
 public class MumblerSymbol {
     public final String name;

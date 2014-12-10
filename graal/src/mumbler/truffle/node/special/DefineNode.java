@@ -1,6 +1,6 @@
-package mumbler.graal.node.special;
+package mumbler.truffle.node.special;
 
-import mumbler.graal.node.MumblerNode;
+import mumbler.truffle.node.MumblerNode;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.dsl.NodeChild;

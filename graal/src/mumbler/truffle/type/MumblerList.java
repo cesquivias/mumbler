@@ -1,4 +1,4 @@
-package mumbler.graal.type;
+package mumbler.truffle.type;
 
 import static java.util.Arrays.asList;
 

@@ -1,4 +1,4 @@
-package mumbler.graal.node.builtin;
+package mumbler.truffle.node.builtin;
 
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;

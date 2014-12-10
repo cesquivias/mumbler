@@ -1,7 +1,7 @@
-package mumbler.graal.node.call;
+package mumbler.truffle.node.call;
 
-import mumbler.graal.node.MumblerNode;
-import mumbler.graal.type.MumblerFunction;
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.type.MumblerFunction;
 
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
