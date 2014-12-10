@@ -34,17 +34,17 @@ public class Reader {
     }
 
     private static interface Convertible {
-        public MumblerNode get();
+        public MumblerNode convert();
     }
 
-    private static class Literal implements Convertible {
+    private static class LiteralConvertible implements Convertible {
         final MumblerNode value;
-        public Literal(MumblerNode value) {
+        public LiteralConvertible(MumblerNode value) {
             this.value = value;
         }
 
         @Override
-        public MumblerNode get() {
+        public MumblerNode convert() {
             return this.value;
         }
     }
@@ -56,7 +56,7 @@ public class Reader {
         }
 
         @Override
-        public MumblerNode get() {
+        public MumblerNode convert() {
             return SymbolNodeFactory.create(
                     frameDescriptors.peek().findOrAddFrameSlot(this.name));
         }
@@ -69,14 +69,14 @@ public class Reader {
         }
 
         @Override
-        public MumblerNode get() {
+        public MumblerNode convert() {
             if (this.list.size() == 0) {
                 return new LiteralListNode(MumblerList.EMPTY);
             } else if (this.list.get(0) instanceof SymbolConvertible
                     && this.isSpecialForm((SymbolConvertible) this.list.get(0))) {
                 return this.toSpecialForm();
             }
-            return new InvokeNode(this.list.get(0).get(),
+            return new InvokeNode(this.list.get(0).convert(),
                     this.list.subList(1, this.list.size()).toArray(
                             new MumblerNode[] {}));
         }
@@ -99,22 +99,22 @@ public class Reader {
             case "quote":
                 return quote(this.list.get(1));
             case "if":
-                return new IfNode(this.list.get(1).get(),
-                        this.list.get(2).get(),
-                        this.list.get(3).get());
+                return new IfNode(this.list.get(1).convert(),
+                        this.list.get(2).convert(),
+                        this.list.get(3).convert());
             case "define":
-                return DefineNodeFactory.create(this.list.get(2).get(),
+                return DefineNodeFactory.create(this.list.get(2).convert(),
                         frameDescriptors.peek().findOrAddFrameSlot(
                                 ((SymbolConvertible) this.list.get(1)).name));
             case "lambda":
                 frameDescriptors.push(new FrameDescriptor());
                 List<FrameSlot> formalParameters = new ArrayList<>();
                 for (Convertible arg : ((ListConvertible) this.list.get(1)).list) {
-                    formalParameters.add(((SymbolNode) arg.get()).getSlot());
+                    formalParameters.add(((SymbolNode) arg.convert()).getSlot());
                 }
                 List<MumblerNode> bodyNodes = new ArrayList<>();
                 for (Convertible bodyConv : this.list.subList(2, this.list.size())) {
-                    bodyNodes.add(bodyConv.get());
+                    bodyNodes.add(bodyConv.convert());
                 }
                 frameDescriptors.pop();
                 MumblerFunction function = MumblerFunction.create(
@@ -127,8 +127,8 @@ public class Reader {
         }
 
         private static MumblerNode quote(Convertible conv) {
-            if (conv instanceof Literal) {
-                return ((Literal) conv).get();
+            if (conv instanceof LiteralConvertible) {
+                return ((LiteralConvertible) conv).convert();
             } else if (conv instanceof SymbolConvertible) {
                 return new LiteralSymbolNode(new MumblerSymbol(
                         ((SymbolConvertible) conv).name));
@@ -156,7 +156,7 @@ public class Reader {
         char c = (char) pstream.read();
         while ((byte) c != -1) {
             pstream.unread(c);
-            nodes.add(readNode(pstream).get());
+            nodes.add(readNode(pstream).convert());
             readWhitespace(pstream);
             c = (char) pstream.read();
         }
@@ -232,19 +232,19 @@ public class Reader {
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        return new Literal(new NumberNode(Long.valueOf(b.toString(), 10)));
+        return new LiteralConvertible(new NumberNode(Long.valueOf(b.toString(), 10)));
     }
 
-    private static Literal readBoolean(PushbackReader pstream)
+    private static LiteralConvertible readBoolean(PushbackReader pstream)
             throws IOException {
         char hash = (char) pstream.read();
         assert hash == '#' : "Reading a boolean must start with '#'";
 
         SymbolConvertible sym = readSymbol(pstream);
         if ("t".equals(sym.name)) {
-            return new Literal(BooleanNode.TRUE);
+            return new LiteralConvertible(BooleanNode.TRUE);
         } else if ("f".equals(sym.name)) {
-            return new Literal(BooleanNode.FALSE);
+            return new LiteralConvertible(BooleanNode.FALSE);
         } else {
             throw new IllegalArgumentException("Unknown value: #" + sym);
         }
