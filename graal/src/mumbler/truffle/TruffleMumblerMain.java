@@ -10,8 +10,11 @@ import java.util.stream.StreamSupport;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.AddBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.LessThanBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.PrintlnBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.SubBuiltinNodeFactory;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
@@ -78,12 +81,20 @@ public class TruffleMumblerMain {
     private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
         VirtualFrame virtualFrame = Truffle.getRuntime().createVirtualFrame(
                 new Object[] {}, frameDescriptor);
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
+                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("+"),
                 createBuiltinFunction(AddBuiltinNodeFactory.getInstance(),
                         frameDescriptor));
-        // more buitins ...
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
-                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("-"),
+                createBuiltinFunction(SubBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("<"),
+                createBuiltinFunction(LessThanBuiltinNodeFactory.getInstance(),
+                        frameDescriptor));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("list"),
+                createBuiltinFunction(ListBuiltinNodeFactory.getInstance(),
                         frameDescriptor));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
                 createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
