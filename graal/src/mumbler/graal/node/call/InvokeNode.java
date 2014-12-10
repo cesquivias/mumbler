@@ -15,11 +15,10 @@ public class InvokeNode extends MumblerNode {
     @Children protected final MumblerNode[] argumentNodes;
     @Child protected DispatchNode dispatchNode;
 
-    public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes,
-            DispatchNode dispatchNode) {
+    public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes) {
         this.functionNode = functionNode;
         this.argumentNodes = argumentNodes;
-        this.dispatchNode = dispatchNode;
+        this.dispatchNode = new DispatchNode();
     }
 
     @Override

@@ -7,13 +7,143 @@ import java.io.InputStreamReader;
 import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import mumbler.graal.node.MumblerNode;
+import mumbler.graal.node.SymbolNode;
+import mumbler.graal.node.SymbolNodeFactory;
+import mumbler.graal.node.call.InvokeNode;
+import mumbler.graal.node.literal.BooleanNode;
+import mumbler.graal.node.literal.LiteralListNode;
+import mumbler.graal.node.literal.LiteralSymbolNode;
 import mumbler.graal.node.literal.NumberNode;
+import mumbler.graal.node.special.DefineNodeFactory;
+import mumbler.graal.node.special.IfNode;
+import mumbler.graal.node.special.LambdaNodeFactory;
+import mumbler.graal.type.MumblerFunction;
 import mumbler.graal.type.MumblerList;
 import mumbler.graal.type.MumblerSymbol;
 
+import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlot;
+
 public class Reader {
+    public static final Stack<FrameDescriptor> frameDescriptors = new Stack<>();
+    static {
+        frameDescriptors.add(new FrameDescriptor());
+    }
+
+    private static interface Convertible {
+        public MumblerNode get();
+    }
+
+    private static class Literal implements Convertible {
+        final MumblerNode value;
+        public Literal(MumblerNode value) {
+            this.value = value;
+        }
+
+        @Override
+        public MumblerNode get() {
+            return this.value;
+        }
+    }
+
+    private static class SymbolConvertible implements Convertible {
+        final String name;
+        public SymbolConvertible(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public MumblerNode get() {
+            return SymbolNodeFactory.create(
+                    frameDescriptors.peek().findOrAddFrameSlot(this.name));
+        }
+    }
+
+    private static class ListConvertible implements Convertible {
+        final List<Convertible> list;
+        public ListConvertible(List<Convertible> list) {
+            this.list = list;
+        }
+
+        @Override
+        public MumblerNode get() {
+            if (this.list.size() == 0) {
+                return new LiteralListNode(MumblerList.EMPTY);
+            } else if (this.list.get(0) instanceof SymbolConvertible
+                    && this.isSpecialForm((SymbolConvertible) this.list.get(0))) {
+                return this.toSpecialForm();
+            }
+            return new InvokeNode(this.list.get(0).get(),
+                    this.list.subList(1, this.list.size()).toArray(
+                            new MumblerNode[] {}));
+        }
+
+        private boolean isSpecialForm(SymbolConvertible symbol) {
+            switch (symbol.name) {
+            case "lambda":
+            case "define":
+            case "quote":
+            case "if":
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        private MumblerNode toSpecialForm() {
+            SymbolConvertible symbol = (SymbolConvertible) this.list.get(0);
+            switch (symbol.name) {
+            case "quote":
+                return quote(this.list.get(1));
+            case "if":
+                return new IfNode(this.list.get(1).get(),
+                        this.list.get(2).get(),
+                        this.list.get(3).get());
+            case "define":
+                return DefineNodeFactory.create(this.list.get(2).get(),
+                        frameDescriptors.peek().findOrAddFrameSlot(
+                                ((SymbolConvertible) this.list.get(1)).name));
+            case "lambda":
+                frameDescriptors.push(new FrameDescriptor());
+                List<FrameSlot> formalParameters = new ArrayList<>();
+                for (Convertible arg : ((ListConvertible) this.list.get(1)).list) {
+                    formalParameters.add(((SymbolNode) arg.get()).getSlot());
+                }
+                List<MumblerNode> bodyNodes = new ArrayList<>();
+                for (Convertible bodyConv : this.list.subList(2, this.list.size())) {
+                    bodyNodes.add(bodyConv.get());
+                }
+                frameDescriptors.pop();
+                MumblerFunction function = MumblerFunction.create(
+                        formalParameters.toArray(new FrameSlot[] {}),
+                        bodyNodes.toArray(new MumblerNode[] {}));
+                return LambdaNodeFactory.create(function);
+            default:
+                throw new IllegalStateException("Unknown special form");
+            }
+        }
+
+        private static MumblerNode quote(Convertible conv) {
+            if (conv instanceof Literal) {
+                return ((Literal) conv).get();
+            } else if (conv instanceof SymbolConvertible) {
+                return new LiteralSymbolNode(new MumblerSymbol(
+                        ((SymbolConvertible) conv).name));
+            } else if (conv instanceof ListConvertible) {
+                List<MumblerNode> output = new ArrayList<>();
+                for (Convertible el : ((ListConvertible) conv).list) {
+                    output.add(quote(el));
+                }
+                return new LiteralListNode(MumblerList.list(output));
+            } else {
+                throw new IllegalStateException("Unknown Convertible");
+            }
+        }
+    }
+
     public static MumblerList<MumblerNode> read(InputStream istream) throws IOException {
         return read(new PushbackReader(new InputStreamReader(istream)));
     }
@@ -26,7 +156,7 @@ public class Reader {
         char c = (char) pstream.read();
         while ((byte) c != -1) {
             pstream.unread(c);
-            nodes.add(readNode(pstream));
+            nodes.add(readNode(pstream).get());
             readWhitespace(pstream);
             c = (char) pstream.read();
         }
@@ -34,7 +164,7 @@ public class Reader {
         return MumblerList.list(nodes);
     }
 
-    public static MumblerNode readNode(PushbackReader pstream) throws IOException {
+    public static Convertible readNode(PushbackReader pstream) throws IOException {
         char c = (char) pstream.read();
         pstream.unread(c);
         if (c == '(') {
@@ -59,7 +189,7 @@ public class Reader {
         pstream.unread(c);
     }
 
-    private static MumblerNode readSymbol(PushbackReader pstream)
+    private static SymbolConvertible readSymbol(PushbackReader pstream)
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
@@ -68,14 +198,14 @@ public class Reader {
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        //return new MumblerSymbol(b.toString());
-        return null;
+        return new SymbolConvertible(b.toString());
     }
 
-    private static MumblerNode readList(PushbackReader pstream) throws IOException {
+    private static ListConvertible readList(PushbackReader pstream)
+            throws IOException {
         char paren = (char) pstream.read();
         assert paren == '(' : "Reading a list must start with '('";
-        List<MumblerNode> list = new ArrayList<MumblerNode>();
+        List<Convertible> list = new ArrayList<>();
         do {
             readWhitespace(pstream);
             char c = (char) pstream.read();
@@ -90,11 +220,10 @@ public class Reader {
                 list.add(readNode(pstream));
             }
         } while (true);
-        //return SpecialForm.check(MumblerList.list(list));
-        return null;
+        return new ListConvertible(list);
     }
 
-    private static NumberNode readNumber(PushbackReader pstream)
+    private static Convertible readNumber(PushbackReader pstream)
             throws IOException {
         StringBuilder b = new StringBuilder();
         char c = (char) pstream.read();
@@ -103,27 +232,21 @@ public class Reader {
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        return new NumberNode(Long.valueOf(b.toString(), 10));
+        return new Literal(new NumberNode(Long.valueOf(b.toString(), 10)));
     }
 
-    private static final MumblerSymbol TRUE_SYM = new MumblerSymbol("t");
-    private static final MumblerSymbol FALSE_SYM = new MumblerSymbol("f");
-
-    private static MumblerNode readBoolean(PushbackReader pstream)
+    private static Literal readBoolean(PushbackReader pstream)
             throws IOException {
         char hash = (char) pstream.read();
         assert hash == '#' : "Reading a boolean must start with '#'";
 
-        //MumblerSymbol sym = readSymbol(pstream);
-        MumblerSymbol sym = null; // TODO: remove
-        if (TRUE_SYM.equals(sym)) {
-            //return BooleanNode.TRUE;
-            return null;
-        } else if (FALSE_SYM.equals(sym)) {
-            // return BooleanNode.FALSE;
-            return null;
+        SymbolConvertible sym = readSymbol(pstream);
+        if ("t".equals(sym.name)) {
+            return new Literal(BooleanNode.TRUE);
+        } else if ("f".equals(sym.name)) {
+            return new Literal(BooleanNode.FALSE);
         } else {
-            throw new IllegalArgumentException("Unknown value: #" + sym.name);
+            throw new IllegalArgumentException("Unknown value: #" + sym);
         }
     }
 }
