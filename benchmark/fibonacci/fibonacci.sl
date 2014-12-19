@@ -7,6 +7,7 @@ function fib(n) {
 }
 
 function main() {
+	fib(30);fib(30);fib(30);fib(30);fib(30);fib(30);
     start = nanoTime();
     println(fib(30));
     end = nanoTime();
