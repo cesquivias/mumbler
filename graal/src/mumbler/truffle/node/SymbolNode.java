@@ -8,8 +8,8 @@ import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 @NodeField(name = "slot", type = FrameSlot.class)
 public abstract class SymbolNode extends MumblerNode {
@@ -25,44 +25,36 @@ public abstract class SymbolNode extends MumblerNode {
         public T get(Frame frame, FrameSlot slot) throws FrameSlotTypeException;
     }
 
-    @ExplodeLoop
-    public <T> T readUpStack(FrameGet<T> getter, Frame frame)
+    private <T> T readUpStack(FrameGet<T> getter, VirtualFrame virtualFrame)
             throws FrameSlotTypeException {
-        if (this.resolvedSlot == null) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            this.resolveSlot(getter, frame);
-        }
-
-        Frame lookupFrame = frame;
-        for (int i = 0; i < this.lookupDepth; i++) {
-            lookupFrame = this.getLexicalScope(lookupFrame);
-        }
-        return getter.get(lookupFrame, this.resolvedSlot);
-    }
-
-    private <T> void resolveSlot(FrameGet<T> getter, Frame frame)
-            throws FrameSlotTypeException {
-
         FrameSlot slot = this.getSlot();
-        int depth = 0;
         Object identifier = slot.getIdentifier();
-        T value = getter.get(frame, slot);
+        T value = getter.get(virtualFrame, slot);
+        if (value != null) {
+            return value;
+        }
+        CompilerDirectives.transferToInterpreterAndInvalidate();
+        MaterializedFrame frame = this.getLexicalScope(virtualFrame);
         while (value == null) {
-            depth++;
-            frame = this.getLexicalScope(frame);
-            if (frame == null) {
-                CompilerDirectives.transferToInterpreterAndInvalidate();
-                throw new RuntimeException("Unknown variable: "
-                        + this.getSlot().getIdentifier());
-            }
             FrameDescriptor desc = frame.getFrameDescriptor();
             slot = desc.findFrameSlot(identifier);
             if (slot != null) {
                 value = getter.get(frame, slot);
             }
+
+            if (value != null) {
+                continue;
+            } else {
+                frame = this.getLexicalScope(frame);
+                if (frame == null) {
+                    CompilerDirectives.transferToInterpreterAndInvalidate();
+                    throw new RuntimeException("Unknown variable: "
+                            + this.getSlot().getIdentifier());
+                }
+            }
         }
-        this.lookupDepth = depth;
-        this.resolvedSlot = slot;
+        this.replace(LexicalReadNodeFactory.create(frame, slot));
+        return value;
     }
 
     @Specialization(rewriteOn = FrameSlotTypeException.class)
@@ -93,10 +85,10 @@ public abstract class SymbolNode extends MumblerNode {
         return null;
     }
 
-    protected Frame getLexicalScope(Frame frame) {
+    protected MaterializedFrame getLexicalScope(Frame frame) {
         Object[] args = frame.getArguments();
         if (args.length > 0) {
-            return (Frame) frame.getArguments()[0];
+            return (MaterializedFrame) frame.getArguments()[0];
         } else {
             return null;
         }
