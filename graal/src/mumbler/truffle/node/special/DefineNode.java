@@ -41,11 +41,23 @@ public abstract class DefineNode extends MumblerNode {
     }
 
     protected boolean isLongKind() {
-        return this.getSlot().getKind() == FrameSlotKind.Long;
+        return this.isKind(this.getSlot(), FrameSlotKind.Long);
     }
 
     protected boolean isBooleanKind() {
-        return this.getSlot().getKind() == FrameSlotKind.Boolean;
+        return this.isKind(this.getSlot(), FrameSlotKind.Boolean);
+    }
+
+    private boolean isKind(FrameSlot slot, FrameSlotKind kind) {
+        if (slot.getKind() == kind) {
+            return true;
+        }
+        if (slot.getKind() == FrameSlotKind.Illegal) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            slot.setKind(kind);
+            return true;
+        }
+        return false;
     }
 
     @Override
