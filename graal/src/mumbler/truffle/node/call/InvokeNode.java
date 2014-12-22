@@ -5,6 +5,7 @@ import java.util.Arrays;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.type.MumblerFunction;
 
+import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
@@ -28,7 +29,7 @@ public class InvokeNode extends MumblerNode {
     @ExplodeLoop
     public Object execute(VirtualFrame virtualFrame) {
         MumblerFunction function = this.evaluateFunction(virtualFrame);
-        //CompilerAsserts.compilationConstant(this.argumentNodes.length);
+        CompilerAsserts.compilationConstant(this.argumentNodes.length);
 
         Object[] argumentValues = new Object[this.argumentNodes.length + 1];
         argumentValues[0] = function.getLexicalScope();
