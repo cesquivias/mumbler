@@ -11,5 +11,5 @@ function main() {
     start = nanoTime();
     println(fib(30));
     end = nanoTime();
-    println("computation time: " + (end - start) / 1000);
+    println("computation time: " + (end - start) / 1000000);
 }
