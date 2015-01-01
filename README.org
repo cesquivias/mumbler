@@ -1,6 +1,6 @@
 * Usage
 
-To run SimpleMumbler:
+** SimpleMumbler:
 
 #+begin_src shell-script
     ./simple/repl [mumbler script]
@@ -12,6 +12,30 @@ Requires:
   - java
   - javac
   - ant
+
+** TruffleMumbler
+
+Requirements:
+  - Eclipse
+  - [[http://hg.openjdk.java.net/graal/graal/file/tip/][Current branch]] of Truffle
+  - [[http://mercurial.selenic.com/downloads][Mercurial]] (to clone the Truffle repo)
+  - [[http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html][Java 7]] (to build Truffle)
+  - [[http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html][Java 8]] (to build Truffle)
+
+Follow the instruction for [[https://wiki.openjdk.java.net/display/Graal/Instructions][building Truffle]] from their wiki. Follow the instructions to [[https://wiki.openjdk.java.net/display/Graal/Eclipse][set up Eclipse]]. See [[http://cesquivias.github.io/blog/2014/12/02/writing-a-language-in-truffle-part-2-using-truffle-and-graal/#installing-graal--truffle][my notes]] as well if you run into problems.
+
+Once you have Truffle set up with Eclipse you can import the Eclipse project for [[https://github.com/cesquivias/mumbler/tree/master/graal][TruffleMumbler]] into Eclipse. You'll need to change the location of your annotation processor jar and make sure the JRE System Library used is the Graal VM you built.
+
+*** Installing the Truffle's annotation processing
+
+Be sure to follow the instructions to set up Eclipse before proceeding. In Eclipse select the Mumbler project then go to the menu and select ~Project -> Properties~. Under the *Properties* window go to ~Java Compiler -> Annotation Processing~ select *Enable project specific settings*. Then select *Enable annotation processing* and *Enable processing in editor*.
+
+Go to ~Java Compiler -> Annotation Processing -> Factory Path~ and select *Enable project specific settings* then click *Add External JARs...*. Under the directory you built Graal go to ~${GRAAL_DIR}/graal/com.oracle.truffle.dsl.processor/ap/com.oracle.truffle.dsl.processor.jar~ and add it.
+
+*** Changing the JRE System Library
+
+Be sure to build Graal before proceeding. In Eclipse select the Mumbler project then go to the menu and select ~Project -> Properties~. Under the *Properties* window go to ~Java Build Path~. Go to the *Libraries* tab. Remove the current System Library. Click *Add Library*. Select *JRE System Library* and click *Next >*. Select *Alternate JRE* and select the Graal VM you built (e.g., graal-1.8.0_25).
+
 
 * License
 
