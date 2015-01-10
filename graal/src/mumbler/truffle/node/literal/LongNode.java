@@ -4,10 +4,10 @@ import mumbler.truffle.node.MumblerNode;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
-public class NumberNode extends MumblerNode {
+public class LongNode extends MumblerNode {
     public final long number;
 
-    public NumberNode(long number) {
+    public LongNode(long number) {
         this.number = number;
     }
 

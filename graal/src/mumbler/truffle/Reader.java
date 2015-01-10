@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PushbackReader;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -13,10 +14,11 @@ import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.SymbolNode;
 import mumbler.truffle.node.SymbolNodeFactory;
 import mumbler.truffle.node.call.InvokeNode;
+import mumbler.truffle.node.literal.BigIntegerNode;
 import mumbler.truffle.node.literal.BooleanNode;
 import mumbler.truffle.node.literal.LiteralListNode;
 import mumbler.truffle.node.literal.LiteralSymbolNode;
-import mumbler.truffle.node.literal.NumberNode;
+import mumbler.truffle.node.literal.LongNode;
 import mumbler.truffle.node.special.DefineNodeFactory;
 import mumbler.truffle.node.special.IfNode;
 import mumbler.truffle.node.special.LambdaNodeFactory;
@@ -235,7 +237,14 @@ public class Reader {
             c = (char) pstream.read();
         }
         pstream.unread(c);
-        return new LiteralConvertible(new NumberNode(Long.valueOf(b.toString(), 10)));
+        try {
+            return new LiteralConvertible(new LongNode(
+                    Long.valueOf(b.toString(), 10)));
+        } catch (NumberFormatException e) {
+            // Number doesn't fit in a long. Using BigInteger.
+            return new LiteralConvertible(new BigIntegerNode(
+                    new BigInteger(b.toString(), 10)));
+        }
     }
 
     private static LiteralConvertible readBoolean(PushbackReader pstream)
