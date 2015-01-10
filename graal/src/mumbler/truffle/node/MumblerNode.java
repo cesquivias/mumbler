@@ -1,5 +1,7 @@
 package mumbler.truffle.node;
 
+import java.math.BigInteger;
+
 import mumbler.truffle.MumblerTypes;
 import mumbler.truffle.MumblerTypesGen;
 import mumbler.truffle.type.MumblerFunction;
@@ -26,6 +28,12 @@ public abstract class MumblerNode extends Node {
     public boolean executeBoolean(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
         return MumblerTypesGen.MUMBLERTYPES.expectBoolean(
+                this.execute(virtualFrame));
+    }
+
+    public BigInteger executeBigInteger(VirtualFrame virtualFrame)
+            throws UnexpectedResultException {
+        return MumblerTypesGen.MUMBLERTYPES.expectBigInteger(
                 this.execute(virtualFrame));
     }
 
