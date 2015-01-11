@@ -5,7 +5,11 @@ import sys
 import time
 
 from argparse import ArgumentParser
-from os.path import dirname, join, normpath, realpath
+from os.path import dirname, expanduser, join, normpath, realpath
+
+
+GRAAL_VM_DIR = '~/dev/graal/jdk1.8.0_25/product'
+TRUFFLE_MUMBLER_JAR = '~/dev/mumbler/graal/gmumbler.jar'
 
 
 def run(name, lang_args, suffix):
@@ -17,7 +21,7 @@ def run(name, lang_args, suffix):
     end = int(time.time() * 1000)
     print 'total time: %s\n' % (end - start)
 
-def run_mumbler(name):
+def run_simple_mumbler(name):
     simple_mumbler_dir = normpath(join(dirname(realpath(__file__)),
                                         '../simple'))
     p = subprocess.Popen(['ant', '-f', join(simple_mumbler_dir, 'build.xml'),
@@ -25,7 +29,14 @@ def run_mumbler(name):
                          stdout=subprocess.PIPE)
     p.communicate()
     
+    print 'simple',
     run(name, ['java', '-jar', join(simple_mumbler_dir, 'dist/mumbler.jar')],
+        'mumbler')
+
+def run_truffle_mumbler(name):
+    java = expanduser(normpath((join(GRAAL_VM_DIR, 'jre/bin/java'))))
+    print 'truffle',
+    run(name, [java, '-server', '-jar', expanduser(TRUFFLE_MUMBLER_JAR)],
         'mumbler')
 
 def run_racket(name):
@@ -46,4 +57,5 @@ args = parser.parse_args()
 run_racket(args.benchmark)
 run_node(args.benchmark)
 run_python(args.benchmark)
-run_mumbler(args.benchmark)
+run_simple_mumbler(args.benchmark)
+run_truffle_mumbler(args.benchmark)
