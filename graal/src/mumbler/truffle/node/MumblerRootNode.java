@@ -23,12 +23,12 @@ public class MumblerRootNode extends RootNode {
     @Override
     @ExplodeLoop
     public Object execute(VirtualFrame virtualFrame) {
-        int secondToLast = this.bodyNodes.length - 1;
-        CompilerAsserts.compilationConstant(secondToLast);
-        for (int i=0; i<secondToLast; i++) {
+        int last = this.bodyNodes.length - 1;
+        CompilerAsserts.compilationConstant(last);
+        for (int i=0; i<last; i++) {
             this.bodyNodes[i].execute(virtualFrame);
         }
-        return this.bodyNodes[secondToLast].execute(virtualFrame);
+        return this.bodyNodes[last].execute(virtualFrame);
     }
 
     public static MumblerRootNode create(FrameSlot[] argumentNames,
