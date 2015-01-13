@@ -15,6 +15,7 @@ import mumbler.truffle.node.builtin.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.PrintlnBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.SubBuiltinNodeFactory;
+import mumbler.truffle.node.call.TailCallException;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
@@ -73,9 +74,14 @@ public class TruffleMumblerMain {
                 frameDescriptor);
         DirectCallNode directCallNode = Truffle.getRuntime()
                 .createDirectCallNode(function.callTarget);
-        return directCallNode.call(
-                topFrame,
-                new Object[] {topFrame.materialize()});
+
+        try {
+            return directCallNode.call(
+                    topFrame,
+                    new Object[] {topFrame.materialize()});
+        } catch (TailCallException e) {
+            return e.call(topFrame);
+        }
     }
 
     private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {

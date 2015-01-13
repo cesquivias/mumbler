@@ -2,6 +2,7 @@ package mumbler.truffle.node;
 
 import java.util.Arrays;
 
+import mumbler.truffle.node.call.TailCallException;
 import mumbler.truffle.node.special.DefineNodeFactory;
 
 import com.oracle.truffle.api.CompilerAsserts;

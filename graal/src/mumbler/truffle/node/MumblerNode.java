@@ -8,6 +8,7 @@ import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
 
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.TypeSystemReference;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
@@ -17,6 +18,17 @@ import com.oracle.truffle.api.nodes.UnexpectedResultException;
 @TypeSystemReference(MumblerTypes.class)
 @NodeInfo(language = "Mumbler Language", description = "The abstract base node for all expressions")
 public abstract class MumblerNode extends Node {
+    @CompilationFinal
+    private boolean isTail = false;
+
+    public boolean isTail() {
+        return this.isTail;
+    }
+
+    public void setIsTail() {
+        this.isTail = true;
+    }
+
     public abstract Object execute(VirtualFrame virtualFrame);
 
     public long executeLong(VirtualFrame virtualFrame)

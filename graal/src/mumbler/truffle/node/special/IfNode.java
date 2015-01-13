@@ -31,6 +31,13 @@ public class IfNode extends MumblerNode {
         }
     }
 
+    @Override
+    public void setIsTail() {
+        super.setIsTail();
+        this.thenNode.setIsTail();
+        this.elseNode.setIsTail();
+    }
+
     private boolean testResult(VirtualFrame virtualFrame) {
         try {
             return this.testNode.executeBoolean(virtualFrame);

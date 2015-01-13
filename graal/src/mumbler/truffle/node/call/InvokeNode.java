@@ -39,15 +39,25 @@ public class InvokeNode extends MumblerNode {
 
         if (this.callNode == null)  {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            this.callNode = this.insert(Truffle.getRuntime().createDirectCallNode(function.callTarget));
+            this.callNode = this.insert(Truffle.getRuntime()
+                    .createDirectCallNode(function.callTarget));
         }
 
         if (function.callTarget != this.callNode.getCallTarget()) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new UnsupportedOperationException("need to implement a proper inline cache.");
+            throw new UnsupportedOperationException(
+                    "Need to implement a proper inline cache.");
         }
 
-        return this.callNode.call(virtualFrame, argumentValues);
+        if (this.isTail()) {
+            throw new TailCallException(this.callNode, argumentValues);
+        } else {
+            try {
+                return this.callNode.call(virtualFrame, argumentValues);
+            } catch (TailCallException e) {
+                return e.call(virtualFrame);
+            }
+        }
     }
 
     private MumblerFunction evaluateFunction(VirtualFrame virtualFrame) {

@@ -120,6 +120,7 @@ public class Reader {
                 for (Convertible bodyConv : this.list.subList(2, this.list.size())) {
                     bodyNodes.add(bodyConv.convert());
                 }
+                bodyNodes.get(bodyNodes.size() - 1).setIsTail();
                 frameDescriptors.pop();
                 MumblerFunction function = MumblerFunction.create(
                         formalParameters.toArray(new FrameSlot[] {}),
