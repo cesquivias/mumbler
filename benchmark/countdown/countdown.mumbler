@@ -1,0 +1,20 @@
+(define countdown (lambda (n)
+                    (if (< n 101)
+                        (if (< n 1)
+                            0
+                            (countdown (- n 1)))
+                        (countdown
+                         ((lambda (x)
+                            (countdown 100)
+                            (- x 100))
+                          n)))))
+
+(countdown 10000)
+(countdown 10000)
+(countdown 10000)
+(countdown 10000)
+
+(define start (now))
+(countdown 10000)
+(define end (now))
+(println (list (quote computation-time) (- end start)))
