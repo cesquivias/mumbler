@@ -33,39 +33,33 @@ public abstract class MumblerNode extends Node {
 
     public long executeLong(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectLong(
-                this.execute(virtualFrame));
+        return MumblerTypesGen.expectLong(this.execute(virtualFrame));
     }
 
     public boolean executeBoolean(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectBoolean(
-                this.execute(virtualFrame));
+        return MumblerTypesGen.expectBoolean(this.execute(virtualFrame));
     }
 
     public BigInteger executeBigInteger(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectBigInteger(
-                this.execute(virtualFrame));
+        return MumblerTypesGen.expectBigInteger(this.execute(virtualFrame));
     }
 
     public MumblerSymbol executeMumblerSymbol(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectMumblerSymbol(
-                this.execute(virtualFrame));
+        return MumblerTypesGen.expectMumblerSymbol(this.execute(virtualFrame));
     }
 
     public MumblerFunction executeMumblerFunction(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectMumblerFunction(
+        return MumblerTypesGen.expectMumblerFunction(
                 this.execute(virtualFrame));
-
     }
 
     public MumblerList<?> executeMumblerList(VirtualFrame virtualFrame)
             throws UnexpectedResultException {
-        return MumblerTypesGen.MUMBLERTYPES.expectMumblerList(
-                this.execute(virtualFrame));
+        return MumblerTypesGen.expectMumblerList(this.execute(virtualFrame));
     }
 
     protected boolean isArgumentIndexInRange(VirtualFrame virtualFrame,

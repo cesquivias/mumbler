@@ -12,16 +12,16 @@ import java.util.Stack;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.SymbolNode;
-import mumbler.truffle.node.SymbolNodeFactory;
+import mumbler.truffle.node.SymbolNodeGen;
 import mumbler.truffle.node.call.InvokeNode;
 import mumbler.truffle.node.literal.BigIntegerNode;
 import mumbler.truffle.node.literal.BooleanNode;
 import mumbler.truffle.node.literal.LiteralListNode;
 import mumbler.truffle.node.literal.LiteralSymbolNode;
 import mumbler.truffle.node.literal.LongNode;
-import mumbler.truffle.node.special.DefineNodeFactory;
+import mumbler.truffle.node.special.DefineNodeGen;
 import mumbler.truffle.node.special.IfNode;
-import mumbler.truffle.node.special.LambdaNodeFactory;
+import mumbler.truffle.node.special.LambdaNodeGen;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
@@ -59,7 +59,7 @@ public class Reader {
 
         @Override
         public MumblerNode convert() {
-            return SymbolNodeFactory.create(
+            return SymbolNodeGen.create(
                     frameDescriptors.peek().findOrAddFrameSlot(this.name));
         }
     }
@@ -107,7 +107,7 @@ public class Reader {
                         this.list.get(2).convert(),
                         this.list.get(3).convert());
             case "define":
-                return DefineNodeFactory.create(this.list.get(2).convert(),
+                return DefineNodeGen.create(this.list.get(2).convert(),
                         frameDescriptors.peek().findOrAddFrameSlot(
                                 ((SymbolConvertible) this.list.get(1)).name));
             case "lambda":
@@ -126,7 +126,7 @@ public class Reader {
                         formalParameters.toArray(new FrameSlot[] {}),
                         bodyNodes.toArray(new MumblerNode[] {}),
                         frameDescriptors.peek());
-                return LambdaNodeFactory.create(function);
+                return LambdaNodeGen.create(function);
             default:
                 throw new IllegalStateException("Unknown special form");
             }

@@ -13,7 +13,7 @@ import com.oracle.truffle.api.dsl.TypeSystem;
     MumblerSymbol.class, MumblerList.class})
 public class MumblerTypes {
     @ImplicitCast
-    public BigInteger castBigInteger(long value) {
+    public static BigInteger castBigInteger(long value) {
         return BigInteger.valueOf(value);
     }
 }

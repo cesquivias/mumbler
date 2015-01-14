@@ -1,9 +1,11 @@
 package mumbler.truffle.node.builtin;
 
+import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
 
 @NodeInfo(shortName = "println")
+@GenerateNodeFactory
 public abstract class PrintlnBuiltinNode extends BuiltinNode {
     @Specialization
     public long println(long value) {

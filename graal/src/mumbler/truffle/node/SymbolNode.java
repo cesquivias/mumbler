@@ -53,7 +53,7 @@ public abstract class SymbolNode extends MumblerNode {
                 }
             }
         }
-        this.replace(LexicalReadNodeFactory.create(frame, slot));
+        this.replace(LexicalReadNodeGen.create(frame, slot));
         return value;
     }
 

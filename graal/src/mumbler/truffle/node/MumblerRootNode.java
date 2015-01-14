@@ -2,8 +2,7 @@ package mumbler.truffle.node;
 
 import java.util.Arrays;
 
-import mumbler.truffle.node.call.TailCallException;
-import mumbler.truffle.node.special.DefineNodeFactory;
+import mumbler.truffle.node.special.DefineNodeGen;
 
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.FrameDescriptor;
@@ -37,7 +36,7 @@ public class MumblerRootNode extends RootNode {
         MumblerNode[] allNodes = new MumblerNode[argumentNames.length
                                                  + bodyNodes.length];
         for (int i=0; i<argumentNames.length; i++) {
-            allNodes[i] = DefineNodeFactory.create(
+            allNodes[i] = DefineNodeGen.create(
                     new ReadArgumentNode(i), argumentNames[i]);
         }
         System.arraycopy(bodyNodes, 0, allNodes,
