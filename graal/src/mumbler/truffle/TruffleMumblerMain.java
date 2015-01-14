@@ -15,7 +15,8 @@ import mumbler.truffle.node.builtin.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.PrintlnBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.SubBuiltinNodeFactory;
-import mumbler.truffle.node.call.TailCallException;
+import mumbler.truffle.node.call.GenericDispatchNode;
+import mumbler.truffle.node.call.InvokeNode;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
@@ -23,7 +24,6 @@ import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.DirectCallNode;
 
 public class TruffleMumblerMain {
     public static void main(String[] args) throws IOException {
@@ -72,16 +72,11 @@ public class TruffleMumblerMain {
                 StreamSupport.stream(nodes.spliterator(), false)
                 .toArray(size -> new MumblerNode[size]),
                 frameDescriptor);
-        DirectCallNode directCallNode = Truffle.getRuntime()
-                .createDirectCallNode(function.callTarget);
 
-        try {
-            return directCallNode.call(
-                    topFrame,
-                    new Object[] {topFrame.materialize()});
-        } catch (TailCallException e) {
-            return e.call(topFrame);
-        }
+        return InvokeNode.call(topFrame,
+                function.callTarget,
+                new Object[] {topFrame.materialize()},
+                new GenericDispatchNode());
     }
 
     private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {

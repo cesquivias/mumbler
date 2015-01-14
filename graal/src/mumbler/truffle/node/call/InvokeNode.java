@@ -5,12 +5,10 @@ import java.util.Arrays;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.type.MumblerFunction;
 
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerAsserts;
-import com.oracle.truffle.api.CompilerDirectives;
-import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.DirectCallNode;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
@@ -18,11 +16,12 @@ import com.oracle.truffle.api.nodes.UnexpectedResultException;
 public class InvokeNode extends MumblerNode {
     @Child protected MumblerNode functionNode;
     @Children protected final MumblerNode[] argumentNodes;
-    @Child protected DirectCallNode callNode;
+    @Child protected DispatchNode dispatchNode;
 
     public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes) {
         this.functionNode = functionNode;
         this.argumentNodes = argumentNodes;
+        this.dispatchNode = new UninitializedDispatchNode();
     }
 
     @Override
@@ -37,25 +36,22 @@ public class InvokeNode extends MumblerNode {
             argumentValues[i+1] = this.argumentNodes[i].execute(virtualFrame);
         }
 
-        if (this.callNode == null)  {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            this.callNode = this.insert(Truffle.getRuntime()
-                    .createDirectCallNode(function.callTarget));
-        }
-
-        if (function.callTarget != this.callNode.getCallTarget()) {
-            CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new UnsupportedOperationException(
-                    "Need to implement a proper inline cache.");
-        }
-
         if (this.isTail()) {
-            throw new TailCallException(this.callNode, argumentValues);
-        } else {
+            throw new TailCallException(function.callTarget, argumentValues);
+        }
+        return call(virtualFrame, function.callTarget, argumentValues,
+                this.dispatchNode);
+    }
+
+    public static Object call(VirtualFrame virtualFrame, CallTarget callTarget,
+            Object[] arguments, DispatchNode dispatchNode) {
+        while (true) {
             try {
-                return this.callNode.call(virtualFrame, argumentValues);
+                return dispatchNode.executeDispatch(virtualFrame,
+                        callTarget, arguments);
             } catch (TailCallException e) {
-                return e.call(virtualFrame);
+                callTarget = e.callTarget;
+                arguments = e.arguments;
             }
         }
     }

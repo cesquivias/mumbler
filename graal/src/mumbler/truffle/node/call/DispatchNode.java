@@ -1,18 +1,12 @@
 package mumbler.truffle.node.call;
 
-import mumbler.truffle.type.MumblerFunction;
-
-import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.frame.VirtualFrame;
-import com.oracle.truffle.api.nodes.IndirectCallNode;
 import com.oracle.truffle.api.nodes.Node;
 
-public class DispatchNode extends Node {
-    @Child private IndirectCallNode callNode = Truffle.getRuntime()
-            .createIndirectCallNode();
+public abstract class DispatchNode extends Node {
+    protected static final int INLINE_CACHE_SIZE = 2;
 
-    public Object executeDispatch(VirtualFrame virtualFrame,
-            MumblerFunction function, Object[] arguments) {
-        return this.callNode.call(virtualFrame, function.callTarget, arguments);
-    }
+    protected abstract Object executeDispatch(VirtualFrame virtualFrame,
+            CallTarget callTarget, Object[] argumentValues);
 }
