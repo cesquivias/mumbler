@@ -12,11 +12,15 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.utilities.ConditionProfile;
 
 public class InvokeNode extends MumblerNode {
     @Child protected MumblerNode functionNode;
     @Children protected final MumblerNode[] argumentNodes;
     @Child protected DispatchNode dispatchNode;
+
+    private final ConditionProfile conditionProfile =
+            ConditionProfile.createBinaryProfile();
 
     public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes) {
         this.functionNode = functionNode;
@@ -36,11 +40,12 @@ public class InvokeNode extends MumblerNode {
             argumentValues[i+1] = this.argumentNodes[i].execute(virtualFrame);
         }
 
-        if (this.isTail()) {
+        if (this.conditionProfile.profile(this.isTail())) {
             throw new TailCallException(function.callTarget, argumentValues);
+        } else {
+            return call(virtualFrame, function.callTarget, argumentValues,
+                    this.dispatchNode);
         }
-        return call(virtualFrame, function.callTarget, argumentValues,
-                this.dispatchNode);
     }
 
     public static Object call(VirtualFrame virtualFrame, CallTarget callTarget,
