@@ -14,6 +14,7 @@
 (countdown 10000)
 (countdown 10000)
 
+(println (quote start-measure))
 (define start (now))
 (countdown 10000)
 (define end (now))
