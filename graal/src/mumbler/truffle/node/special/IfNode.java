@@ -46,4 +46,9 @@ public class IfNode extends MumblerNode {
             return result != MumblerList.EMPTY;
         }
     }
+
+    @Override
+    public String toString() {
+        return "(if " + this.testNode + " "  + this.elseNode + ")";
+    }
 }

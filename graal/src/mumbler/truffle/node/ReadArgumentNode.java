@@ -18,4 +18,9 @@ public class ReadArgumentNode extends MumblerNode {
         }
         return this.getArgument(virtualFrame, this.argumentIndex);
     }
+
+    @Override
+    public String toString() {
+        return "(arg " + this.argumentIndex + ")";
+    }
 }
