@@ -15,8 +15,6 @@ import mumbler.truffle.node.builtin.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.PrintlnBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.SubBuiltinNodeFactory;
-import mumbler.truffle.node.call.GenericDispatchNode;
-import mumbler.truffle.node.call.InvokeNode;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
@@ -73,10 +71,7 @@ public class TruffleMumblerMain {
                 .toArray(size -> new MumblerNode[size]),
                 frameDescriptor);
 
-        return InvokeNode.call(topFrame,
-                function.callTarget,
-                new Object[] {topFrame.materialize()},
-                new GenericDispatchNode());
+        return function.callTarget.call(new Object[] {topFrame.materialize()});
     }
 
     private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
@@ -84,22 +79,22 @@ public class TruffleMumblerMain {
                 new Object[] {}, frameDescriptor);
         virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
                 createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("+"),
                 createBuiltinFunction(AddBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("-"),
                 createBuiltinFunction(SubBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("<"),
                 createBuiltinFunction(LessThanBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("list"),
                 createBuiltinFunction(ListBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
                 createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
-                        frameDescriptor));
+                        new FrameDescriptor()));
         return virtualFrame;
     }
 }

@@ -125,7 +125,7 @@ public class Reader {
                 MumblerFunction function = MumblerFunction.create(
                         formalParameters.toArray(new FrameSlot[] {}),
                         bodyNodes.toArray(new MumblerNode[] {}),
-                        frameDescriptors.peek());
+                        frameDescriptors.peek().copy());
                 return LambdaNodeGen.create(function);
             default:
                 throw new IllegalStateException("Unknown special form");
