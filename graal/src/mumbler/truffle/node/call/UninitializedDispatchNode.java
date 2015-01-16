@@ -12,38 +12,25 @@ final public class UninitializedDispatchNode extends DispatchNode {
         CompilerDirectives.transferToInterpreterAndInvalidate();
 
         Node cur = this;
-        int depth = 0;
+        int size = 0;
         while (cur.getParent() instanceof DispatchNode) {
             cur = cur.getParent();
-            depth++;
+            size++;
         }
         InvokeNode invokeNode = (InvokeNode) cur.getParent();
 
         DispatchNode replacement;
-        if (callTarget == null) {
-            /* Corner case: the function is not defined, so report an error to
-             * the user. */
-            throw new RuntimeException("Call of undefined function");
-        } else if (depth < INLINE_CACHE_SIZE) {
-            /* Extend the inline cache. Allocate the new cache entry, and the
-             * new end of the cache. */
+        if (size < INLINE_CACHE_SIZE) {
+            // There's still room in the cache. Add a new DirectDispatchNode.
             DispatchNode next = new UninitializedDispatchNode();
             replacement = new DirectDispatchNode(next, callTarget);
-            /* Replace ourself with the new cache entry. */
             this.replace(replacement);
         } else {
-            /* Cache size exceeded, fall back to a single generic dispatch
-             * node. */
             replacement = new GenericDispatchNode();
-            /* Replace the whole chain, not just ourself, with the new generic
-             * node. */
             invokeNode.dispatchNode.replace(replacement);
         }
 
-        /*
-         * Execute the newly created node perform the actual dispatch. That
-         * saves us from duplicating the actual call logic here.
-         */
+        // Call function with newly created dispatch node.
         return replacement.executeDispatch(virtualFrame, callTarget, arguments);
     }
 }
