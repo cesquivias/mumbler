@@ -10,8 +10,11 @@ import java.util.stream.StreamSupport;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.AddBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.DivBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.LessThanBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.ListBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.ModBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.MulBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.PrintlnBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.SubBuiltinNodeFactory;
@@ -85,6 +88,15 @@ public class TruffleMumblerMain {
                         new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("-"),
                 createBuiltinFunction(SubBuiltinNodeFactory.getInstance(),
+                        new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("*"),
+                createBuiltinFunction(MulBuiltinNodeFactory.getInstance(),
+                        new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("/"),
+                createBuiltinFunction(DivBuiltinNodeFactory.getInstance(),
+                        new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("%"),
+                createBuiltinFunction(ModBuiltinNodeFactory.getInstance(),
                         new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("<"),
                 createBuiltinFunction(LessThanBuiltinNodeFactory.getInstance(),
