@@ -12,17 +12,6 @@ public class GenericDispatchNode extends DispatchNode {
     @Override
     protected Object executeDispatch(VirtualFrame virtualFrame,
             CallTarget callTarget, Object[] argumentValues) {
-
-        CallTarget currentCallTarget = callTarget;
-        Object[] arguments = argumentValues;
-        do {
-            try {
-                return this.callNode.call(virtualFrame, currentCallTarget,
-                        arguments);
-            } catch (TailCallException e) {
-                currentCallTarget = e.callTarget;
-                arguments = e.arguments;
-            }
-        } while(true);
+        return this.callNode.call(virtualFrame, callTarget, argumentValues);
     }
 }
