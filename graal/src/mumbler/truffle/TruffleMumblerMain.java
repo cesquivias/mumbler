@@ -10,6 +10,9 @@ import java.util.stream.StreamSupport;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.AddBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.CarBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.CdrBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.ConsBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.DivBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.EqualBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.GreaterThanBuiltinNodeFactory;
@@ -111,6 +114,15 @@ public class TruffleMumblerMain {
                 new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("list"),
             createBuiltinFunction(ListBuiltinNodeFactory.getInstance(),
+                new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("cons"),
+            createBuiltinFunction(ConsBuiltinNodeFactory.getInstance(),
+                new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("car"),
+            createBuiltinFunction(CarBuiltinNodeFactory.getInstance(),
+                new FrameDescriptor()));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("cdr"),
+            createBuiltinFunction(CdrBuiltinNodeFactory.getInstance(),
                 new FrameDescriptor()));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
             createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),

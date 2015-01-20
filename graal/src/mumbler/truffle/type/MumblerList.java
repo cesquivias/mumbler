@@ -8,8 +8,8 @@ import java.util.List;
 public class MumblerList<T extends Object> implements Iterable<T> {
     public static final MumblerList<?> EMPTY = new MumblerList<>();
 
-    public final T car;
-    public final MumblerList<T> cdr;
+    private final T car;
+    private final MumblerList<T> cdr;
 
     private MumblerList() {
         this.car = null;
@@ -37,6 +37,20 @@ public class MumblerList<T extends Object> implements Iterable<T> {
 
     public MumblerList<T> cons(T node) {
         return new MumblerList<T>(node, this);
+    }
+
+    public T car() {
+        if (this != EMPTY) {
+            return this.car;
+        }
+        throw new IllegalStateException("Cannot car the empty list");
+    }
+
+    public MumblerList<T> cdr() {
+        if (this != EMPTY) {
+            return this.cdr;
+        }
+        throw new IllegalStateException("Cannot cdr the empty list");
     }
 
     public long length() {
