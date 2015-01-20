@@ -1,5 +1,6 @@
-package mumbler.truffle.node.builtin;
+package mumbler.truffle.node.builtin.list;
 
+import mumbler.truffle.node.builtin.BuiltinNode;
 import mumbler.truffle.type.MumblerList;
 
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;

@@ -1,6 +1,8 @@
-package mumbler.truffle.node.builtin;
+package mumbler.truffle.node.builtin.arithmetic;
 
 import java.math.BigInteger;
+
+import mumbler.truffle.node.builtin.BuiltinNode;
 
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
