@@ -121,11 +121,11 @@ public class Reader {
                     bodyNodes.add(bodyConv.convert());
                 }
                 bodyNodes.get(bodyNodes.size() - 1).setIsTail();
-                frameDescriptors.pop();
+
                 MumblerFunction function = MumblerFunction.create(
                         formalParameters.toArray(new FrameSlot[] {}),
                         bodyNodes.toArray(new MumblerNode[] {}),
-                        frameDescriptors.peek().copy());
+                        frameDescriptors.pop().copy());
                 return LambdaNodeGen.create(function);
             default:
                 throw new IllegalStateException("Unknown special form");
