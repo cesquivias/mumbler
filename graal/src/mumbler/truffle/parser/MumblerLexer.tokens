@@ -1,9 +1,0 @@
-SYMBOL=4
-T__1=1
-T__0=2
-WS=7
-INT=3
-BOOLEAN=5
-COMMENT=6
-')'=2
-'('=1

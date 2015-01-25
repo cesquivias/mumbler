@@ -1,14 +1,20 @@
 grammar Mumbler;
 
-file : forms ;
+file : form* ;
 
-forms : form* ;
+form : list
+     | number
+     | symbol
+     | bool
+     ;
 
-form : '(' forms ')'                        # list
-    | INT                                   # number
-    | SYMBOL                                # symbol
-    | BOOLEAN                               # bool
-    ;
+list : '(' form* ')' ;
+
+number : INT ;
+
+symbol : SYMBOL ;
+
+bool : BOOLEAN ;
 
 INT : [0-9]+ ;
 SYMBOL : ~('#'|[()]|[ \t\r\n]) ~([()]|[ \t\r\n])* ;
