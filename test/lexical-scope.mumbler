@@ -1,0 +1,10 @@
+(define x 1)
+
+(define f
+  (lambda ()
+    (define y 2)
+    (lambda ()
+      (println x)
+      (println y))))
+
+((f))
