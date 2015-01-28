@@ -1,0 +1,7 @@
+(define tail-recursion
+  (lambda (n)
+    (if (< n 1)
+        0
+        (tail-recursion (- n 1)))))
+
+(println (tail-recursion 10000))

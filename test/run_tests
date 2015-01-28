@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import difflib
+import glob
+import os
+import subprocess
+import sys
+
+from StringIO import StringIO
+
+GRAAL_JRE = '~/dev/graal/jdk1.8.0_25/product/jre'
+MUMBLER_JAR = '~/dev/mumbler/graal/gmumbler.jar'
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+JAVA_BIN = os.path.expanduser(os.path.join(GRAAL_JRE, 'bin/java'))
+
+for mumbler_script in glob.glob("*.mumbler"):
+    output = subprocess.check_output([JAVA_BIN, '-graal', '-jar',
+                                      os.path.expanduser(MUMBLER_JAR),
+                                      mumbler_script],
+                                     universal_newlines=True)
+    with open(os.path.splitext(mumbler_script)[0] + '.output') as truth_file:
+        diff = difflib.unified_diff(output.splitlines(),
+                                    [l.strip() for l in truth_file.readlines()],
+                                    lineterm='')
+        diff = list(diff)
+        if diff:
+            print mumbler_script
+            print '\n'.join(diff)
+        else:
+            sys.stdout.write('.')
