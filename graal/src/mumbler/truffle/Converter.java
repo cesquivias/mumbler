@@ -39,6 +39,8 @@ public class Converter {
             return convert((boolean) obj, desc);
         } else if (obj instanceof MumblerSymbol) {
             return convert((MumblerSymbol) obj, desc);
+        } else if (obj instanceof MumblerList) {
+            return convert((MumblerList<?>) obj, desc);
         } else {
             throw new IllegalArgumentException("Unknown type: " +
                     obj.getClass());
@@ -90,7 +92,7 @@ public class Converter {
     private static DefineNode convertDefine(MumblerList<?> list,
             FrameDescriptor desc) {
         MumblerSymbol sym = (MumblerSymbol) list.cdr().car();
-        return DefineNodeGen.create(convert(sym, desc),
+        return DefineNodeGen.create(convert(list.cdr().cdr().car(), desc),
                 desc.findOrAddFrameSlot(sym.name));
     }
 
