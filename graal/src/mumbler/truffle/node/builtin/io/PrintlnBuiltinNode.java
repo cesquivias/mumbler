@@ -1,4 +1,4 @@
-package mumbler.truffle.node.builtin;
+package mumbler.truffle.node.builtin.io;
 
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
