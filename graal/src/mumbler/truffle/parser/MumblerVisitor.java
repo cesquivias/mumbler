@@ -33,6 +33,13 @@ public interface MumblerVisitor<T> extends ParseTreeVisitor<T> {
 	T visitFile(@NotNull MumblerParser.FileContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link MumblerParser#quote}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitQuote(@NotNull MumblerParser.QuoteContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link MumblerParser#bool}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

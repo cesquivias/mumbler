@@ -70,4 +70,10 @@ public class Reader extends MumblerBaseVisitor<Object> {
     public MumblerSymbol visitSymbol(MumblerParser.SymbolContext ctx) {
         return new MumblerSymbol(ctx.getText());
     }
+
+    @Override
+    public Object visitQuote(MumblerParser.QuoteContext ctx) {
+        return MumblerList.list(new MumblerSymbol("quote"),
+                this.visit(ctx.form()));
+    }
 }

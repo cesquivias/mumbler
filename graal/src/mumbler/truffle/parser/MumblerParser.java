@@ -15,9 +15,10 @@ public class MumblerParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__1=1, T__0=2, INT=3, SYMBOL=4, BOOLEAN=5, COMMENT=6, WS=7;
+		T__2=1, T__1=2, T__0=3, INT=4, SYMBOL=5, BOOLEAN=6, COMMENT=7, WS=8;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'('", "')'", "INT", "SYMBOL", "BOOLEAN", "COMMENT", "WS"
+		"<INVALID>", "'''", "'('", "')'", "INT", "SYMBOL", "BOOLEAN", "COMMENT", 
+		"WS"
 	};
 	public static final int
 		RULE_file = 0, RULE_form = 1;
@@ -72,7 +73,7 @@ public class MumblerParser extends Parser {
 			setState(7);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 1) | (1L << INT) | (1L << SYMBOL) | (1L << BOOLEAN))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 1) | (1L << 2) | (1L << INT) | (1L << SYMBOL) | (1L << BOOLEAN))) != 0)) {
 				{
 				{
 				setState(4); form();
@@ -124,6 +125,17 @@ public class MumblerParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class QuoteContext extends FormContext {
+		public FormContext form() {
+			return getRuleContext(FormContext.class,0);
+		}
+		public QuoteContext(FormContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MumblerVisitor ) return ((MumblerVisitor<? extends T>)visitor).visitQuote(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class BoolContext extends FormContext {
 		public TerminalNode BOOLEAN() { return getToken(MumblerParser.BOOLEAN, 0); }
 		public BoolContext(FormContext ctx) { copyFrom(ctx); }
@@ -153,17 +165,17 @@ public class MumblerParser extends Parser {
 		enterRule(_localctx, 2, RULE_form);
 		int _la;
 		try {
-			setState(21);
+			setState(23);
 			switch (_input.LA(1)) {
-			case 1:
+			case 2:
 				_localctx = new ListContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(10); match(1);
+				setState(10); match(2);
 				setState(14);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 1) | (1L << INT) | (1L << SYMBOL) | (1L << BOOLEAN))) != 0)) {
+				while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << 1) | (1L << 2) | (1L << INT) | (1L << SYMBOL) | (1L << BOOLEAN))) != 0)) {
 					{
 					{
 					setState(11); form();
@@ -173,28 +185,36 @@ public class MumblerParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(17); match(2);
+				setState(17); match(3);
+				}
+				break;
+			case 1:
+				_localctx = new QuoteContext(_localctx);
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(18); match(1);
+				setState(19); form();
 				}
 				break;
 			case INT:
 				_localctx = new NumberContext(_localctx);
-				enterOuterAlt(_localctx, 2);
+				enterOuterAlt(_localctx, 3);
 				{
-				setState(18); match(INT);
+				setState(20); match(INT);
 				}
 				break;
 			case BOOLEAN:
 				_localctx = new BoolContext(_localctx);
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 4);
 				{
-				setState(19); match(BOOLEAN);
+				setState(21); match(BOOLEAN);
 				}
 				break;
 			case SYMBOL:
 				_localctx = new SymbolContext(_localctx);
-				enterOuterAlt(_localctx, 4);
+				enterOuterAlt(_localctx, 5);
 				{
-				setState(20); match(SYMBOL);
+				setState(22); match(SYMBOL);
 				}
 				break;
 			default:
@@ -213,14 +233,15 @@ public class MumblerParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\t\32\4\2\t\2\4\3"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\n\34\4\2\t\2\4\3"+
 		"\t\3\3\2\7\2\b\n\2\f\2\16\2\13\13\2\3\3\3\3\7\3\17\n\3\f\3\16\3\22\13"+
-		"\3\3\3\3\3\3\3\3\3\5\3\30\n\3\3\3\2\2\4\2\4\2\2\34\2\t\3\2\2\2\4\27\3"+
-		"\2\2\2\6\b\5\4\3\2\7\6\3\2\2\2\b\13\3\2\2\2\t\7\3\2\2\2\t\n\3\2\2\2\n"+
-		"\3\3\2\2\2\13\t\3\2\2\2\f\20\7\3\2\2\r\17\5\4\3\2\16\r\3\2\2\2\17\22\3"+
-		"\2\2\2\20\16\3\2\2\2\20\21\3\2\2\2\21\23\3\2\2\2\22\20\3\2\2\2\23\30\7"+
-		"\4\2\2\24\30\7\5\2\2\25\30\7\7\2\2\26\30\7\6\2\2\27\f\3\2\2\2\27\24\3"+
-		"\2\2\2\27\25\3\2\2\2\27\26\3\2\2\2\30\5\3\2\2\2\5\t\20\27";
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\32\n\3\3\3\2\2\4\2\4\2\2\37\2\t\3\2\2\2"+
+		"\4\31\3\2\2\2\6\b\5\4\3\2\7\6\3\2\2\2\b\13\3\2\2\2\t\7\3\2\2\2\t\n\3\2"+
+		"\2\2\n\3\3\2\2\2\13\t\3\2\2\2\f\20\7\4\2\2\r\17\5\4\3\2\16\r\3\2\2\2\17"+
+		"\22\3\2\2\2\20\16\3\2\2\2\20\21\3\2\2\2\21\23\3\2\2\2\22\20\3\2\2\2\23"+
+		"\32\7\5\2\2\24\25\7\3\2\2\25\32\5\4\3\2\26\32\7\6\2\2\27\32\7\b\2\2\30"+
+		"\32\7\7\2\2\31\f\3\2\2\2\31\24\3\2\2\2\31\26\3\2\2\2\31\27\3\2\2\2\31"+
+		"\30\3\2\2\2\32\5\3\2\2\2\5\t\20\31";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
