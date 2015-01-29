@@ -30,3 +30,4 @@ for mumbler_script in glob.glob("*.mumbler"):
             print '\n'.join(diff)
         else:
             sys.stdout.write('.')
+            sys.stdout.flush()
