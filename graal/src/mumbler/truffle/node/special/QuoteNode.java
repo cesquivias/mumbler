@@ -14,6 +14,7 @@ public abstract class QuoteNode extends MumblerNode {
     public static enum QuoteKind {
         LONG,
         BOOLEAN,
+        STRING,
         SYMBOL,
         LIST
     }

@@ -14,6 +14,7 @@ import mumbler.truffle.node.literal.BooleanNode;
 import mumbler.truffle.node.literal.LiteralListNode;
 import mumbler.truffle.node.literal.LiteralSymbolNode;
 import mumbler.truffle.node.literal.LongNode;
+import mumbler.truffle.node.literal.StringNode;
 import mumbler.truffle.node.special.DefineNode;
 import mumbler.truffle.node.special.DefineNodeGen;
 import mumbler.truffle.node.special.IfNode;
@@ -37,6 +38,8 @@ public class Converter {
             return convert((BigInteger) obj, desc);
         } else if (obj instanceof Boolean) {
             return convert((boolean) obj, desc);
+        } else if (obj instanceof String) {
+            return convert((String) obj, desc);
         } else if (obj instanceof MumblerSymbol) {
             return convert((MumblerSymbol) obj, desc);
         } else if (obj instanceof MumblerList) {
@@ -58,6 +61,10 @@ public class Converter {
 
     public static BooleanNode convert(boolean bool, FrameDescriptor desc) {
         return bool ? BooleanNode.TRUE : BooleanNode.FALSE;
+    }
+
+    public static StringNode convert(String str, FrameDescriptor desc) {
+        return new StringNode(str);
     }
 
     public static SymbolNode convert(MumblerSymbol sym, FrameDescriptor desc) {
@@ -135,6 +142,9 @@ public class Converter {
         } else if (value instanceof Boolean) {
             kind = QuoteKind.BOOLEAN;
             node = convert((boolean) value, desc);
+        } else if (value instanceof String) {
+            kind = QuoteKind.STRING;
+            node = new StringNode((String) value);
         } else if (value instanceof MumblerSymbol) {
             kind = QuoteKind.SYMBOL;
             node = new LiteralSymbolNode((MumblerSymbol) value);

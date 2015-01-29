@@ -62,6 +62,11 @@ public abstract class MumblerNode extends Node {
         return MumblerTypesGen.expectMumblerList(this.execute(virtualFrame));
     }
 
+    public String executeString(VirtualFrame virtualFrame)
+            throws UnexpectedResultException{
+        return MumblerTypesGen.expectString(this.execute(virtualFrame));
+    }
+
     protected boolean isArgumentIndexInRange(VirtualFrame virtualFrame,
             int index) {
         return (index + 1) < virtualFrame.getArguments().length;

@@ -75,4 +75,10 @@ public class Reader extends MumblerBaseVisitor<Object> {
         return MumblerList.list(new MumblerSymbol("quote"),
                 this.visit(ctx.form()));
     }
+
+    @Override
+    public String visitString(MumblerParser.StringContext ctx) {
+        String text = ctx.getText();
+        return text.substring(1, text.length() - 1);
+    }
 }

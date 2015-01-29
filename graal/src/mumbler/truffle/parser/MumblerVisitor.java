@@ -47,6 +47,13 @@ public interface MumblerVisitor<T> extends ParseTreeVisitor<T> {
 	T visitBool(@NotNull MumblerParser.BoolContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link MumblerParser#string}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitString(@NotNull MumblerParser.StringContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link MumblerParser#list}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

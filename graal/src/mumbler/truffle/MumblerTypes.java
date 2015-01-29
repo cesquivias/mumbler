@@ -10,7 +10,7 @@ import com.oracle.truffle.api.dsl.ImplicitCast;
 import com.oracle.truffle.api.dsl.TypeSystem;
 
 @TypeSystem({long.class, boolean.class, BigInteger.class, MumblerFunction.class,
-    MumblerSymbol.class, MumblerList.class})
+    MumblerSymbol.class, MumblerList.class, String.class})
 public class MumblerTypes {
     @ImplicitCast
     public static BigInteger castBigInteger(long value) {
