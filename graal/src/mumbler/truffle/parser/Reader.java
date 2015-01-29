@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import mumbler.truffle.Converter;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;

@@ -1,4 +1,4 @@
-package mumbler.truffle;
+package mumbler.truffle.parser;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
