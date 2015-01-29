@@ -1,0 +1,2 @@
+(println "hello") ;; normal string
+(println "\\hello\n\"world\"\t\!?\b") ;; control characters
