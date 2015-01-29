@@ -79,6 +79,42 @@ public class Reader extends MumblerBaseVisitor<Object> {
     @Override
     public String visitString(MumblerParser.StringContext ctx) {
         String text = ctx.getText();
-        return text.substring(1, text.length() - 1);
+        StringBuilder b = new StringBuilder();
+        for (int i=1; i<text.length()-1; i++) {
+            char c = text.charAt(i);
+            if (c == '\\') {
+                char next = text.charAt(i + 1);
+                i++;
+                switch (next) {
+                case '\\':
+                    b.append('\\');
+                    break;
+                case '"':
+                    b.append('"');
+                    break;
+                case 'n':
+                    b.append('\n');
+                    break;
+                case 'r':
+                    b.append('\r');
+                    break;
+                case 't':
+                    b.append('\t');
+                    break;
+                case 'f':
+                    b.append('\f');
+                    break;
+                case 'b':
+                    b.deleteCharAt(b.length() -1);
+                    break;
+                default:
+                    b.append(next);
+                    break;
+                }
+            } else {
+                b.append(c);
+            }
+        }
+        return b.toString();
     }
 }
