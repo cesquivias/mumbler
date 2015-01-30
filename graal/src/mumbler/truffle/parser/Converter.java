@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.SymbolNode;
 import mumbler.truffle.node.SymbolNodeGen;
@@ -45,8 +46,7 @@ public class Converter {
         } else if (obj instanceof MumblerList) {
             return convert((MumblerList<?>) obj, desc);
         } else {
-            throw new IllegalArgumentException("Unknown type: " +
-                    obj.getClass());
+            throw new MumblerException("Unknown type: " + obj.getClass());
         }
     }
 
@@ -152,7 +152,7 @@ public class Converter {
             kind = QuoteKind.LIST;
             node = new LiteralListNode((MumblerList<?>) value);
         } else {
-            throw new IllegalArgumentException("Unknown quote type: " +
+            throw new MumblerException("Unknown quote type: " +
                     value.getClass());
         }
         return QuoteNodeGen.create(node, kind);

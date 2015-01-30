@@ -1,5 +1,7 @@
 package mumbler.truffle.node;
 
+import mumbler.truffle.MumblerException;
+
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;
 
@@ -14,7 +16,8 @@ public class ReadArgumentNode extends MumblerNode {
     public Object execute(VirtualFrame virtualFrame) {
         if (!this.isArgumentIndexInRange(virtualFrame, this.argumentIndex)) {
             CompilerDirectives.transferToInterpreterAndInvalidate();
-            throw new IllegalArgumentException("Not enough arguments passed");
+            throw new MumblerException("Not enough arguments passed. Missing " +
+                    this.argumentIndex + 1 + "th argument");
         }
         return this.getArgument(virtualFrame, this.argumentIndex);
     }

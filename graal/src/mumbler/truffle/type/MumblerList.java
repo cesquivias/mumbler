@@ -5,6 +5,8 @@ import static java.util.Arrays.asList;
 import java.util.Iterator;
 import java.util.List;
 
+import mumbler.truffle.MumblerException;
+
 public class MumblerList<T extends Object> implements Iterable<T> {
     public static final MumblerList<?> EMPTY = new MumblerList<>();
 
@@ -43,14 +45,14 @@ public class MumblerList<T extends Object> implements Iterable<T> {
         if (this != EMPTY) {
             return this.car;
         }
-        throw new IllegalStateException("Cannot car the empty list");
+        throw new MumblerException("Cannot car the empty list");
     }
 
     public MumblerList<T> cdr() {
         if (this != EMPTY) {
             return this.cdr;
         }
-        throw new IllegalStateException("Cannot cdr the empty list");
+        throw new MumblerException("Cannot cdr the empty list");
     }
 
     public long length() {
@@ -80,7 +82,7 @@ public class MumblerList<T extends Object> implements Iterable<T> {
             @Override
             public T next() {
                 if (this.l == EMPTY) {
-                    throw new IllegalStateException("At end of list");
+                    throw new MumblerException("At end of list");
                 }
                 T car = this.l.car;
                 this.l = this.l.cdr;
@@ -89,7 +91,7 @@ public class MumblerList<T extends Object> implements Iterable<T> {
 
             @Override
             public void remove() {
-                throw new IllegalStateException("Iterator is immutable");
+                throw new MumblerException("Iterator is immutable");
             }
         };
     }

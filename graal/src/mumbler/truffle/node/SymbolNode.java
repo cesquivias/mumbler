@@ -1,5 +1,7 @@
 package mumbler.truffle.node;
 
+import mumbler.truffle.MumblerException;
+
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.NodeField;
@@ -48,7 +50,7 @@ public abstract class SymbolNode extends MumblerNode {
                 frame = this.getLexicalScope(frame);
                 if (frame == null) {
                     CompilerDirectives.transferToInterpreterAndInvalidate();
-                    throw new RuntimeException("Unknown variable: "
+                    throw new MumblerException("Unknown variable: "
                             + this.getSlot().getIdentifier());
                 }
             }
