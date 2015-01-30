@@ -1,15 +1,22 @@
 #!/usr/bin/env python
 
+import os
 import subprocess
 import sys
 import time
 
 from argparse import ArgumentParser
-from os.path import dirname, expanduser, join, normpath, realpath
+from os.path import dirname, join, normpath, realpath
 
 
-GRAAL_VM_DIR = '~/dev/graal/jdk1.8.0_25/product'
-TRUFFLE_MUMBLER_JAR = '~/dev/mumbler/graal/gmumbler.jar'
+GRAAL_HOME = os.environ.get('GRAAL_HOME') if 'GRAAL_HOME' in os.environ else \
+             os.environ.get('JAVA_HOME')
+if not GRAAL_HOME:
+    raise Exception('No Graal VM home set')
+
+MUMBLER_JAR = os.environ.get('MUMBLER_JAR')
+if not MUMBLER_JAR:
+    raise Exception('MUMBLER_JAR environment variable not set')
 
 
 def run(name, lang_args, suffix):
@@ -34,9 +41,9 @@ def run_simple_mumbler(name):
         'mumbler')
 
 def run_truffle_mumbler(name):
-    java = expanduser(normpath((join(GRAAL_VM_DIR, 'jre/bin/java'))))
+    java = normpath((join(GRAAL_HOME, 'bin/java')))
     print 'truffle',
-    run(name, [java, '-server', '-jar', expanduser(TRUFFLE_MUMBLER_JAR)],
+    run(name, [java, '-server', '-jar', MUMBLER_JAR],
         'mumbler')
 
 def run_racket(name):
