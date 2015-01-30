@@ -43,7 +43,7 @@ def run_simple_mumbler(name):
 def run_truffle_mumbler(name):
     java = normpath((join(GRAAL_HOME, 'bin/java')))
     print 'truffle',
-    run(name, [java, '-server', '-jar', MUMBLER_JAR],
+    run(name, [java, '-graal', '-jar', MUMBLER_JAR],
         'mumbler')
 
 def run_racket(name):
