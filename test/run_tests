@@ -8,16 +8,24 @@ import sys
 
 from StringIO import StringIO
 
-GRAAL_JRE = '~/dev/graal/jdk1.8.0_25/product/jre'
-MUMBLER_JAR = '~/dev/mumbler/graal/gmumbler.jar'
+
+GRAAL_HOME = os.environ.get('GRAAL_HOME') if 'GRAAL_HOME' in os.environ else \
+             os.environ.get('JAVA_HOME')
+if not GRAAL_HOME:
+    raise Exception('No Graal VM home set')
+
+MUMBLER_JAR = os.environ.get('MUMBLER_JAR')
+if not MUMBLER_JAR:
+    raise Exception('MUMBLER_JAR environment variable not set')
+
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-JAVA_BIN = os.path.expanduser(os.path.join(GRAAL_JRE, 'bin/java'))
+JAVA_BIN = os.path.join(GRAAL_HOME, 'bin/java')
 
 for mumbler_script in glob.glob("*.mumbler"):
     output = subprocess.check_output([JAVA_BIN, '-graal', '-jar',
-                                      os.path.expanduser(MUMBLER_JAR),
+                                      MUMBLER_JAR,
                                       mumbler_script],
                                      universal_newlines=True)
     with open(os.path.splitext(mumbler_script)[0] + '.output') as truth_file:
