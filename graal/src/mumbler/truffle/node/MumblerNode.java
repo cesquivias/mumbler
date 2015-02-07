@@ -10,6 +10,8 @@ import mumbler.truffle.type.MumblerSymbol;
 
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.TypeSystemReference;
+import com.oracle.truffle.api.frame.Frame;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -74,5 +76,14 @@ public abstract class MumblerNode extends Node {
 
     protected Object getArgument(VirtualFrame virtualFrame, int index) {
         return virtualFrame.getArguments()[index + 1];
+    }
+
+    protected static MaterializedFrame getLexicalScope(Frame frame) {
+        Object[] args = frame.getArguments();
+        if (args.length > 0) {
+            return (MaterializedFrame) frame.getArguments()[0];
+        } else {
+            return null;
+        }
     }
 }

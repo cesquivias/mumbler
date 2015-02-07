@@ -36,7 +36,7 @@ public abstract class SymbolNode extends MumblerNode {
             return value;
         }
         CompilerDirectives.transferToInterpreterAndInvalidate();
-        MaterializedFrame frame = this.getLexicalScope(virtualFrame);
+        MaterializedFrame frame = getLexicalScope(virtualFrame);
         while (value == null) {
             FrameDescriptor desc = frame.getFrameDescriptor();
             slot = desc.findFrameSlot(identifier);
@@ -47,7 +47,7 @@ public abstract class SymbolNode extends MumblerNode {
             if (value != null) {
                 continue;
             } else {
-                frame = this.getLexicalScope(frame);
+                frame = getLexicalScope(frame);
                 if (frame == null) {
                     CompilerDirectives.transferToInterpreterAndInvalidate();
                     throw new MumblerException("Unknown variable: "
@@ -85,15 +85,6 @@ public abstract class SymbolNode extends MumblerNode {
             // FrameSlotTypeException not thrown
         }
         return null;
-    }
-
-    protected MaterializedFrame getLexicalScope(Frame frame) {
-        Object[] args = frame.getArguments();
-        if (args.length > 0) {
-            return (MaterializedFrame) frame.getArguments()[0];
-        } else {
-            return null;
-        }
     }
 
     @Override
