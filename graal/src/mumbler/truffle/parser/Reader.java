@@ -20,17 +20,26 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 public class Reader extends MumblerBaseVisitor<Object> {
     public static MumblerList<MumblerNode> read(InputStream istream,
             FrameDescriptor descriptor) throws IOException {
+        MumblerNode[] nodes = StreamSupport.stream(
+                ((MumblerList<?>) new Reader().visit(createParseTree(istream)))
+                .spliterator(), false)
+                .map(obj -> Converter.convert(obj, descriptor))
+                .toArray(size -> new MumblerNode[size]);
+        return MumblerList.list(nodes);
+    }
+
+    public static Object readForm(InputStream istream) throws IOException {
+        return ((MumblerList<?>) new Reader().visit(createParseTree(istream)))
+                .car();
+    }
+
+    private static ParseTree createParseTree(InputStream istream)
+            throws IOException {
         ANTLRInputStream input = new ANTLRInputStream(istream);
         MumblerLexer lexer = new MumblerLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MumblerParser parser = new MumblerParser(tokens);
-        ParseTree tree = parser.file();
-        Reader reader = new Reader();
-        MumblerNode[] nodes = StreamSupport.stream(
-                ((MumblerList<?>) reader.visit(tree)).spliterator(), false)
-                .map(obj -> Converter.convert(obj, descriptor))
-                .toArray(size -> new MumblerNode[size]);
-        return MumblerList.list(nodes);
+        return parser.file();
     }
 
     @Override

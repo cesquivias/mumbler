@@ -17,6 +17,7 @@ import mumbler.truffle.node.builtin.arithmetic.SubBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.PrintlnBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.lang.EvalBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.lang.ReadBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CarBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CdrBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.ConsBuiltinNodeFactory;
@@ -138,6 +139,9 @@ public class TruffleMumblerMain {
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("eval"),
                 createBuiltinFunction(EvalBuiltinNodeFactory.getInstance(),
+                        virtualFrame));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("read"),
+                createBuiltinFunction(ReadBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         return virtualFrame;
     }
