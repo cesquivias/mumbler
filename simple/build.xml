@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project name="SimpleMumbler" default="dist" basedir=".">
+<project name="SimpleMumbler" default="jar" basedir=".">
     <property name="srcdir" location="src" />
     <property name="builddir" location="build" />
     <property name="distdir" location="dist" />
@@ -12,6 +12,7 @@
     <target name="init">
         <tstamp />
         <mkdir dir="${builddir}" />
+        <mkdir dir="${distdir}" />
     </target>
 
     <target name="build" depends="init">
