@@ -1,4 +1,27 @@
-* TruffleMumbler
+Mumbler is a lisp programming language to try out the [[http://openjdk.java.net/projects/graal/][Graal JIT]] for the JVM.
+
+* The Language
+Mumbler is a very small lisp modeled after Scheme but with much fewer special forms and built in functions. Here is the "[[http://cesquivias.github.io/blog/2014/10/13/writing-a-language-in-truffle-part-1-a-simple-slow-interpreter/#mumbler-language][Mumbler language specification]]".
+
+* Build
+Mumbler uses [[http://gradle.org/][Gradle]] as the build system. To build the code simply run
+
+#+begin_src shell-script
+    cd graal
+    ./gradlew distZip
+#+end_src
+
+* Run
+Mumbler requires a special version of the JVM. You can download a [[http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html][graal JVM]] from Oracle. Mumbler requires version 0.9.
+
+Unzip the distribution that was built and set ~JAVA_HOME~ to point to the graal JVM.
+
+#+begin_src shell-script
+    cd graal
+    unzip build/distributions/mumbler.zip
+    JAVA_HOME=<graal-vm-dir> ./mumbler/bin/mumbler
+#+end_src
+
 ** Run benchmarks
 [[sec:build][Build]] Truffle and Mumbler and [[sec:env-var][set environment variables]].
 
@@ -25,25 +48,6 @@ To run Mumbler's scripts use three environment variables.
     GRAAL_HOME : The directory of the Graal VM. If this is empty JAVA_HOME will be used.
     MUMBLER_JRE : The path to the bundled jar of Mumbler
 #+end_example
-
-<<sec:build>>
-** Build
-*** Build Truffle & Graal
-Follow the instruction for [[https://wiki.openjdk.java.net/display/Graal/Instructions][building Truffle]] from their wiki. Follow the instructions to [[https://wiki.openjdk.java.net/display/Graal/Eclipse][set up Eclipse]]. See [[http://cesquivias.github.io/blog/2014/12/02/writing-a-language-in-truffle-part-2-using-truffle-and-graal/#installing-graal--truffle][my notes]] as well if you run into problems.
-
-*** Build Mumbler with Maven
-[[sec:env-var][Set the environment variables]] first. Set the TRUFFLE_DSL_JAR environment variable as well. Set it to the full path of Truffle's annotation processor JAR. If you built Graal using the wiki instructions it's located at ~${GRAAL_DIR}/graal/com.oracle.truffle.dsl.processor/ap/com.oracle.truffle.dsl.processor.jar~. After those 3 environment variables are set just run.
-
-#+begin_src shell-script
-    mvn package
-#+end_src
-
-The Mumbler jar will be located under ~target/mumbler-0.1-with-dependencies.jar~.
-
-You can start Mumbler by
-#+begin_src shell-script
-    ${GRAAL_HOME}/bin/java -graal -jar target/mumbler-0.1-with-dependencies.jar
-#+end_src
 
 * SimpleMumbler:
 

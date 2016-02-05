@@ -20,11 +20,5 @@ dependencies {
     apt 'com.oracle.truffle:truffle-dsl-processor:0.9'
 }
 
-jar {
-    manifest {
-        attributes 'Main-Class': 'mumbler.truffle.TruffleMumblerMain'
-    }
-}
-
+applicationName = 'mumbler'
 mainClassName = 'mumbler.truffle.TruffleMumblerMain'
-applicationDefaultJvmArgs = ['-server']
