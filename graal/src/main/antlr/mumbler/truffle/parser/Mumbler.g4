@@ -1,5 +1,9 @@
 grammar Mumbler;
 
+@header {
+    package mumbler.truffle.parser;
+}
+
 file : form* ;
 
 form : '(' form* ')'            # list

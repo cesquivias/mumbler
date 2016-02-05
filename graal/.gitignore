@@ -2,3 +2,7 @@ target/
 .gradle
 bin/
 .apt_generated/
+.classpath
+.factorypath
+.project
+.settings/

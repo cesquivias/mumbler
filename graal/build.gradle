@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'antlr'
     id 'application'
+    id 'eclipse'
     id "net.ltgt.apt" version "0.3"
 }
 
@@ -22,3 +23,13 @@ dependencies {
 
 applicationName = 'mumbler'
 mainClassName = 'mumbler.truffle.TruffleMumblerMain'
+
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
+}
+
+generateGrammarSource {
+    arguments += ["-visitor"]
+}
