@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'application'
+    id "net.ltgt.apt" version "0.3"
+}
+
+repositories {
+    maven {
+        url "http://lafo.ssw.uni-linz.ac.at/nexus/content/repositories/releases/"
+    }
+    jcenter()
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.5'
+    compile 'org.antlr:antlr4-runtime:4.5'
+    compile 'com.oracle.truffle:truffle-api:0.9'
+    apt 'com.oracle.truffle:truffle-api:0.9'
+    apt 'com.oracle.truffle:truffle-dsl-processor:0.9'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'mumbler.truffle.TruffleMumblerMain'
+    }
+}
+
+mainClassName = 'mumbler.truffle.TruffleMumblerMain'
+applicationDefaultJvmArgs = ['-server']
