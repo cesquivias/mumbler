@@ -1,7 +1,5 @@
 package mumbler.truffle.node;
 
-import mumbler.truffle.MumblerException;
-
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.dsl.NodeField;
@@ -10,8 +8,8 @@ import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.FrameSlotTypeException;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.ExplodeLoop;
 
 @NodeField(name = "slot", type = FrameSlot.class)
 public abstract class SymbolNode extends MumblerNode {
@@ -27,36 +25,44 @@ public abstract class SymbolNode extends MumblerNode {
         public T get(Frame frame, FrameSlot slot) throws FrameSlotTypeException;
     }
 
-    private <T> T readUpStack(FrameGet<T> getter, VirtualFrame virtualFrame)
+    @ExplodeLoop
+    public <T> T readUpStack(FrameGet<T> getter, Frame frame)
             throws FrameSlotTypeException {
-        FrameSlot slot = this.getSlot();
-        Object identifier = slot.getIdentifier();
-        T value = getter.get(virtualFrame, slot);
-        if (value != null) {
-            return value;
+        if (this.resolvedSlot == null) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            this.resolveSlot(getter, frame);
         }
-        CompilerDirectives.transferToInterpreterAndInvalidate();
-        MaterializedFrame frame = getLexicalScope(virtualFrame);
+
+        Frame lookupFrame = frame;
+        for (int i = 0; i < this.lookupDepth; i++) {
+            lookupFrame = getLexicalScope(lookupFrame);
+        }
+        return getter.get(lookupFrame, this.resolvedSlot);
+    }
+
+    private <T> void resolveSlot(FrameGet<T> getter, Frame frame)
+            throws FrameSlotTypeException {
+
+        FrameSlot slot = this.getSlot();
+        int depth = 0;
+        Object identifier = slot.getIdentifier();
+        T value = getter.get(frame, slot);
         while (value == null) {
+            depth++;
+            frame = getLexicalScope(frame);
+            if (frame == null) {
+                CompilerDirectives.transferToInterpreterAndInvalidate();
+                throw new RuntimeException("Unknown variable: "
+                        + this.getSlot().getIdentifier());
+            }
             FrameDescriptor desc = frame.getFrameDescriptor();
             slot = desc.findFrameSlot(identifier);
             if (slot != null) {
                 value = getter.get(frame, slot);
             }
-
-            if (value != null) {
-                continue;
-            } else {
-                frame = getLexicalScope(frame);
-                if (frame == null) {
-                    CompilerDirectives.transferToInterpreterAndInvalidate();
-                    throw new MumblerException("Unknown variable: "
-                            + this.getSlot().getIdentifier());
-                }
-            }
         }
-        this.replace(LexicalReadNodeGen.create(frame, slot));
-        return value;
+        this.lookupDepth = depth;
+        this.resolvedSlot = slot;
     }
 
     @Specialization(rewriteOn = FrameSlotTypeException.class)
