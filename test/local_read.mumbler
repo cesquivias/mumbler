@@ -1,0 +1,11 @@
+(define n 1)
+
+(define f
+  (lambda (b)
+    (if b
+        (define n 2)
+        '())
+    (println n)))
+
+(f #f)
+(f #t)

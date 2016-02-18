@@ -9,28 +9,21 @@ import sys
 from StringIO import StringIO
 
 
-GRAAL_HOME = os.environ.get('GRAAL_HOME') if 'GRAAL_HOME' in os.environ else \
-             os.environ.get('JAVA_HOME')
-if not GRAAL_HOME:
-    raise Exception('No Graal VM home set')
-
-MUMBLER_JAR = os.environ.get('MUMBLER_JAR')
-if not MUMBLER_JAR:
-    raise Exception('MUMBLER_JAR environment variable not set')
+MUMBLER_HOME = os.environ.get('MUMBLER_HOME')
+if not MUMBLER_HOME:
+    raise Exception('MUMBLER_HOME environment variable not set')
 
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-JAVA_BIN = os.path.join(GRAAL_HOME, 'bin/java')
+MUMBER_BIN = os.path.join(MUMBLER_HOME, 'bin/mumbler')
 
 for mumbler_script in glob.glob("*.mumbler"):
-    output = subprocess.check_output([JAVA_BIN, '-graal', '-jar',
-                                      MUMBLER_JAR,
-                                      mumbler_script],
+    output = subprocess.check_output([MUMBER_BIN, mumbler_script],
                                      universal_newlines=True)
     with open(os.path.splitext(mumbler_script)[0] + '.output') as truth_file:
-        diff = difflib.unified_diff(output.splitlines(),
-                                    [l.strip() for l in truth_file.readlines()],
+        diff = difflib.unified_diff([l.strip() for l in truth_file.readlines()],
+                                    output.splitlines(),
                                     lineterm='')
         diff = list(diff)
         if diff:
