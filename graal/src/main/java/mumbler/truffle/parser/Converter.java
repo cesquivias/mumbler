@@ -80,7 +80,7 @@ public class Converter {
 
     public static MumblerNode convert(MumblerList<?> list,
             FrameDescriptor desc) {
-        if (list == MumblerList.EMPTY || list.length() == 0) {
+        if (list == MumblerList.EMPTY || list.size() == 0) {
             return new LiteralListNode(MumblerList.EMPTY);
         }
 

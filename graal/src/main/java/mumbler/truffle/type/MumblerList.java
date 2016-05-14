@@ -12,15 +12,18 @@ public class MumblerList<T extends Object> implements Iterable<T> {
 
     private final T car;
     private final MumblerList<T> cdr;
+    private final int length;
 
     private MumblerList() {
         this.car = null;
         this.cdr = null;
+        this.length = 1;
     }
 
     private MumblerList(T car, MumblerList<T> cdr) {
         this.car = car;
         this.cdr = cdr;
+        this.length = cdr.length + 1;
     }
 
     @SafeVarargs
@@ -55,18 +58,8 @@ public class MumblerList<T extends Object> implements Iterable<T> {
         throw new MumblerException("Cannot cdr the empty list");
     }
 
-    public long length() {
-        if (this == EMPTY) {
-            return 0;
-        }
-
-        long len = 1;
-        MumblerList<T> l = this.cdr;
-        while (l != EMPTY) {
-            len++;
-            l = l.cdr;
-        }
-        return len;
+    public long size() {
+        return this.length;
     }
 
     @Override
