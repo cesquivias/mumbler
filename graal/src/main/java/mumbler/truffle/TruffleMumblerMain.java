@@ -6,7 +6,12 @@ import java.io.ByteArrayInputStream;
 import java.io.Console;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.stream.StreamSupport;
+
+import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.frame.VirtualFrame;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.arithmetic.AddBuiltinNodeFactory;
@@ -25,15 +30,10 @@ import mumbler.truffle.node.builtin.list.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.EqualBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.GreaterThanBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.LessThanBuiltinNodeFactory;
+import mumbler.truffle.parser.Converter;
 import mumbler.truffle.parser.Reader;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
-
-import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class TruffleMumblerMain {
     public static MaterializedFrame globalScope;
@@ -58,8 +58,9 @@ public class TruffleMumblerMain {
                 // EOF sent
                 break;
             }
-            MumblerList<MumblerNode> nodes = Reader.read(
-                    new ByteArrayInputStream(data.getBytes()),
+            MumblerList<Object> sexp = Reader.read(
+                    new ByteArrayInputStream(data.getBytes()));
+            MumblerNode[] nodes = Converter.convertSexp(sexp,
                     topFrame.getFrameDescriptor());
 
             // EVAL
@@ -74,18 +75,16 @@ public class TruffleMumblerMain {
 
     private static void runMumbler(String filename) throws IOException {
         VirtualFrame topFrame = createTopFrame(new FrameDescriptor());
-        MumblerList<MumblerNode> nodes= Reader.read(
-                new FileInputStream(filename), topFrame.getFrameDescriptor());
+        MumblerList<Object> sexp = Reader.read(new FileInputStream(filename));
+        MumblerNode[] nodes = Converter.convertSexp(sexp,
+                topFrame.getFrameDescriptor());
         execute(nodes, topFrame);
     }
 
-    private static Object execute(MumblerList<MumblerNode> nodes,
-            VirtualFrame topFrame) {
+    private static Object execute(MumblerNode[] nodes, VirtualFrame topFrame) {
         FrameDescriptor frameDescriptor = topFrame.getFrameDescriptor();
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
-                StreamSupport.stream(nodes.spliterator(), false)
-                .toArray(size -> new MumblerNode[size]),
-                frameDescriptor);
+                nodes, frameDescriptor);
 
         globalScope = topFrame.materialize();
 

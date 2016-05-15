@@ -5,27 +5,18 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
-
-import mumbler.truffle.node.MumblerNode;
-import mumbler.truffle.type.MumblerList;
-import mumbler.truffle.type.MumblerSymbol;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.oracle.truffle.api.frame.FrameDescriptor;
+import mumbler.truffle.type.MumblerList;
+import mumbler.truffle.type.MumblerSymbol;
 
 public class Reader extends MumblerBaseVisitor<Object> {
-    public static MumblerList<MumblerNode> read(InputStream istream,
-            FrameDescriptor descriptor) throws IOException {
-        MumblerNode[] nodes = StreamSupport.stream(
-                ((MumblerList<?>) new Reader().visit(createParseTree(istream)))
-                .spliterator(), false)
-                .map(obj -> Converter.convert(obj, descriptor))
-                .toArray(size -> new MumblerNode[size]);
-        return MumblerList.list(nodes);
+    @SuppressWarnings("unchecked")
+    public static MumblerList<Object> read(InputStream istream) throws IOException {
+        return (MumblerList<Object>) new Reader().visit(createParseTree(istream));
     }
 
     public static Object readForm(InputStream istream) throws IOException {

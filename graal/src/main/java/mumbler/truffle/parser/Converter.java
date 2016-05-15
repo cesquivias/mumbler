@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlot;
+
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.SymbolNode;
@@ -28,10 +31,14 @@ import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
 
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlot;
-
 public class Converter {
+    public static MumblerNode[] convertSexp(MumblerList<Object> sexp,
+            FrameDescriptor descriptor) {
+        return StreamSupport.stream(sexp.spliterator(), false)
+                .map(obj -> Converter.convert(obj, descriptor))
+                .toArray(size -> new MumblerNode[size]);
+    }
+
     public static MumblerNode convert(Object obj, FrameDescriptor desc) {
         if (obj instanceof Long) {
             return convert((long) obj, desc);
