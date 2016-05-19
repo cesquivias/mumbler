@@ -22,8 +22,10 @@ public class IdentifierScanner {
     private final Map<MumblerList<?>, Namespace> namespaces;
     private Namespace currentNamespace;
 
-    public IdentifierScanner() {
+    public IdentifierScanner(Namespace topNamespace) {
         this.namespaces = new HashMap<>();
+        this.namespaces.put(null, topNamespace);
+        this.currentNamespace = topNamespace;
     }
 
     public Namespace getNamespace(MumblerList<?> list) {
@@ -31,9 +33,6 @@ public class IdentifierScanner {
     }
 
     public void scan(MumblerList<?> sexp) {
-        this.currentNamespace = new Namespace(null);
-        this.namespaces.put(null, this.currentNamespace);
-
         for (Object el : sexp) {
             if (el instanceof MumblerList) {
                 scanList((MumblerList<?>) el);
@@ -65,7 +64,7 @@ public class IdentifierScanner {
     }
 
     private static boolean isListOfSymbol(MumblerList<?> list, String text) {
-        if (list.size() != 3) {
+        if (list.size() < 3) {
             return false;
         }
         if (!(list.car() instanceof MumblerSymbol)) {
@@ -82,6 +81,11 @@ public class IdentifierScanner {
         private final Namespace parent;
         private final FrameDescriptor frameDescriptor;
 
+        public Namespace(FrameDescriptor frameDescriptor) {
+            this.parent = null;
+            this.frameDescriptor = frameDescriptor;
+        }
+
         public Namespace(Namespace parent) {
             this.parent = parent;
             this.frameDescriptor = new FrameDescriptor();
@@ -89,6 +93,10 @@ public class IdentifierScanner {
 
         public Namespace getParent() {
             return this.parent;
+        }
+
+        public FrameDescriptor getFrameDescriptor() {
+            return this.frameDescriptor;
         }
 
         public FrameSlot addIdentifier(String id) {

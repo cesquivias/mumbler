@@ -17,7 +17,7 @@ public class MumblerList<T extends Object> implements Iterable<T> {
     private MumblerList() {
         this.car = null;
         this.cdr = null;
-        this.length = 1;
+        this.length = 0;
     }
 
     private MumblerList(T car, MumblerList<T> cdr) {

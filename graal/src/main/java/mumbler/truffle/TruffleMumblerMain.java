@@ -21,7 +21,6 @@ import mumbler.truffle.node.builtin.arithmetic.MulBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.arithmetic.SubBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.PrintlnBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.lang.EvalBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.lang.ReadBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CarBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CdrBuiltinNodeFactory;
@@ -31,6 +30,7 @@ import mumbler.truffle.node.builtin.relational.EqualBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.GreaterThanBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.LessThanBuiltinNodeFactory;
 import mumbler.truffle.parser.Converter;
+import mumbler.truffle.parser.IdentifierScanner.Namespace;
 import mumbler.truffle.parser.Reader;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
@@ -58,10 +58,11 @@ public class TruffleMumblerMain {
                 // EOF sent
                 break;
             }
+            Namespace global = new Namespace(topFrame.getFrameDescriptor());
             MumblerList<Object> sexp = Reader.read(
                     new ByteArrayInputStream(data.getBytes()));
-            MumblerNode[] nodes = Converter.convertSexp(sexp,
-                    topFrame.getFrameDescriptor());
+            Converter converter = new Converter();
+            MumblerNode[] nodes = converter.convertSexp(sexp, global);
 
             // EVAL
             Object result = execute(nodes, topFrame);
@@ -75,9 +76,10 @@ public class TruffleMumblerMain {
 
     private static void runMumbler(String filename) throws IOException {
         VirtualFrame topFrame = createTopFrame(new FrameDescriptor());
+        Namespace global = new Namespace(topFrame.getFrameDescriptor());
         MumblerList<Object> sexp = Reader.read(new FileInputStream(filename));
-        MumblerNode[] nodes = Converter.convertSexp(sexp,
-                topFrame.getFrameDescriptor());
+        Converter converter = new Converter();
+        MumblerNode[] nodes = converter.convertSexp(sexp, global);
         execute(nodes, topFrame);
     }
 
@@ -136,9 +138,9 @@ public class TruffleMumblerMain {
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
                 createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
                         virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("eval"),
-                createBuiltinFunction(EvalBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
+//        virtualFrame.setObject(frameDescriptor.addFrameSlot("eval"),
+//                createBuiltinFunction(EvalBuiltinNodeFactory.getInstance(),
+//                        virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("read"),
                 createBuiltinFunction(ReadBuiltinNodeFactory.getInstance(),
                         virtualFrame));

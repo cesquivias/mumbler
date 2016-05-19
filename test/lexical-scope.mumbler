@@ -3,8 +3,10 @@
 (define f
   (lambda ()
     (define y 2)
-    (lambda ()
-      (println x)
-      (println y))))
+    (define f (lambda ()
+                (println x)
+                (println y)))
+    (define x 3)
+    f))
 
 ((f))

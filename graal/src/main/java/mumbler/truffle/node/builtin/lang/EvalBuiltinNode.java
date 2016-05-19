@@ -3,8 +3,10 @@ package mumbler.truffle.node.builtin.lang;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.BuiltinNode;
 import mumbler.truffle.parser.Converter;
+import mumbler.truffle.parser.IdentifierScanner.Namespace;
 
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
+import com.oracle.truffle.api.dsl.NodeField;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -13,11 +15,12 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 @GenerateNodeFactory
 public abstract class EvalBuiltinNode extends BuiltinNode {
     // TODO: Change to take second namespace (Frame) argument
-
-    @Specialization
-    public Object eval(VirtualFrame virtualFrame, Object form) {
-        MumblerNode node = this.insert(Converter.convert(
-                form, virtualFrame.getFrameDescriptor()));
-        return node.execute(virtualFrame);
-    }
+//
+//    @Specialization
+//    public Object eval(VirtualFrame virtualFrame, Object form) {
+//        Converter converter = new Converter();
+//        MumblerNode node = this.insert(converter.convert(
+//                form, this.getNamespace()));
+//        return node.execute(virtualFrame);
+//    }
 }
