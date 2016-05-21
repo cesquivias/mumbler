@@ -2,7 +2,7 @@ package mumbler.truffle.node.builtin;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.MumblerRootNode;
-import mumbler.truffle.node.ReadArgumentNode;
+import mumbler.truffle.node.read.ReadArgumentNode;
 import mumbler.truffle.type.MumblerFunction;
 
 import com.oracle.truffle.api.Truffle;

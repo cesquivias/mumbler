@@ -1,6 +1,7 @@
-package mumbler.truffle.node;
+package mumbler.truffle.node.read;
 
 import mumbler.truffle.MumblerException;
+import mumbler.truffle.node.MumblerNode;
 
 import com.oracle.truffle.api.CompilerDirectives;
 import com.oracle.truffle.api.frame.VirtualFrame;

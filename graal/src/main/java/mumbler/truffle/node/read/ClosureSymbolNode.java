@@ -1,7 +1,6 @@
-package mumbler.truffle.node;
+package mumbler.truffle.node.read;
 
 import com.oracle.truffle.api.dsl.NodeField;
-import com.oracle.truffle.api.dsl.NodeFields;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameSlot;
@@ -9,18 +8,17 @@ import com.oracle.truffle.api.frame.FrameSlotTypeException;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 
-@NodeFields({
-    @NodeField(name = "slot", type = FrameSlot.class),
-    @NodeField(name = "depth", type = int.class),
-})
-public abstract class SymbolNode extends MumblerNode {
+@NodeField(name = "depth", type = int.class)
+public abstract class ClosureSymbolNode extends SymbolNode {
 
-    public abstract FrameSlot getSlot();
-    public abstract int getDepth();
-
+    /**
+     * Functional interface to get right type out of {@link VirtualFrame}.
+     */
     public static interface FrameGet<T> {
         public T get(Frame frame, FrameSlot slot) throws FrameSlotTypeException;
     }
+
+    public abstract int getDepth();
 
     @ExplodeLoop
     public <T> T readUpStack(FrameGet<T> getter, Frame frame)
@@ -59,10 +57,5 @@ public abstract class SymbolNode extends MumblerNode {
             // FrameSlotTypeException not thrown
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return "'" + this.getSlot().getIdentifier();
     }
 }

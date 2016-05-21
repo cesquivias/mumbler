@@ -7,13 +7,10 @@ import java.util.stream.StreamSupport;
 
 import org.antlr.v4.runtime.misc.Pair;
 
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
-import mumbler.truffle.node.SymbolNode;
-import mumbler.truffle.node.SymbolNodeGen;
 import mumbler.truffle.node.call.InvokeNode;
 import mumbler.truffle.node.literal.BigIntegerNode;
 import mumbler.truffle.node.literal.BooleanNode;
@@ -21,6 +18,9 @@ import mumbler.truffle.node.literal.LiteralListNode;
 import mumbler.truffle.node.literal.LiteralSymbolNode;
 import mumbler.truffle.node.literal.LongNode;
 import mumbler.truffle.node.literal.StringNode;
+import mumbler.truffle.node.read.ClosureSymbolNodeGen;
+import mumbler.truffle.node.read.LocalSymbolNodeGen;
+import mumbler.truffle.node.read.SymbolNode;
 import mumbler.truffle.node.special.DefineNode;
 import mumbler.truffle.node.special.DefineNodeGen;
 import mumbler.truffle.node.special.IfNode;
@@ -84,7 +84,11 @@ public class Converter {
 
     public static SymbolNode convert(MumblerSymbol sym, Namespace ns) {
         Pair<Integer, FrameSlot> pair = ns.getIdentifier(sym.name);
-        return SymbolNodeGen.create(pair.b, pair.a);
+        if (pair.a == 0) {
+            return LocalSymbolNodeGen.create(pair.b);
+        } else {
+            return ClosureSymbolNodeGen.create(pair.b, pair.a);
+        }
     }
 
     public MumblerNode convert(MumblerList<?> list, Namespace ns) {

@@ -44,6 +44,10 @@ public class IdentifierScanner {
         if (isLambda(list)) {
             this.currentNamespace = new Namespace(this.currentNamespace);
             this.namespaces.put(list, this.currentNamespace);
+            @SuppressWarnings("unchecked")
+            MumblerList<MumblerSymbol> formalArgs = (MumblerList<MumblerSymbol>)
+                    list.cdr().car();
+            this.addLambdaArguments(formalArgs);
             this.scan(list);
             this.currentNamespace = this.currentNamespace.getParent();
         } else if (isDefine(list)) {
@@ -52,6 +56,12 @@ public class IdentifierScanner {
             this.scan(list);
         } else {
             this.scan(list);
+        }
+    }
+
+    private void addLambdaArguments(MumblerList<MumblerSymbol> formalArgs) {
+        for (MumblerSymbol sym : formalArgs) {
+            this.currentNamespace.addIdentifier(sym.name);
         }
     }
 
