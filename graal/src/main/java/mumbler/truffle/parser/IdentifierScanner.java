@@ -125,6 +125,9 @@ public class IdentifierScanner {
                 }
                 slot = current.frameDescriptor.findFrameSlot(id);
             }
+            if (current.parent == null) {
+                return new Pair<>(-1, slot);
+            }
             return new Pair<>(depth, slot);
         }
     }

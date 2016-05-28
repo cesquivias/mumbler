@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 import org.antlr.v4.runtime.misc.Pair;
 
 import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
@@ -19,6 +20,7 @@ import mumbler.truffle.node.literal.LiteralSymbolNode;
 import mumbler.truffle.node.literal.LongNode;
 import mumbler.truffle.node.literal.StringNode;
 import mumbler.truffle.node.read.ClosureSymbolNodeGen;
+import mumbler.truffle.node.read.GlobalSymbolNodeGen;
 import mumbler.truffle.node.read.LocalSymbolNodeGen;
 import mumbler.truffle.node.read.SymbolNode;
 import mumbler.truffle.node.special.DefineNode;
@@ -35,10 +37,12 @@ import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
 
 public class Converter {
+    private MaterializedFrame globalFrame;
     private IdentifierScanner idScanner;
 
     public MumblerNode[] convertSexp(MumblerList<Object> sexp,
-            Namespace globalNs) {
+            Namespace globalNs, MaterializedFrame globalFrame) {
+        this.globalFrame = globalFrame;
         Namespace fileNamespace = new Namespace(globalNs);
         this.idScanner = new IdentifierScanner(fileNamespace);
         this.idScanner.scan(sexp);
@@ -82,10 +86,12 @@ public class Converter {
         return new StringNode(str);
     }
 
-    public static SymbolNode convert(MumblerSymbol sym, Namespace ns) {
+    public SymbolNode convert(MumblerSymbol sym, Namespace ns) {
         Pair<Integer, FrameSlot> pair = ns.getIdentifier(sym.name);
         if (pair.a == 0) {
             return LocalSymbolNodeGen.create(pair.b);
+        } else if (pair.a == -1) {
+            return GlobalSymbolNodeGen.create(pair.b, globalFrame);
         } else {
             return ClosureSymbolNodeGen.create(pair.b, pair.a);
         }

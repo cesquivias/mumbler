@@ -59,10 +59,12 @@ public class TruffleMumblerMain {
                 break;
             }
             Namespace global = new Namespace(topFrame.getFrameDescriptor());
+            globalScope = topFrame.materialize();
             MumblerList<Object> sexp = Reader.read(
                     new ByteArrayInputStream(data.getBytes()));
             Converter converter = new Converter();
-            MumblerNode[] nodes = converter.convertSexp(sexp, global);
+            MumblerNode[] nodes = converter.convertSexp(sexp, global,
+                    globalScope);
 
             // EVAL
             Object result = execute(nodes, topFrame);
@@ -76,10 +78,11 @@ public class TruffleMumblerMain {
 
     private static void runMumbler(String filename) throws IOException {
         VirtualFrame topFrame = createTopFrame(new FrameDescriptor());
+        globalScope = topFrame.materialize();
         Namespace global = new Namespace(topFrame.getFrameDescriptor());
         MumblerList<Object> sexp = Reader.read(new FileInputStream(filename));
         Converter converter = new Converter();
-        MumblerNode[] nodes = converter.convertSexp(sexp, global);
+        MumblerNode[] nodes = converter.convertSexp(sexp, global, globalScope);
         execute(nodes, topFrame);
     }
 
@@ -87,8 +90,6 @@ public class TruffleMumblerMain {
         FrameDescriptor frameDescriptor = topFrame.getFrameDescriptor();
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
                 nodes, frameDescriptor);
-
-        globalScope = topFrame.materialize();
 
         return function.callTarget.call(new Object[] {globalScope});
     }
