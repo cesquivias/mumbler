@@ -9,17 +9,21 @@ import sys
 from StringIO import StringIO
 
 
-MUMBLER_HOME = os.environ.get('MUMBLER_HOME')
+MUMBLER_HOME = os.path.abspath(os.environ.get('MUMBLER_HOME'))
+print MUMBLER_HOME
 if not MUMBLER_HOME:
     raise Exception('MUMBLER_HOME environment variable not set')
 
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-MUMBER_BIN = os.path.join(MUMBLER_HOME, 'bin/mumbler')
+MUMBLER_BIN = os.path.join(MUMBLER_HOME, 'bin/mumbler')
+
+if not os.path.isfile(MUMBLER_BIN):
+    raise Exception('MUMBLER_HOME does not point to mumbler library')
 
 for mumbler_script in glob.glob("*.mumbler"):
-    output = subprocess.check_output([MUMBER_BIN, mumbler_script],
+    output = subprocess.check_output([MUMBLER_BIN, mumbler_script],
                                      universal_newlines=True)
     with open(os.path.splitext(mumbler_script)[0] + '.output') as truth_file:
         diff = difflib.unified_diff([l.strip() for l in truth_file.readlines()],
