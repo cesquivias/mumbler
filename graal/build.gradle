@@ -16,9 +16,9 @@ repositories {
 dependencies {
     antlr 'org.antlr:antlr4:4.5'
     compile 'org.antlr:antlr4-runtime:4.5'
-    compile 'com.oracle.truffle:truffle-api:0.9'
-    apt 'com.oracle.truffle:truffle-api:0.9'
-    apt 'com.oracle.truffle:truffle-dsl-processor:0.9'
+    compile 'com.oracle.truffle:truffle-api:0.12'
+    apt 'com.oracle.truffle:truffle-api:0.12'
+    apt 'com.oracle.truffle:truffle-dsl-processor:0.12'
 }
 
 applicationName = 'mumbler'

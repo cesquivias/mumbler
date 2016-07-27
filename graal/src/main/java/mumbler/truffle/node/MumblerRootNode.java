@@ -2,9 +2,6 @@ package mumbler.truffle.node;
 
 import java.util.Arrays;
 
-import mumbler.truffle.node.read.ReadArgumentNode;
-import mumbler.truffle.node.special.DefineNodeGen;
-
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
@@ -12,12 +9,16 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
 
+import mumbler.truffle.MumblerLanguage;
+import mumbler.truffle.node.read.ReadArgumentNode;
+import mumbler.truffle.node.special.DefineNodeGen;
+
 public class MumblerRootNode extends RootNode {
     @Children private final MumblerNode[] bodyNodes;
 
     public MumblerRootNode(MumblerNode[] bodyNodes,
             FrameDescriptor frameDescriptor) {
-        super(null, frameDescriptor);
+        super(MumblerLanguage.class, null, frameDescriptor);
         this.bodyNodes = bodyNodes;
     }
 

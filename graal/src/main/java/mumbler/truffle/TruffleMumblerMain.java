@@ -94,7 +94,7 @@ public class TruffleMumblerMain {
         return function.callTarget.call(new Object[] {globalScope});
     }
 
-    private static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
+    public static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
         VirtualFrame virtualFrame = Truffle.getRuntime().createVirtualFrame(
                 new Object[] {}, frameDescriptor);
         virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
