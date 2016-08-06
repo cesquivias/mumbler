@@ -1,14 +1,16 @@
 package mumbler.truffle.node.literal;
 
 import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.syntax.LongSyntax;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class LongNode extends MumblerNode {
     public final long number;
 
-    public LongNode(long number) {
-        this.number = number;
+    public LongNode(LongSyntax syntax) {
+        this.number = syntax.getValue();
+        setSourceSection(syntax.getSourceSection());
     }
 
     @Override

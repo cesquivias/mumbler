@@ -1,14 +1,8 @@
 package mumbler.truffle.parser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
-
-import org.antlr.v4.runtime.misc.Pair;
-
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
@@ -32,111 +26,134 @@ import mumbler.truffle.node.special.QuoteNode;
 import mumbler.truffle.node.special.QuoteNode.QuoteKind;
 import mumbler.truffle.node.special.QuoteNodeGen;
 import mumbler.truffle.parser.IdentifierScanner.Namespace;
+import mumbler.truffle.syntax.BigIntegerSyntax;
+import mumbler.truffle.syntax.BooleanSyntax;
+import mumbler.truffle.syntax.ListSyntax;
+import mumbler.truffle.syntax.LongSyntax;
+import mumbler.truffle.syntax.StringSyntax;
+import mumbler.truffle.syntax.SymbolSyntax;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
+
+import org.antlr.v4.runtime.misc.Pair;
+
+import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.MaterializedFrame;
 
 public class Converter {
     private MaterializedFrame globalFrame;
     private IdentifierScanner idScanner;
 
-    public MumblerNode[] convertSexp(MumblerList<Object> sexp,
+    public MumblerNode[] convertSexp(ListSyntax sexp,
             Namespace globalNs, MaterializedFrame globalFrame) {
         this.globalFrame = globalFrame;
         Namespace fileNamespace = new Namespace(globalNs);
         this.idScanner = new IdentifierScanner(fileNamespace);
         this.idScanner.scan(sexp);
 
-        return StreamSupport.stream(sexp.spliterator(), false)
+        return StreamSupport.stream(sexp.getValue().spliterator(), false)
                 .map(obj -> this.convert(obj, fileNamespace))
                 .toArray(size -> new MumblerNode[size]);
     }
 
-    public MumblerNode convert(Object obj, Namespace ns) {
-        if (obj instanceof Long) {
-            return convert((long) obj);
-        } else if (obj instanceof BigInteger) {
-            return convert((BigInteger) obj);
-        } else if (obj instanceof Boolean) {
-            return convert((boolean) obj);
-        } else if (obj instanceof String) {
-            return convert((String) obj);
-        } else if (obj instanceof MumblerSymbol) {
-            return convert((MumblerSymbol) obj, ns);
-        } else if (obj instanceof MumblerList) {
-            return convert((MumblerList<?>) obj, ns);
+    public MumblerNode convert(Syntax<?> syntax, Namespace ns) {
+        if (syntax instanceof LongSyntax) {
+            return convert((LongSyntax) syntax);
+        } else if (syntax instanceof BigIntegerSyntax) {
+            return convert((BigIntegerSyntax) syntax);
+        } else if (syntax instanceof BooleanSyntax) {
+            return convert((BooleanSyntax) syntax);
+        } else if (syntax instanceof StringSyntax) {
+            return convert((StringSyntax) syntax);
+        } else if (syntax instanceof SymbolSyntax) {
+            return convert((SymbolSyntax) syntax, ns);
+        } else if (syntax instanceof ListSyntax) {
+            return convert((ListSyntax) syntax, ns);
         } else {
-            throw new MumblerException("Unknown type: " + obj.getClass());
+            throw new MumblerException("Unknown type: " + syntax.getClass());
         }
     }
 
-    public static LongNode convert(long number) {
+    public static LongNode convert(LongSyntax number) {
         return new LongNode(number);
     }
 
-    public static BigIntegerNode convert(BigInteger number) {
+    public static BigIntegerNode convert(BigIntegerSyntax number) {
         return new BigIntegerNode(number);
     }
 
-    public static BooleanNode convert(boolean bool) {
-        return bool ? BooleanNode.TRUE : BooleanNode.FALSE;
+    public static BooleanNode convert(BooleanSyntax bool) {
+        return new BooleanNode(bool);
     }
 
-    public static StringNode convert(String str) {
+    public static StringNode convert(StringSyntax str) {
         return new StringNode(str);
     }
 
-    public SymbolNode convert(MumblerSymbol sym, Namespace ns) {
+    public SymbolNode convert(SymbolSyntax syntax, Namespace ns) {
+    	SymbolNode node;
+    	MumblerSymbol sym = syntax.getValue();
         Pair<Integer, FrameSlot> pair = ns.getIdentifier(sym.name);
         if (pair.a == 0) {
-            return LocalSymbolNodeGen.create(pair.b);
+            node = LocalSymbolNodeGen.create(pair.b);
         } else if (pair.a == -1) {
-            return GlobalSymbolNodeGen.create(pair.b, globalFrame);
+            node = GlobalSymbolNodeGen.create(pair.b, globalFrame);
         } else {
-            return ClosureSymbolNodeGen.create(pair.b, pair.a);
+            node = ClosureSymbolNodeGen.create(pair.b, pair.a);
         }
+        node.setSourceSection(syntax.getSourceSection());
+        return node;
     }
 
-    public MumblerNode convert(MumblerList<?> list, Namespace ns) {
+    public MumblerNode convert(ListSyntax syntax, Namespace ns) {
+    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         if (list == MumblerList.EMPTY || list.size() == 0) {
             return new LiteralListNode(MumblerList.EMPTY);
         }
 
-        Object car = list.car();
-        if (car instanceof MumblerSymbol) {
-            switch (((MumblerSymbol) car).name) {
+        Syntax<? extends Object> car = list.car();
+        if (car instanceof SymbolSyntax) {
+        	MumblerSymbol sym = ((SymbolSyntax) car).getValue();
+            switch (sym.name) {
             case "define":
-                return convertDefine(list, ns);
+                return convertDefine(syntax, ns);
             case "lambda":
-                return convertLambda(list, ns);
+                return convertLambda(syntax, ns);
             case "if":
-                return convertIf(list, ns);
+                return convertIf(syntax, ns);
             case "quote":
-                return convertQuote(list, ns);
+                return convertQuote(syntax, ns);
             }
         }
         return new InvokeNode(convert(list.car(), ns),
                 StreamSupport.stream(list.cdr().spliterator(), false)
-                .map(obj -> convert(obj, ns))
-                .toArray(size -> new MumblerNode[size]));
+                .map(syn-> convert(syn, ns))
+                .toArray(size -> new MumblerNode[size]),
+               syntax.getSourceSection());
     }
 
-    private DefineNode convertDefine(MumblerList<?> list, Namespace ns) {
-        MumblerSymbol sym = (MumblerSymbol) list.cdr().car();
-        return DefineNodeGen.create(convert(list.cdr().cdr().car(), ns),
-                ns.getIdentifier(sym.name).b);
+    private DefineNode convertDefine(ListSyntax syntax, Namespace ns) {
+    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        SymbolSyntax symSyntax = (SymbolSyntax) list.cdr().car();
+        DefineNode node = DefineNodeGen.create(
+        		convert(list.cdr().cdr().car(), ns),
+                ns.getIdentifier(symSyntax.getValue().name).b);
+        node.setSourceSection(syntax.getSourceSection());
+        return node;
     }
 
     @SuppressWarnings("unchecked")
-    private LambdaNode convertLambda(MumblerList<?> list, Namespace ns) {
+    private LambdaNode convertLambda(ListSyntax syntax, Namespace ns) {
+    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         Namespace lambdaNs = this.idScanner.getNamespace(list);
         List<FrameSlot> formalParameters = new ArrayList<>();
-        for (MumblerSymbol arg : (MumblerList<MumblerSymbol>)
-                list.cdr().car()) {
+        ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
+        for (SymbolSyntax arg : (MumblerList<SymbolSyntax>) argsSyntax.getValue()) {
             formalParameters.add(convert(arg, lambdaNs).getSlot());
         }
         List<MumblerNode> bodyNodes = new ArrayList<>();
-        for (Object body : list.cdr().cdr()) {
+        for (Syntax<? extends Object> body : list.cdr().cdr()) {
             bodyNodes.add(convert(body, lambdaNs));
         }
         bodyNodes.get(bodyNodes.size() - 1).setIsTail();
@@ -145,35 +162,40 @@ public class Converter {
                 formalParameters.toArray(new FrameSlot[] {}),
                 bodyNodes.toArray(new MumblerNode[] {}),
                 lambdaNs.getFrameDescriptor());
-        return LambdaNodeGen.create(function);
+        LambdaNode node = LambdaNodeGen.create(function);
+        node.setSourceSection(syntax.getSourceSection());
+        return node;
     }
 
-    private IfNode convertIf(MumblerList<?> list, Namespace ns) {
+    private IfNode convertIf(ListSyntax syntax, Namespace ns) {
+    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         return new IfNode(convert(list.cdr().car(), ns),
                 convert(list.cdr().cdr().car(), ns),
-                convert(list.cdr().cdr().cdr().car(), ns));
+                convert(list.cdr().cdr().cdr().car(), ns),
+                syntax.getSourceSection());
     }
 
-    private static QuoteNode convertQuote(MumblerList<?> list,
+    private static QuoteNode convertQuote(ListSyntax syntax,
             Namespace ns) {
-        Object value = list.cdr().car();
+    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        Syntax<? extends Object> value = list.cdr().car();
         MumblerNode node;
         QuoteKind kind;
-        if (value instanceof Long) {
+        if (value instanceof LongSyntax) {
             kind = QuoteKind.LONG;
-            node = convert((long) value);
-        } else if (value instanceof Boolean) {
+            node = convert((LongSyntax) value);
+        } else if (value instanceof BooleanSyntax) {
             kind = QuoteKind.BOOLEAN;
-            node = convert((boolean) value);
-        } else if (value instanceof String) {
+            node = convert((BooleanSyntax) value);
+        } else if (value instanceof StringSyntax) {
             kind = QuoteKind.STRING;
-            node = new StringNode((String) value);
-        } else if (value instanceof MumblerSymbol) {
+            node = new StringNode((StringSyntax) value);
+        } else if (value instanceof SymbolSyntax) {
             kind = QuoteKind.SYMBOL;
-            node = new LiteralSymbolNode((MumblerSymbol) value);
-        } else if (value instanceof MumblerList) {
+            node = new LiteralSymbolNode((SymbolSyntax) value);
+        } else if (value instanceof ListSyntax) {
             kind = QuoteKind.LIST;
-            node = new LiteralListNode((MumblerList<?>) value);
+            node = new LiteralListNode((MumblerList<?>) syntax.strip());
         } else {
             throw new MumblerException("Unknown quote type: " +
                     value.getClass());

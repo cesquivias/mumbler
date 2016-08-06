@@ -3,14 +3,16 @@ package mumbler.truffle.node.literal;
 import java.math.BigInteger;
 
 import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.syntax.BigIntegerSyntax;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class BigIntegerNode extends MumblerNode {
     public final BigInteger value;
 
-    public BigIntegerNode(BigInteger value) {
-        this.value = value;
+    public BigIntegerNode(BigIntegerSyntax number) {
+        this.value = number.getValue();
+        setSourceSection(number.getSourceSection());
     }
 
     @Override

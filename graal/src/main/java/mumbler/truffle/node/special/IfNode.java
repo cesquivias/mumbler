@@ -5,7 +5,8 @@ import mumbler.truffle.type.MumblerList;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
-import com.oracle.truffle.api.utilities.ConditionProfile;
+import com.oracle.truffle.api.profiles.ConditionProfile;
+import com.oracle.truffle.api.source.SourceSection;
 
 public class IfNode extends MumblerNode {
     @Child private MumblerNode testNode;
@@ -16,10 +17,11 @@ public class IfNode extends MumblerNode {
             ConditionProfile.createBinaryProfile();
 
     public IfNode(MumblerNode testNode, MumblerNode thenNode,
-            MumblerNode elseNode) {
+            MumblerNode elseNode, SourceSection sourceSection) {
         this.testNode = testNode;
         this.thenNode = thenNode;
         this.elseNode = elseNode;
+        setSourceSection(sourceSection);
     }
 
     @Override

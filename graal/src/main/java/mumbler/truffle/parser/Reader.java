@@ -6,21 +6,33 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-
+import mumbler.truffle.syntax.BigIntegerSyntax;
+import mumbler.truffle.syntax.BooleanSyntax;
+import mumbler.truffle.syntax.ListSyntax;
+import mumbler.truffle.syntax.LongSyntax;
+import mumbler.truffle.syntax.StringSyntax;
+import mumbler.truffle.syntax.SymbolSyntax;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
 
-public class Reader extends MumblerBaseVisitor<Object> {
-    @SuppressWarnings("unchecked")
-    public static MumblerList<Object> read(InputStream istream) throws IOException {
-        return (MumblerList<Object>) new Reader().visit(createParseTree(istream));
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.oracle.truffle.api.source.Source;
+import com.oracle.truffle.api.source.SourceSection;
+
+public class Reader extends MumblerBaseVisitor<Syntax<?>> {
+    public static ListSyntax read(Source source) throws IOException {
+        return (ListSyntax) new Reader(source)
+            .visit(createParseTree(source.getInputStream()));
     }
 
-    public static Object readForm(InputStream istream) throws IOException {
-        return ((MumblerList<?>) new Reader().visit(createParseTree(istream)))
+	public static Syntax<?> readForm(Source source) throws IOException {
+        return ((ListSyntax) new Reader(source).visit(
+                createParseTree(source.getInputStream())))
+                .getValue()
                 .car();
     }
 
@@ -33,51 +45,72 @@ public class Reader extends MumblerBaseVisitor<Object> {
         return parser.file();
     }
 
-    @Override
-    public MumblerList<Object> visitFile(MumblerParser.FileContext ctx) {
-        List<Object> forms = new ArrayList<>();
-        for (MumblerParser.FormContext form : ctx.form()) {
-            forms.add(this.visit(form));
-        }
-        return MumblerList.list(forms);
+    private final Source source;
+
+    private Reader(Source source) {
+        this.source = source;
     }
 
     @Override
-    public MumblerList<Object> visitList(MumblerParser.ListContext ctx) {
-        List<Object> forms = new ArrayList<>();
+    public ListSyntax visitFile(MumblerParser.FileContext ctx) {
+        List<Syntax<?>> forms = new ArrayList<>();
         for (MumblerParser.FormContext form : ctx.form()) {
             forms.add(this.visit(form));
         }
-        return MumblerList.list(forms);
+        return new ListSyntax(MumblerList.list(forms),
+                createSourceSection(ctx));
     }
 
     @Override
-    public Number visitNumber(MumblerParser.NumberContext ctx) {
+    public ListSyntax visitList(MumblerParser.ListContext ctx) {
+        List<Syntax<?>> forms = new ArrayList<>();
+        for (MumblerParser.FormContext form : ctx.form()) {
+            forms.add(this.visit(form));
+        }
+        return new ListSyntax(MumblerList.list(forms),
+                createSourceSection(ctx));
+    }
+
+    @Override
+    public Syntax<?> visitNumber(MumblerParser.NumberContext ctx) {
         try {
-            return Long.valueOf(ctx.getText());
+        return new LongSyntax(Long.valueOf(ctx.getText(), 10),
+                createSourceSection(ctx));
         } catch (NumberFormatException e) {
-            return new BigInteger(ctx.getText());
+            return new BigIntegerSyntax(new BigInteger(ctx.getText()),
+                    createSourceSection(ctx));
         }
     }
 
-    @Override
-    public Boolean visitBool(MumblerParser.BoolContext ctx) {
-        return "#t".equals(ctx.getText()) ? true : false;
+    private SourceSection createSourceSection(ParserRuleContext ctx) {
+        return source.createSection(MumblerParser.VOCABULARY.getDisplayName(ctx.getRuleIndex()),
+                ctx.start.getLine(),
+                ctx.start.getCharPositionInLine(),
+                ctx.stop.getStopIndex() - ctx.start.getStartIndex());
     }
 
     @Override
-    public MumblerSymbol visitSymbol(MumblerParser.SymbolContext ctx) {
-        return new MumblerSymbol(ctx.getText());
+    public BooleanSyntax visitBool(MumblerParser.BoolContext ctx) {
+        return new BooleanSyntax("#t".equals(ctx.getText()) ? true : false,
+                createSourceSection(ctx));
     }
 
     @Override
-    public Object visitQuote(MumblerParser.QuoteContext ctx) {
-        return MumblerList.list(new MumblerSymbol("quote"),
-                this.visit(ctx.form()));
+    public SymbolSyntax visitSymbol(MumblerParser.SymbolContext ctx) {
+        return new SymbolSyntax(new MumblerSymbol(ctx.getText()),
+                createSourceSection(ctx));
     }
 
     @Override
-    public String visitString(MumblerParser.StringContext ctx) {
+    public ListSyntax visitQuote(MumblerParser.QuoteContext ctx) {
+        return new ListSyntax(MumblerList.list(
+                new SymbolSyntax(new MumblerSymbol("quote"), createSourceSection(ctx)),
+                this.visit(ctx.form())),
+                createSourceSection(ctx));
+    }
+
+    @Override
+    public StringSyntax visitString(MumblerParser.StringContext ctx) {
         String text = ctx.getText();
         StringBuilder b = new StringBuilder();
         for (int i=1; i<text.length()-1; i++) {
@@ -115,6 +148,6 @@ public class Reader extends MumblerBaseVisitor<Object> {
                 b.append(c);
             }
         }
-        return b.toString();
+        return new StringSyntax(b.toString(), createSourceSection(ctx));
     }
 }

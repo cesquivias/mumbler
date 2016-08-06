@@ -1,17 +1,16 @@
 package mumbler.truffle.node.literal;
 
 import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.syntax.BooleanSyntax;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 
 public class BooleanNode extends MumblerNode {
-    public static final BooleanNode TRUE = new BooleanNode(true);
-    public static final BooleanNode FALSE = new BooleanNode(false);
-
     public final boolean value;
 
-    private BooleanNode(boolean value) {
-        this.value = value;
+    public BooleanNode(BooleanSyntax bool) {
+        this.value = bool.getValue();
+        setSourceSection(bool.getSourceSection());
     }
 
     @Override

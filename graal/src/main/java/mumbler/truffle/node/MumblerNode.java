@@ -16,12 +16,25 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeInfo;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.source.SourceSection;
 
 @TypeSystemReference(MumblerTypes.class)
 @NodeInfo(language = "Mumbler Language", description = "The abstract base node for all expressions")
 public abstract class MumblerNode extends Node {
     @CompilationFinal
+    private SourceSection sourceSection;
+
+    @CompilationFinal
     private boolean isTail = false;
+
+    @Override
+    public SourceSection getSourceSection() {
+    	return this.sourceSection;
+    }
+
+    public void setSourceSection(SourceSection sourceSection) {
+    	this.sourceSection = sourceSection;
+    }
 
     public boolean isTail() {
         return this.isTail;

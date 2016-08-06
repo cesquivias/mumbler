@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.misc.Pair;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 
+import mumbler.truffle.syntax.ListSyntax;
+import mumbler.truffle.syntax.SymbolSyntax;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
 
@@ -32,30 +34,32 @@ public class IdentifierScanner {
         return this.namespaces.get(list);
     }
 
-    public void scan(MumblerList<?> sexp) {
-        for (Object el : sexp) {
-            if (el instanceof MumblerList) {
-                scanList((MumblerList<?>) el);
+    public void scan(ListSyntax sexp) {
+        for (Syntax<? extends Object> syntax : sexp.getValue()) {
+            if (syntax instanceof ListSyntax) {
+                scanList((ListSyntax) syntax);
             }
         }
     }
 
-    private void scanList(MumblerList<?> list) {
+    private void scanList(ListSyntax syntax) {
+    	MumblerList<? extends Syntax<?>> list = syntax.getValue();
         if (isLambda(list)) {
             this.currentNamespace = new Namespace(this.currentNamespace);
             this.namespaces.put(list, this.currentNamespace);
+            ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
             @SuppressWarnings("unchecked")
             MumblerList<MumblerSymbol> formalArgs = (MumblerList<MumblerSymbol>)
-                    list.cdr().car();
+                    argsSyntax.strip();
             this.addLambdaArguments(formalArgs);
-            this.scan(list);
+            this.scan(syntax);
             this.currentNamespace = this.currentNamespace.getParent();
         } else if (isDefine(list)) {
-            MumblerSymbol sym = (MumblerSymbol) list.cdr().car();
+            MumblerSymbol sym = (MumblerSymbol) list.cdr().car().getValue();
             this.currentNamespace.addIdentifier(sym.name);
-            this.scan(list);
+            this.scan(syntax);
         } else {
-            this.scan(list);
+            this.scan(syntax);
         }
     }
 
@@ -65,23 +69,23 @@ public class IdentifierScanner {
         }
     }
 
-    private boolean isLambda(MumblerList<?> list) {
+    private boolean isLambda(MumblerList<? extends Syntax<?>> list) {
         return isListOfSymbol(list, "lambda");
     }
 
-    public boolean isDefine(MumblerList<?> list) {
+    public boolean isDefine(MumblerList<? extends Syntax<?>> list) {
         return isListOfSymbol(list, "define");
     }
 
-    private static boolean isListOfSymbol(MumblerList<?> list, String text) {
+    private static boolean isListOfSymbol(MumblerList<? extends Syntax<?>> list, String text) {
         if (list.size() < 3) {
             return false;
         }
-        if (!(list.car() instanceof MumblerSymbol)) {
+        if (!(list.car() instanceof SymbolSyntax)) {
             return false;
         }
-        MumblerSymbol sym = (MumblerSymbol) list.car();
-        if (!sym.name.equals(text)) {
+        SymbolSyntax sym = (SymbolSyntax) list.car();
+        if (!sym.getValue().name.equals(text)) {
             return false;
         }
         return true;

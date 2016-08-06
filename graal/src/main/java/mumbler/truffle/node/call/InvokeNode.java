@@ -9,6 +9,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
+import com.oracle.truffle.api.source.SourceSection;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.type.MumblerFunction;
@@ -18,10 +19,12 @@ public class InvokeNode extends MumblerNode {
     @Children protected final MumblerNode[] argumentNodes;
     @Child protected DispatchNode dispatchNode;
 
-    public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes) {
+    public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes,
+    		SourceSection sourceSection) {
         this.functionNode = functionNode;
         this.argumentNodes = argumentNodes;
         this.dispatchNode = new UninitializedDispatchNode();
+        setSourceSection(sourceSection);
     }
 
     @Override
