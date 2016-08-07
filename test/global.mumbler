@@ -1,0 +1,5 @@
+(define foo 3)
+
+(define bar (+ foo 4))
+
+(println bar)

@@ -26,6 +26,6 @@ public class LiteralSymbolNode extends MumblerNode {
 
     @Override
     public String toString() {
-        return this.symbol.toString();
+        return "'" + this.symbol.toString();
     }
 }

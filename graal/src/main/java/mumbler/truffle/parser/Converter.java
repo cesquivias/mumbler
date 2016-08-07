@@ -177,7 +177,7 @@ public class Converter {
 
     private static QuoteNode convertQuote(ListSyntax syntax,
             Namespace ns) {
-    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         Syntax<? extends Object> value = list.cdr().car();
         MumblerNode node;
         QuoteKind kind;
@@ -195,7 +195,7 @@ public class Converter {
             node = new LiteralSymbolNode((SymbolSyntax) value);
         } else if (value instanceof ListSyntax) {
             kind = QuoteKind.LIST;
-            node = new LiteralListNode((MumblerList<?>) syntax.strip());
+            node = new LiteralListNode(((MumblerList<?>) value.strip()));
         } else {
             throw new MumblerException("Unknown quote type: " +
                     value.getClass());
