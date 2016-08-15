@@ -1,43 +1,20 @@
 package mumbler.truffle;
 
-import static mumbler.truffle.node.builtin.BuiltinNode.createBuiltinFunction;
-
 import java.io.Console;
 import java.io.IOException;
 
 import mumbler.truffle.node.MumblerNode;
-import mumbler.truffle.node.builtin.arithmetic.AddBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.arithmetic.DivBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.arithmetic.ModBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.arithmetic.MulBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.arithmetic.SubBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.io.NowBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.io.PrintlnBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.lang.ReadBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.list.CarBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.list.CdrBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.list.ConsBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.list.ListBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.relational.EqualBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.relational.GreaterThanBuiltinNodeFactory;
-import mumbler.truffle.node.builtin.relational.LessThanBuiltinNodeFactory;
 import mumbler.truffle.parser.Converter;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
 import mumbler.truffle.parser.Reader;
 import mumbler.truffle.syntax.ListSyntax;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
-import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.source.Source;
 
 public class TruffleMumblerMain {
-    public static MaterializedFrame globalScope;
-
     public static void main(String[] args) throws IOException {
         assert args.length < 2 : "Mumbler only accepts 1 or 0 files";
         if (args.length == 0) {
@@ -48,8 +25,6 @@ public class TruffleMumblerMain {
     }
 
     private static void startREPL() throws IOException {
-        VirtualFrame topFrame = createTopFrame(new FrameDescriptor());
-
         Console console = System.console();
         while (true) {
             // READ
@@ -58,16 +33,15 @@ public class TruffleMumblerMain {
                 // EOF sent
                 break;
             }
-            Namespace global = new Namespace(topFrame.getFrameDescriptor());
-            globalScope = topFrame.materialize();
+            MumblerContext context = new MumblerContext();
             Source source = Source.fromText(data, "<console>");
             ListSyntax sexp = Reader.read(source);
+            // TODO : replace with MumblerLanguage#parse
             Converter converter = new Converter();
-            MumblerNode[] nodes = converter.convertSexp(sexp, global,
-                    globalScope);
+            MumblerNode[] nodes = converter.convertSexp(context, sexp);
 
             // EVAL
-            Object result = execute(nodes, topFrame);
+            Object result = execute(nodes, context.getGlobalFrame());
 
             // PRINT
             if (result != MumblerList.EMPTY) {
@@ -77,76 +51,19 @@ public class TruffleMumblerMain {
     }
 
     private static void runMumbler(String filename) throws IOException {
-        VirtualFrame topFrame = createTopFrame(new FrameDescriptor());
-        globalScope = topFrame.materialize();
-        Namespace global = new Namespace(topFrame.getFrameDescriptor());
-
         Source source = Source.fromFileName(filename);
+        MumblerContext context = new MumblerContext();
         ListSyntax sexp = Reader.read(source);
+        // TODO : replace with MumblerLanguage#parse
         Converter converter = new Converter();
-        MumblerNode[] nodes = converter.convertSexp(sexp, global, globalScope);
-        execute(nodes, topFrame);
+        MumblerNode[] nodes = converter.convertSexp(context, sexp);
+        execute(nodes, context.getGlobalFrame());
     }
 
-    private static Object execute(MumblerNode[] nodes, VirtualFrame topFrame) {
-        FrameDescriptor frameDescriptor = topFrame.getFrameDescriptor();
+    private static Object execute(MumblerNode[] nodes, MaterializedFrame globalFrame) {
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
-                nodes, frameDescriptor);
+                nodes, globalFrame.getFrameDescriptor());
 
-        return function.callTarget.call(new Object[] {globalScope});
-    }
-
-    public static VirtualFrame createTopFrame(FrameDescriptor frameDescriptor) {
-        VirtualFrame virtualFrame = Truffle.getRuntime().createVirtualFrame(
-                new Object[] {}, frameDescriptor);
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
-                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("+"),
-                createBuiltinFunction(AddBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("-"),
-                createBuiltinFunction(SubBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("*"),
-                createBuiltinFunction(MulBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("/"),
-                createBuiltinFunction(DivBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("%"),
-                createBuiltinFunction(ModBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("="),
-                createBuiltinFunction(EqualBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("<"),
-                createBuiltinFunction(LessThanBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot(">"),
-                createBuiltinFunction(GreaterThanBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("list"),
-                createBuiltinFunction(ListBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("cons"),
-                createBuiltinFunction(ConsBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("car"),
-                createBuiltinFunction(CarBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("cdr"),
-                createBuiltinFunction(CdrBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
-                createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-//        virtualFrame.setObject(frameDescriptor.addFrameSlot("eval"),
-//                createBuiltinFunction(EvalBuiltinNodeFactory.getInstance(),
-//                        virtualFrame));
-        virtualFrame.setObject(frameDescriptor.addFrameSlot("read"),
-                createBuiltinFunction(ReadBuiltinNodeFactory.getInstance(),
-                        virtualFrame));
-        return virtualFrame;
+        return function.callTarget.call(new Object[] {globalFrame});
     }
 }

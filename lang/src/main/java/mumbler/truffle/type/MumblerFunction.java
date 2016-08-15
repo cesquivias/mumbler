@@ -1,6 +1,5 @@
 package mumbler.truffle.type;
 
-import mumbler.truffle.TruffleMumblerMain;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.MumblerRootNode;
 
@@ -19,9 +18,7 @@ public class MumblerFunction {
     }
 
     public MaterializedFrame getLexicalScope() {
-        // TODO: Hack. We should just return null if we don't have a scope.
-        return this.lexicalScope == null ? TruffleMumblerMain.globalScope :
-            this.lexicalScope;
+        return lexicalScope;
     }
 
     public void setLexicalScope(MaterializedFrame lexicalScope) {

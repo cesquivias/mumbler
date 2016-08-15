@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import mumbler.truffle.MumblerContext;
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.call.InvokeNode;
@@ -39,16 +40,14 @@ import mumbler.truffle.type.MumblerSymbol;
 import org.antlr.v4.runtime.misc.Pair;
 
 import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.MaterializedFrame;
 
 public class Converter {
-    private MaterializedFrame globalFrame;
+    private MumblerContext context;
     private IdentifierScanner idScanner;
 
-    public MumblerNode[] convertSexp(ListSyntax sexp,
-            Namespace globalNs, MaterializedFrame globalFrame) {
-        this.globalFrame = globalFrame;
-        Namespace fileNamespace = new Namespace(globalNs);
+    public MumblerNode[] convertSexp(MumblerContext context, ListSyntax sexp) {
+        this.context = context;
+        Namespace fileNamespace = new Namespace(this.context.getGlobalNamespace());
         this.idScanner = new IdentifierScanner(fileNamespace);
         this.idScanner.scan(sexp);
 
@@ -98,7 +97,7 @@ public class Converter {
         if (pair.a == 0) {
             node = LocalSymbolNodeGen.create(pair.b);
         } else if (pair.a == -1) {
-            node = GlobalSymbolNodeGen.create(pair.b, globalFrame);
+            node = GlobalSymbolNodeGen.create(pair.b, this.context.getGlobalFrame());
         } else {
             node = ClosureSymbolNodeGen.create(pair.b, pair.a);
         }
@@ -107,14 +106,14 @@ public class Converter {
     }
 
     public MumblerNode convert(ListSyntax syntax, Namespace ns) {
-    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         if (list == MumblerList.EMPTY || list.size() == 0) {
             return new LiteralListNode(MumblerList.EMPTY);
         }
 
         Syntax<? extends Object> car = list.car();
         if (car instanceof SymbolSyntax) {
-        	MumblerSymbol sym = ((SymbolSyntax) car).getValue();
+            MumblerSymbol sym = ((SymbolSyntax) car).getValue();
             switch (sym.name) {
             case "define":
                 return convertDefine(syntax, ns);

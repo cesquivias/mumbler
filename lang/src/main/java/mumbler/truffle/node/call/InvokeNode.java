@@ -2,6 +2,9 @@ package mumbler.truffle.node.call;
 
 import java.util.Arrays;
 
+import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.type.MumblerFunction;
+
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.CompilerAsserts;
 import com.oracle.truffle.api.dsl.UnsupportedSpecializationException;
@@ -11,16 +14,13 @@ import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.UnexpectedResultException;
 import com.oracle.truffle.api.source.SourceSection;
 
-import mumbler.truffle.node.MumblerNode;
-import mumbler.truffle.type.MumblerFunction;
-
 public class InvokeNode extends MumblerNode {
     @Child protected MumblerNode functionNode;
     @Children protected final MumblerNode[] argumentNodes;
     @Child protected DispatchNode dispatchNode;
 
     public InvokeNode(MumblerNode functionNode, MumblerNode[] argumentNodes,
-    		SourceSection sourceSection) {
+            SourceSection sourceSection) {
         this.functionNode = functionNode;
         this.argumentNodes = argumentNodes;
         this.dispatchNode = new UninitializedDispatchNode();

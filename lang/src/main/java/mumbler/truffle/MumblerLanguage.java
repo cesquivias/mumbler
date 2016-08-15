@@ -4,17 +4,14 @@ import java.io.IOException;
 
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.parser.Converter;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
 import mumbler.truffle.parser.Reader;
 import mumbler.truffle.syntax.ListSyntax;
 import mumbler.truffle.type.MumblerFunction;
 
 import com.oracle.truffle.api.CallTarget;
 import com.oracle.truffle.api.TruffleLanguage;
-import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.source.Source;
 
@@ -30,20 +27,17 @@ public class MumblerLanguage extends TruffleLanguage<Object> {
 
     @Override
     protected Object createContext(TruffleLanguage.Env env) {
-        return new Object();
+        return new MumblerContext();
     }
 
     @Override
-    protected CallTarget parse(Source source, Node context, String... argumentNames) throws IOException {
+    protected CallTarget parse(Source source, Node node, String... argumentNames) throws IOException {
+        MumblerContext context = new MumblerContext();
         ListSyntax sexp = Reader.read(source);
         Converter converter = new Converter();
-        VirtualFrame topFrame = TruffleMumblerMain.createTopFrame(new FrameDescriptor());
-        Namespace global = new Namespace(topFrame.getFrameDescriptor());
-        MaterializedFrame globalFrame = topFrame.materialize();
-        MumblerNode[] nodes = converter.convertSexp(sexp, global, globalFrame);
-        FrameDescriptor frameDescriptor = topFrame.getFrameDescriptor();
+        MumblerNode[] nodes = converter.convertSexp(context, sexp);
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
-                nodes, frameDescriptor);
+                nodes, context.getGlobalFrame().getFrameDescriptor());
         return function.callTarget;
     }
 
