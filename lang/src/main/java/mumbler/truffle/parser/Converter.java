@@ -8,6 +8,7 @@ import mumbler.truffle.MumblerContext;
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.call.InvokeNode;
+import mumbler.truffle.node.call.TCOInvokeNode;
 import mumbler.truffle.node.literal.BigIntegerNode;
 import mumbler.truffle.node.literal.BooleanNode;
 import mumbler.truffle.node.literal.LiteralListNode;
@@ -40,10 +41,16 @@ import mumbler.truffle.type.MumblerSymbol;
 import org.antlr.v4.runtime.misc.Pair;
 
 import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.source.SourceSection;
 
 public class Converter {
     private MumblerContext context;
     private IdentifierScanner idScanner;
+    private final boolean isTailCallOptimizationEnabled;
+
+    public Converter(boolean tailCallOptimizationEnabled) {
+        this.isTailCallOptimizationEnabled = tailCallOptimizationEnabled;
+    }
 
     public MumblerNode[] convertSexp(MumblerContext context, ListSyntax sexp) {
         this.context = context;
@@ -125,11 +132,18 @@ public class Converter {
                 return convertQuote(syntax, ns);
             }
         }
-        return new InvokeNode(convert(list.car(), ns),
-                StreamSupport.stream(list.cdr().spliterator(), false)
+
+        MumblerNode functionNode = convert(list.car(), ns);
+        MumblerNode[] arguments = StreamSupport
+                .stream(list.cdr().spliterator(), false)
                 .map(syn-> convert(syn, ns))
-                .toArray(size -> new MumblerNode[size]),
-               syntax.getSourceSection());
+                .toArray(size -> new MumblerNode[size]);
+        SourceSection sourceSection = syntax.getSourceSection();
+        if (isTailCallOptimizationEnabled) {
+            return new TCOInvokeNode(functionNode, arguments, sourceSection);
+        } else {
+            return new InvokeNode(functionNode, arguments, sourceSection);
+        }
     }
 
     private DefineNode convertDefine(ListSyntax syntax, Namespace ns) {
@@ -155,6 +169,7 @@ public class Converter {
         for (Syntax<? extends Object> body : list.cdr().cdr()) {
             bodyNodes.add(convert(body, lambdaNs));
         }
+
         bodyNodes.get(bodyNodes.size() - 1).setIsTail();
 
         MumblerFunction function = MumblerFunction.create(

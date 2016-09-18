@@ -40,24 +40,13 @@ public class InvokeNode extends MumblerNode {
             argumentValues[i+1] = this.argumentNodes[i].execute(virtualFrame);
         }
 
-        if (this.isTail()) {
-            throw new TailCallException(function.callTarget, argumentValues);
-        } else {
-            return this.call(virtualFrame, function.callTarget, argumentValues);
-        }
+        return call(virtualFrame, function.callTarget, argumentValues);
     }
 
-    public Object call(VirtualFrame virtualFrame, CallTarget callTarget,
+    protected Object call(VirtualFrame virtualFrame, CallTarget callTarget,
             Object[] arguments) {
-        while (true) {
-            try {
-                return this.dispatchNode.executeDispatch(virtualFrame,
-                        callTarget, arguments);
-            } catch (TailCallException e) {
-                callTarget = e.callTarget;
-                arguments = e.arguments;
-            }
-        }
+        return this.dispatchNode.executeDispatch(virtualFrame,
+                callTarget, arguments);
     }
 
     private MumblerFunction evaluateFunction(VirtualFrame virtualFrame) {

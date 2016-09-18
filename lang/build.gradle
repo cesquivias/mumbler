@@ -15,8 +15,11 @@ repositories {
 
 dependencies {
     antlr 'org.antlr:antlr4:4.5'
+
     compile 'org.antlr:antlr4-runtime:4.5'
     compile 'com.oracle.truffle:truffle-api:0.12'
+    compile "com.beust:jcommander:1.48"
+
     apt 'com.oracle.truffle:truffle-api:0.12'
     apt 'com.oracle.truffle:truffle-dsl-processor:0.12'
 }

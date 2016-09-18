@@ -22,6 +22,8 @@ public class MumblerLanguage extends TruffleLanguage<Object> {
 
     public static final MumblerLanguage INSTANCE = new MumblerLanguage();
 
+    private static final boolean TAIL_CALL_OPTIMIZATION_ENABLED = true;
+
     private MumblerLanguage() {
     }
 
@@ -34,7 +36,7 @@ public class MumblerLanguage extends TruffleLanguage<Object> {
     protected CallTarget parse(Source source, Node node, String... argumentNames) throws IOException {
         MumblerContext context = new MumblerContext();
         ListSyntax sexp = Reader.read(source);
-        Converter converter = new Converter();
+        Converter converter = new Converter(TAIL_CALL_OPTIMIZATION_ENABLED);
         MumblerNode[] nodes = converter.convertSexp(context, sexp);
         MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
                 nodes, context.getGlobalFrame().getFrameDescriptor());

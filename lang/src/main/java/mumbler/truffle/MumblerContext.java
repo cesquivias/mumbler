@@ -8,6 +8,7 @@ import mumbler.truffle.node.builtin.arithmetic.MulBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.arithmetic.SubBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.NowBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.io.PrintlnBuiltinNodeFactory;
+import mumbler.truffle.node.builtin.io.SleepBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.lang.ReadBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CarBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.list.CdrBuiltinNodeFactory;
@@ -90,6 +91,9 @@ public class MumblerContext {
 //                        virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("read"),
                 createBuiltinFunction(ReadBuiltinNodeFactory.getInstance(),
+                        virtualFrame));
+        virtualFrame.setObject(frameDescriptor.addFrameSlot("sleep"),
+                createBuiltinFunction(SleepBuiltinNodeFactory.getInstance(),
                         virtualFrame));
     }
 
