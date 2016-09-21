@@ -3,6 +3,11 @@ package mumbler.truffle;
 import java.io.Console;
 import java.io.IOException;
 
+import com.beust.jcommander.JCommander;
+import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.frame.MaterializedFrame;
+import com.oracle.truffle.api.source.Source;
+
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.parser.Converter;
 import mumbler.truffle.parser.Reader;
@@ -10,12 +15,9 @@ import mumbler.truffle.syntax.ListSyntax;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 
-import com.beust.jcommander.JCommander;
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.source.Source;
-
 public class TruffleMumblerMain {
+    private static final String PROMPT = "\u27AB ";
+
     private static Flags flags;
 
     public static void main(String[] args) throws IOException {
@@ -38,7 +40,7 @@ public class TruffleMumblerMain {
         Console console = System.console();
         while (true) {
             // READ
-            String data = console.readLine("~> ");
+            String data = console.readLine(PROMPT);
             if (data == null) {
                 // EOF sent
                 break;
