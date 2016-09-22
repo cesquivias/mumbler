@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import org.antlr.v4.runtime.misc.Pair;
+
+import com.oracle.truffle.api.frame.FrameSlot;
+import com.oracle.truffle.api.source.SourceSection;
+
 import mumbler.truffle.MumblerContext;
 import mumbler.truffle.MumblerException;
 import mumbler.truffle.node.MumblerNode;
@@ -24,6 +29,7 @@ import mumbler.truffle.node.special.DefineNodeGen;
 import mumbler.truffle.node.special.IfNode;
 import mumbler.truffle.node.special.LambdaNode;
 import mumbler.truffle.node.special.LambdaNodeGen;
+import mumbler.truffle.node.special.LoopNode;
 import mumbler.truffle.node.special.QuoteNode;
 import mumbler.truffle.node.special.QuoteNode.QuoteKind;
 import mumbler.truffle.node.special.QuoteNodeGen;
@@ -36,11 +42,6 @@ import mumbler.truffle.syntax.SymbolSyntax;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
-
-import org.antlr.v4.runtime.misc.Pair;
-
-import com.oracle.truffle.api.frame.FrameSlot;
-import com.oracle.truffle.api.source.SourceSection;
 
 public class Converter {
     private MumblerContext context;
@@ -130,15 +131,21 @@ public class Converter {
                 return convertIf(syntax, ns);
             case "quote":
                 return convertQuote(syntax, ns);
+            case "loop":
+                return convertLoop(syntax, ns);
             }
         }
+        return convertInvoke(list, syntax.getSourceSection(), ns);
+    }
+
+    private InvokeNode convertInvoke(MumblerList<? extends Syntax<? extends Object>> list,
+            SourceSection sourceSection, Namespace ns) {
 
         MumblerNode functionNode = convert(list.car(), ns);
         MumblerNode[] arguments = StreamSupport
                 .stream(list.cdr().spliterator(), false)
                 .map(syn-> convert(syn, ns))
                 .toArray(size -> new MumblerNode[size]);
-        SourceSection sourceSection = syntax.getSourceSection();
         if (isTailCallOptimizationEnabled) {
             return new TCOInvokeNode(functionNode, arguments, sourceSection);
         } else {
@@ -219,5 +226,10 @@ public class Converter {
                     value.getClass());
         }
         return QuoteNodeGen.create(node, kind);
+    }
+
+    private LoopNode convertLoop(ListSyntax syntax, Namespace ns) {
+        return new LoopNode(convertInvoke(
+                syntax.getValue().cdr(), syntax.getSourceSection(), ns));
     }
 }
