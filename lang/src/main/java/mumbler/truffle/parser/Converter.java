@@ -54,7 +54,7 @@ public class Converter {
 
     public MumblerNode[] convertSexp(MumblerContext context, ListSyntax sexp) {
         this.context = context;
-        Namespace fileNamespace = new Namespace(this.context.getGlobalNamespace());
+        Namespace fileNamespace = new Namespace("<top>", this.context.getGlobalNamespace());
         this.idScanner = new IdentifierScanner(fileNamespace);
         this.idScanner.scan(sexp);
 
@@ -147,12 +147,31 @@ public class Converter {
     }
 
     private DefineNode convertDefine(ListSyntax syntax, Namespace ns) {
-    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        if (list.size() != 3) {
+            throw new MumblerReadException("define takes 2 arguments") {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public SourceSection getSourceSection() {
+                    return syntax.getSourceSection();
+                }
+
+                @Override
+                public String getMethodName() {
+                    return ns.getFunctionName();
+                }
+            };
+        }
         SymbolSyntax symSyntax = (SymbolSyntax) list.cdr().car();
-        DefineNode node = DefineNodeGen.create(
-        		convert(list.cdr().cdr().car(), ns),
-                ns.getIdentifier(symSyntax.getValue().name).b);
+        FrameSlot nameSlot = ns.getIdentifier(symSyntax.getValue().name).b;
+        MumblerNode valueNode = convert(list.cdr().cdr().car(), ns);
+        DefineNode node = DefineNodeGen.create(valueNode, nameSlot);
         node.setSourceSection(syntax.getSourceSection());
+        if (valueNode instanceof LambdaNode) {
+            LambdaNode lambda = (LambdaNode) valueNode;
+            lambda.setName(nameSlot.toString());
+        }
         return node;
     }
 

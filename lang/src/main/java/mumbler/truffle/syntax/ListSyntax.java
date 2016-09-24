@@ -22,4 +22,15 @@ public class ListSyntax extends Syntax<MumblerList<? extends Syntax<?>>> {
         }
         return MumblerList.list(list);
     }
+
+    @Override
+    public String getName() {
+        if (super.getName() != null) {
+            return super.getName();
+        }
+        if (this.getValue().size() == 0) {
+            return "()";
+        }
+        return this.getValue().car().getValue().toString() + "-" + this.hashCode();
+    }
 }

@@ -3,15 +3,15 @@ package mumbler.truffle.parser;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.antlr.v4.runtime.misc.Pair;
-
-import com.oracle.truffle.api.frame.FrameDescriptor;
-import com.oracle.truffle.api.frame.FrameSlot;
-
 import mumbler.truffle.syntax.ListSyntax;
 import mumbler.truffle.syntax.SymbolSyntax;
 import mumbler.truffle.type.MumblerList;
 import mumbler.truffle.type.MumblerSymbol;
+
+import org.antlr.v4.runtime.misc.Pair;
+
+import com.oracle.truffle.api.frame.FrameDescriptor;
+import com.oracle.truffle.api.frame.FrameSlot;
 
 /**
  * The pass through the Mumbler AST to find all declarations of identifiers
@@ -45,7 +45,7 @@ public class IdentifierScanner {
     private void scanList(ListSyntax syntax) {
     	MumblerList<? extends Syntax<?>> list = syntax.getValue();
         if (isLambda(list)) {
-            this.currentNamespace = new Namespace(this.currentNamespace);
+            this.currentNamespace = new Namespace(syntax.getName(), this.currentNamespace);
             this.namespaces.put(list, this.currentNamespace);
             ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
             @SuppressWarnings("unchecked")
@@ -57,6 +57,8 @@ public class IdentifierScanner {
         } else if (isDefine(list)) {
             MumblerSymbol sym = (MumblerSymbol) list.cdr().car().getValue();
             this.currentNamespace.addIdentifier(sym.name);
+            // Setting value syntax to the name used
+            list.cdr().cdr().car().setName(sym.name);
             this.scan(syntax);
         } else {
             this.scan(syntax);
@@ -92,17 +94,24 @@ public class IdentifierScanner {
     }
 
     public static class Namespace {
+        private final String functionName;
         private final Namespace parent;
         private final FrameDescriptor frameDescriptor;
 
         public Namespace(FrameDescriptor frameDescriptor) {
+            this.functionName = "<global>";
             this.parent = null;
             this.frameDescriptor = frameDescriptor;
         }
 
-        public Namespace(Namespace parent) {
+        public Namespace(String name, Namespace parent) {
+            this.functionName = name;
             this.parent = parent;
             this.frameDescriptor = new FrameDescriptor();
+        }
+
+        public String getFunctionName() {
+            return this.functionName;
         }
 
         public Namespace getParent() {

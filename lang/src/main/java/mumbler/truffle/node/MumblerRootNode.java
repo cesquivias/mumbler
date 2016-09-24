@@ -2,19 +2,21 @@ package mumbler.truffle.node;
 
 import java.util.Arrays;
 
+import mumbler.truffle.MumblerLanguage;
+import mumbler.truffle.node.read.ReadArgumentNode;
+import mumbler.truffle.node.special.DefineNodeGen;
+
 import com.oracle.truffle.api.CompilerAsserts;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.VirtualFrame;
 import com.oracle.truffle.api.nodes.ExplodeLoop;
 import com.oracle.truffle.api.nodes.RootNode;
 
-import mumbler.truffle.MumblerLanguage;
-import mumbler.truffle.node.read.ReadArgumentNode;
-import mumbler.truffle.node.special.DefineNodeGen;
-
 public class MumblerRootNode extends RootNode {
     @Children private final MumblerNode[] bodyNodes;
+    @CompilationFinal public String name;
 
     public MumblerRootNode(MumblerNode[] bodyNodes,
             FrameDescriptor frameDescriptor) {
@@ -44,6 +46,12 @@ public class MumblerRootNode extends RootNode {
         System.arraycopy(bodyNodes, 0, allNodes,
                 argumentNames.length, bodyNodes.length);
         return new MumblerRootNode(allNodes, frameDescriptor);
+    }
+
+    public void setName(String name) {
+        if (this.name == null) {
+            this.name = name;
+        }
     }
 
     @Override
