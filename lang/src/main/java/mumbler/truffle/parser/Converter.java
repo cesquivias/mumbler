@@ -1,5 +1,7 @@
 package mumbler.truffle.parser;
 
+import static mumbler.truffle.parser.MumblerReadException.throwReaderException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -149,19 +151,7 @@ public class Converter {
     private DefineNode convertDefine(ListSyntax syntax, Namespace ns) {
         MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
         if (list.size() != 3) {
-            throw new MumblerReadException("define takes 2 arguments") {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public SourceSection getSourceSection() {
-                    return syntax.getSourceSection();
-                }
-
-                @Override
-                public String getMethodName() {
-                    return ns.getFunctionName();
-                }
-            };
+            throwReaderException("Define takes 2 arguments", syntax, ns);
         }
         SymbolSyntax symSyntax = (SymbolSyntax) list.cdr().car();
         FrameSlot nameSlot = ns.getIdentifier(symSyntax.getValue().name).b;
