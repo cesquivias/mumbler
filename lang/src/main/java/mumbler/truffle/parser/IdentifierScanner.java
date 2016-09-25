@@ -99,12 +99,21 @@ public class IdentifierScanner {
     }
 
     public static class Namespace {
+        /**
+         * The name for the namespace at the top level of a file.
+         */
+        public static final String TOP_NS = "<top>";
+        /**
+         * The name of the global namespace that contains all predefined variables.
+         */
+        private static final String GLOBAL_NS = "<global>";
+
         private final String functionName;
         private final Namespace parent;
         private final FrameDescriptor frameDescriptor;
 
         public Namespace(FrameDescriptor frameDescriptor) {
-            this.functionName = "<global>";
+            this.functionName = GLOBAL_NS;
             this.parent = null;
             this.frameDescriptor = frameDescriptor;
         }

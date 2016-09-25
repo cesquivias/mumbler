@@ -22,6 +22,8 @@ dependencies {
 
     apt 'com.oracle.truffle:truffle-api:0.12'
     apt 'com.oracle.truffle:truffle-dsl-processor:0.12'
+
+    testCompile 'junit:junit:4.12'
 }
 
 applicationName = 'mumbler'

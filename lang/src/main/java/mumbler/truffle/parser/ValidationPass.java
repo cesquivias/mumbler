@@ -25,17 +25,19 @@ import mumbler.truffle.type.MumblerList;
 public class ValidationPass {
     public static void validate(Syntax<?> syntax,
             Map<MumblerList<?>, Namespace> nsMap) {
+        Stack<Namespace> ns = new Stack<>();
+        ns.push(nsMap.get(null));
+
         new SexpListener(syntax) {
-            private Stack<Namespace> ns = new Stack<>();
 
             @Override
             public void onLambda(ListSyntax syntax) {
-                this.ns.push(nsMap.get(syntax.getValue()));
+                ns.push(nsMap.get(syntax.getValue()));
             }
 
             @Override
             public void onLambdaExit(ListSyntax syntax) {
-                this.ns.pop();
+                ns.pop();
             }
 
             @Override

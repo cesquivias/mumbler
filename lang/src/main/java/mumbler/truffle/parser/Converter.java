@@ -54,7 +54,8 @@ public class Converter {
 
     public MumblerNode[] convertSexp(MumblerContext context, ListSyntax sexp) {
         this.context = context;
-        Namespace fileNamespace = new Namespace("<top>", this.context.getGlobalNamespace());
+        Namespace fileNamespace = new Namespace(Namespace.TOP_NS,
+                this.context.getGlobalNamespace());
         this.idScanner = new IdentifierScanner(fileNamespace);
         this.idScanner.scan(sexp);
 
