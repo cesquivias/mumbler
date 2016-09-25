@@ -21,6 +21,7 @@ import com.oracle.truffle.api.frame.FrameSlot;
  * appropriate {@link FrameDescriptor}.
  */
 public class IdentifierScanner {
+    // TODO : Key over ListSyntax instead of MumblerList
     private final Map<MumblerList<?>, Namespace> namespaces;
     private Namespace currentNamespace;
 
@@ -28,6 +29,10 @@ public class IdentifierScanner {
         this.namespaces = new HashMap<>();
         this.namespaces.put(null, topNamespace);
         this.currentNamespace = topNamespace;
+    }
+
+    public Map<MumblerList<?>, Namespace> getNamespaceMap() {
+        return this.namespaces;
     }
 
     public Namespace getNamespace(MumblerList<?> list) {
