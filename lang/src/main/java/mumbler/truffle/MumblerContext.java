@@ -17,7 +17,7 @@ import mumbler.truffle.node.builtin.list.ListBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.EqualBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.GreaterThanBuiltinNodeFactory;
 import mumbler.truffle.node.builtin.relational.LessThanBuiltinNodeFactory;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
+import mumbler.truffle.parser.Namespace;
 
 import com.oracle.truffle.api.Truffle;
 import com.oracle.truffle.api.frame.FrameDescriptor;

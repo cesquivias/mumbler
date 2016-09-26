@@ -3,7 +3,6 @@ package mumbler.truffle.node.builtin.lang;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.builtin.BuiltinNode;
 import mumbler.truffle.parser.Converter;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
 
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeField;

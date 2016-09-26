@@ -27,7 +27,6 @@ import mumbler.truffle.node.special.LambdaNodeGen;
 import mumbler.truffle.node.special.QuoteNode;
 import mumbler.truffle.node.special.QuoteNode.QuoteKind;
 import mumbler.truffle.node.special.QuoteNodeGen;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
 import mumbler.truffle.syntax.BigIntegerSyntax;
 import mumbler.truffle.syntax.BooleanSyntax;
 import mumbler.truffle.syntax.ListSyntax;
@@ -45,7 +44,7 @@ import com.oracle.truffle.api.source.SourceSection;
 
 public class Converter {
     private MumblerContext context;
-    private IdentifierScanner idScanner;
+    private Analyzer analyzer;
     private final boolean isTailCallOptimizationEnabled;
 
     public Converter(boolean tailCallOptimizationEnabled) {
@@ -56,10 +55,8 @@ public class Converter {
         this.context = context;
         Namespace fileNamespace = new Namespace(Namespace.TOP_NS,
                 this.context.getGlobalNamespace());
-        this.idScanner = new IdentifierScanner(fileNamespace);
-        this.idScanner.scan(sexp);
-
-        ValidationPass.validate(sexp, idScanner.getNamespaceMap());
+        this.analyzer = new Analyzer(fileNamespace);
+        this.analyzer.walk(sexp);
 
         return StreamSupport.stream(sexp.getValue().spliterator(), false)
                 .map(obj -> this.convert(obj, fileNamespace))
@@ -166,7 +163,7 @@ public class Converter {
     @SuppressWarnings("unchecked")
     private LambdaNode convertLambda(ListSyntax syntax, Namespace ns) {
     	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
-        Namespace lambdaNs = this.idScanner.getNamespace(list);
+        Namespace lambdaNs = this.analyzer.getNamespace(list);
         List<FrameSlot> formalParameters = new ArrayList<>();
         ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
         for (SymbolSyntax arg : (MumblerList<SymbolSyntax>) argsSyntax.getValue()) {

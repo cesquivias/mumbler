@@ -9,11 +9,10 @@ import sys
 from StringIO import StringIO
 
 
-MUMBLER_HOME = os.path.abspath(os.environ.get('MUMBLER_HOME'))
-print MUMBLER_HOME
-if not MUMBLER_HOME:
+if 'MUMBLER_HOME' not in os.environ:
     raise Exception('MUMBLER_HOME environment variable not set')
-
+    
+MUMBLER_HOME = os.path.abspath(os.environ.get('MUMBLER_HOME'))
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 

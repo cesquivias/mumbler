@@ -1,7 +1,6 @@
 package mumbler.truffle.parser;
 
 import mumbler.truffle.MumblerException;
-import mumbler.truffle.parser.IdentifierScanner.Namespace;
 import mumbler.truffle.syntax.ListSyntax;
 
 import com.oracle.truffle.api.source.Source;

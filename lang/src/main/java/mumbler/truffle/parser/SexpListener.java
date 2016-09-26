@@ -19,20 +19,9 @@ public abstract class SexpListener {
         QUOTE;
     }
 
-    private final Syntax<?> topSexp;
-
-    public SexpListener(Syntax<?> sexp) {
-        this.topSexp = sexp;
-    }
-
-    public void walk() {
-        walk(this.topSexp);
-    }
-
-    private void walk(Syntax<?> sexp) {
+    public void walk(Syntax<?> sexp) {
         if (sexp instanceof ListSyntax) {
             ListSyntax list = (ListSyntax) sexp;
-            onList(list);
 
             ListType listType = ListType.LIST;
             if (isListOf("define", list)) {
@@ -47,6 +36,8 @@ public abstract class SexpListener {
             } else if (isListOf("quote", list)) {
                 onQuote(list);
                 listType = ListType.QUOTE;
+            } else {
+                onList(list);
             }
 
             for (Syntax<?> sub : list.getValue()) {
@@ -66,8 +57,8 @@ public abstract class SexpListener {
             case QUOTE:
                 onQuoteExit(list);
                 break;
-            default:
-                // do nothing;
+            case LIST:
+                onListExit(list);
                 break;
             }
         } else if (sexp instanceof SymbolSyntax) {
@@ -83,6 +74,8 @@ public abstract class SexpListener {
     }
 
     public void onList(ListSyntax syntax) {}
+
+    public void onListExit(ListSyntax syntax) {}
 
     public void onDefine(ListSyntax syntax) {}
 
