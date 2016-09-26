@@ -12,39 +12,24 @@ from os.path import dirname, join, normpath, realpath
 GRAAL_HOME = os.environ.get('GRAAL_HOME') if 'GRAAL_HOME' in os.environ else \
              os.environ.get('JAVA_HOME')
 if not GRAAL_HOME:
-    raise Exception('No Graal VM home set')
+    raise Exception('JAVA_HOME environment variable not set')
 
-MUMBLER_JAR = os.environ.get('MUMBLER_JAR')
-if not MUMBLER_JAR:
-    raise Exception('MUMBLER_JAR environment variable not set')
+MUMBLER_HOME = os.environ.get('MUMBLER_HOME')
+if not MUMBLER_HOME:
+    raise Exception('MUMBLER_HOME environment variable not set')
 
 
 def run(name, lang_args, suffix):
     print suffix
     print '--------------'
-    filename = join(name, name + '.' + suffix)
+    print filename
     start = int(time.time() * 1000)
     subprocess.call(lang_args + [filename])
     end = int(time.time() * 1000)
     print 'total time: %s\n' % (end - start)
 
-def run_simple_mumbler(name):
-    simple_mumbler_dir = normpath(join(dirname(realpath(__file__)),
-                                        '../simple'))
-    p = subprocess.Popen(['ant', '-f', join(simple_mumbler_dir, 'build.xml'),
-                          'jar'],
-                         stdout=subprocess.PIPE)
-    p.communicate()
-    
-    print 'simple',
-    run(name, ['java', '-jar', join(simple_mumbler_dir, 'dist/mumbler.jar')],
-        'mumbler')
-
 def run_truffle_mumbler(name):
-    java = normpath((join(GRAAL_HOME, 'bin/java')))
-    print 'truffle',
-    run(name, [java, '-server', '-jar', MUMBLER_JAR],
-        'mumbler')
+    run(name, [os.path.join(MUMBLER_HOME, 'bin/mumbler')], 'mumbler')
 
 def run_racket(name):
     run(name, ['racket'], 'rkt')
@@ -64,5 +49,4 @@ args = parser.parse_args()
 run_racket(args.benchmark)
 run_node(args.benchmark)
 run_python(args.benchmark)
-run_simple_mumbler(args.benchmark)
 run_truffle_mumbler(args.benchmark)

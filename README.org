@@ -1,67 +1,48 @@
 Mumbler is a lisp programming language to try out the [[http://openjdk.java.net/projects/graal/][Graal JIT]] for the JVM.
 
 * The Language
-Mumbler is a very small lisp modeled after Scheme but with much fewer special forms and built in functions. Here is the "[[http://cesquivias.github.io/blog/2014/10/13/writing-a-language-in-truffle-part-1-a-simple-slow-interpreter/#mumbler-language][Mumbler language specification]]".
+Mumbler is a very small lisp modeled after Scheme but with far fewer special forms and built-in functions. Here is the "[[http://cesquivias.github.io/blog/2014/10/13/writing-a-language-in-truffle-part-1-a-simple-slow-interpreter/#mumbler-language][Mumbler language specification]]".
 
 * Build
 Mumbler uses [[http://gradle.org/][Gradle]] as the build system. To build the code simply run
 
 #+begin_src shell-script
     cd graal
-    ./gradlew distZip
+    ./gradlew installDist
 #+end_src
 
 * Run
-Mumbler requires a special version of the JVM. You can download a [[http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html][graal JVM]] from Oracle. Mumbler requires version 0.9.
+Mumbler requires a special version of the JVM. You can download a [[http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html][graal JVM]] from Oracle. Mumbler requires version 0.14 or greater.
 
-Unzip the distribution that was built and set ~JAVA_HOME~ to point to the graal JVM.
+You can start Mumbler's REPL from the build directory. Just set ~JAVA_HOME~ to point to the Graal JVM.
 
 #+begin_src shell-script
-    cd graal
-    unzip build/distributions/mumbler.zip
-    JAVA_HOME=<graal-vm-dir> ./mumbler/bin/mumbler
+    JAVA_HOME=<graal-vm-dir> ${MUMBLER_REPO}/lang/build/install/mumbler/bin/mumbler
 #+end_src
 
 ** Run benchmarks
 [[sec:build][Build]] Truffle and Mumbler and [[sec:env-var][set environment variables]].
 
 #+begin_src shell-script
-    ./benchmark/measure <benchmark-name>
+    ${MUMBLER_REPO}/benchmark/measure <benchmark-name>
 #+end_src
 
-The ~benchmark-name~ is the name of one of the directories under benchmark/.
+The ~benchmark-name~ is the name of one of the directories under benchmark.
 
 ** Run tests
-[[sec:build][Build]] Truffle and Mumbler and [[sec:env-var][set environment variables]].
-
-The test/ directory contains several Mumbler scripts that try different features. To run all the tests:
+The test/ directory contains several Mumbler scripts that try out different features. To run all the tests:
 
 #+begin_src shell-script
-    ./test/run_tests
+    ${MUMBLER_REPO}/test/run_tests
 #+end_src
 
-<<sec:env-var>>
 ** Set Environment Variables
 To run Mumbler's scripts use three environment variables.
 
 #+begin_example
     GRAAL_HOME : The directory of the Graal VM. If this is empty JAVA_HOME will be used.
-    MUMBLER_JRE : The path to the bundled jar of Mumbler
+    MUMBLER_HOME : The path where gradle built and installed Mumbler. It should be under ${MUMBLER_HOME}/lang/build/install/mumbler
 #+end_example
-
-* SimpleMumbler:
-
-#+begin_src shell-script
-    ./simple/repl [mumbler script]
-#+end_src
-
-The REPL is started with no argument.
-
-Requires:
-  - java
-  - javac
-  - ant
-
 
 * License
 
