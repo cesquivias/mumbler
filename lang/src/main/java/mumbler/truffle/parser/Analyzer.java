@@ -31,8 +31,7 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
  * </ol>
  */
 public class Analyzer extends SexpListener {
-    // TODO : Key over ListSyntax instead of MumblerList
-    private final Map<MumblerList<?>, Namespace> namespaces;
+    private final Map<ListSyntax, Namespace> namespaces;
     private Namespace currentNamespace;
 
     public Analyzer(Namespace topNamespace) {
@@ -41,12 +40,12 @@ public class Analyzer extends SexpListener {
         this.currentNamespace = topNamespace;
     }
 
-    public Map<MumblerList<?>, Namespace> getNamespaceMap() {
+    public Map<ListSyntax, Namespace> getNamespaceMap() {
         return this.namespaces;
     }
 
-    public Namespace getNamespace(MumblerList<?> list) {
-        return this.namespaces.get(list);
+    public Namespace getNamespace(ListSyntax syntax) {
+        return this.namespaces.get(syntax);
     }
 
     @Override
@@ -78,7 +77,7 @@ public class Analyzer extends SexpListener {
         }
 
         this.currentNamespace = new Namespace(syntax.getName(), this.currentNamespace);
-        this.namespaces.put(list, this.currentNamespace);
+        this.namespaces.put(syntax, this.currentNamespace);
         this.addLambdaArguments((ListSyntax) list.cdr().car());
     }
 
@@ -114,26 +113,4 @@ public class Analyzer extends SexpListener {
             }
         }
     }
-//
-//    private boolean isLambda(MumblerList<? extends Syntax<?>> list) {
-//        return isListOfSymbol(list, "lambda");
-//    }
-//
-//    public boolean isDefine(MumblerList<? extends Syntax<?>> list) {
-//        return isListOfSymbol(list, "define");
-//    }
-//
-//    private static boolean isListOfSymbol(MumblerList<? extends Syntax<?>> list, String text) {
-//        if (list.size() < 3) {
-//            return false;
-//        }
-//        if (!(list.car() instanceof SymbolSyntax)) {
-//            return false;
-//        }
-//        SymbolSyntax sym = (SymbolSyntax) list.car();
-//        if (!sym.getValue().name.equals(text)) {
-//            return false;
-//        }
-//        return true;
-//    }
 }

@@ -163,7 +163,7 @@ public class Converter {
     @SuppressWarnings("unchecked")
     private LambdaNode convertLambda(ListSyntax syntax, Namespace ns) {
     	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
-        Namespace lambdaNs = this.analyzer.getNamespace(list);
+        Namespace lambdaNs = this.analyzer.getNamespace(syntax);
         List<FrameSlot> formalParameters = new ArrayList<>();
         ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
         for (SymbolSyntax arg : (MumblerList<SymbolSyntax>) argsSyntax.getValue()) {
