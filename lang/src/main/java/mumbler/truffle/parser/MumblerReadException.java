@@ -1,15 +1,14 @@
 package mumbler.truffle.parser;
 
-import mumbler.truffle.MumblerException;
-import mumbler.truffle.syntax.ListSyntax;
-
 import com.oracle.truffle.api.source.Source;
 import com.oracle.truffle.api.source.SourceSection;
+
+import mumbler.truffle.MumblerException;
 
 public abstract class MumblerReadException extends MumblerException {
     private static final long serialVersionUID = 1L;
 
-    public static void throwReaderException(String message, ListSyntax syntax,
+    public static void throwReaderException(String message, Syntax<?> syntax,
             Namespace ns) {
         throw new MumblerReadException(message) {
             private static final long serialVersionUID = 1L;

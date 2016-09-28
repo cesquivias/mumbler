@@ -1,5 +1,7 @@
 package mumbler.truffle.parser;
 
+import static mumbler.truffle.parser.MumblerReadException.throwReaderException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -102,9 +104,12 @@ public class Converter {
     	SymbolNode node;
     	MumblerSymbol sym = syntax.getValue();
         Pair<Integer, FrameSlot> pair = ns.getIdentifier(sym.name);
-        if (pair.a == 0) {
+        if (pair.a == Namespace.LEVEL_UNDEFINED) {
+            throwReaderException(sym.name + " undefined", syntax, ns);
+            return null;
+        } else if (pair.a == 0) {
             node = LocalSymbolNodeGen.create(pair.b);
-        } else if (pair.a == -1) {
+        } else if (pair.a == Namespace.LEVEL_GLOBAL) {
             node = GlobalSymbolNodeGen.create(pair.b, this.context.getGlobalFrame());
         } else {
             node = ClosureSymbolNodeGen.create(pair.b, pair.a);
@@ -161,6 +166,8 @@ public class Converter {
         DefineNode node = DefineNodeGen.create(valueNode, nameSlot);
         node.setSourceSection(syntax.getSourceSection());
         if (valueNode instanceof LambdaNode) {
+            // TODO : not good enough. if there's an error in the lambda,
+            // the name won't be used. Have to pass name
             LambdaNode lambda = (LambdaNode) valueNode;
             lambda.setName(nameSlot.toString());
         }

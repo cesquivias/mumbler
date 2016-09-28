@@ -6,10 +6,14 @@ import com.oracle.truffle.api.frame.FrameDescriptor;
 import com.oracle.truffle.api.frame.FrameSlot;
 
 public class Namespace {
+    public static final int LEVEL_GLOBAL = -1;
+    public static final int LEVEL_UNDEFINED = -2;
+
     /**
      * The name for the namespace at the top level of a file.
      */
     public static final String TOP_NS = "<top>";
+
     /**
      * The name of the global namespace that contains all predefined variables.
      */
@@ -55,12 +59,12 @@ public class Namespace {
             depth++;
             current = current.parent;
             if (current == null) {
-                return new Pair<>(-1, null);
+                return new Pair<>(LEVEL_UNDEFINED, null);
             }
             slot = current.frameDescriptor.findFrameSlot(id);
         }
         if (current.parent == null) {
-            return new Pair<>(-1, slot);
+            return new Pair<>(LEVEL_GLOBAL, slot);
         }
         return new Pair<>(depth, slot);
     }
