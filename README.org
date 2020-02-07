@@ -1,4 +1,4 @@
-Mumbler is a lisp programming language I wrote to try out the [[http://openjdk.java.net/projects/graal/][Graal JIT]] for the JVM.
+Mumbler is a lisp programming language I wrote to try out the [[https://www.graalvm.org/][Graal JIT]] for the JVM.
 
 * Mumbler
 Mumbler is a very small lisp modeled after Scheme but with far fewer special forms and built-in functions. Here is the "[[http://cesquivias.github.io/blog/2014/10/13/writing-a-language-in-truffle-part-1-a-simple-slow-interpreter/#mumbler-language][Mumbler language specification]]".
@@ -12,7 +12,7 @@ Mumbler uses [[http://gradle.org/][Gradle]] as the build system. To build the co
 #+end_src
 
 * Run
-Mumbler requires a special version of the JVM. You can download a [[http://www.oracle.com/technetwork/oracle-labs/program-languages/downloads/index.html][graal JVM]] from Oracle. Mumbler requires version 0.14 or greater.
+Mumbler requires a special version of the JVM. You can download a [[https://www.graalvm.org/downloads/][graal JVM]] from Oracle. Mumbler requires version 19.3 or newer.
 
 You can start Mumbler's REPL from the build directory. Just set ~JAVA_HOME~ to point to the Graal JVM.
 
@@ -33,6 +33,20 @@ You can try out individual scripts by starting running Mumbler directly.
   ${MUMBLER_REPO}/lang/build/install/mumbler/bin/mumbler ${MUMBLER_REPO}/test/<a-random-script>.mumbler
 #+end_src
 
+You can disable tail call optimization.
+
+#+begin_src shell-script
+  ${MUMBLER_REPO}/lang/build/install/mumbler/bin/mumbler --tco=false ${MUMBLER_REPO}/test/<a-random-script>.mumbler
+#+end_src
+
+You can also run individual scripts using gradle.
+
+#+begin_src shell-script
+    cd ${MUMBLER_REPO}/lang
+    ./gradlew run -PappArgs="['/home/jchaloup/development/mumbler/benchmark/fibonacci/fibonacci.mumbler']"
+    ./gradlew run -PappArgs="['/home/jchaloup/development/mumbler/benchmark/fibonacci/fibonacci.mumbler', '--tco=false']"
+#+end_src
+
 ** Run benchmarks
 [[sec:build][Build]] Truffle and Mumbler and [[sec:env-var][set environment variables]].
 
@@ -40,21 +54,27 @@ You can try out individual scripts by starting running Mumbler directly.
     ${MUMBLER_REPO}/benchmark/measure <benchmark-name>
 #+end_src
 
-~benchmark-name~ is the name of one of the directories under ~benchmark~.
+~benchmark-name~ is the name of the files in one of the directories under ~benchmark~, without the extension, as in the following example.
+
+#+begin_src shell-script
+    ${MUMBLER_REPO}/benchmark/measure ${MUMBLER_REPO}/benchmark/fibonacci/fibonacci
+#+end_src
+
+You can uncomment the benchmark execution commands at the end of the ~measure~ script in order to benchmark mumbler against other languages than python.
 
 ** Set Environment Variables
 Mumbler's scripts use two environment variables.
 
 #+begin_example
     JAVA_HOME : The directory of the Graal VM. Mumbler may run using the default Oracle or OpenJDK JVM, but you won't see the performance gains that Graal provides.
-    MUMBLER_HOME : The path where gradle built and installed Mumbler. It should be under ${MUMBLER_HOME}/lang/build/install/mumbler
+    MUMBLER_HOME : The path where gradle built and installed Mumbler. It should be under ${MUMBLER_REPO}/lang/build/install/mumbler
 #+end_example
 
 The ~MUMBLER_REPO~ environment variable referenced here is not used by an scripts. It signifies where the Mumbler repo was cloned on your system.
 
 * License
 
-Copyright © 2014-2016 Cristian Esquivias
+Copyright © 2014-2020 Cristian Esquivias
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

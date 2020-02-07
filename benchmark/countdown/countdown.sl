@@ -1,11 +1,13 @@
 function countdown(n) {
     if (n < 101) {
-        if (n > 0) {
-            countdown(n - 1);
+        if (n < 1) {
+            return 0;
+        } else {
+            return countdown(n - 1);
         }
     } else {
         countdown(100);
-        countdown(n - 100);
+        return countdown(n - 100);
     }
 }
 

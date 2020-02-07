@@ -22,7 +22,7 @@ public class DirectDispatchNode extends DispatchNode {
     protected Object executeDispatch(VirtualFrame frame, CallTarget callTarget,
             Object[] arguments) {
         if (this.cachedCallTarget == callTarget) {
-            return this.callCachedTargetNode.call(frame, arguments);
+            return this.callCachedTargetNode.call(arguments);
         }
         return this.nextNode.executeDispatch(frame, callTarget, arguments);
     }

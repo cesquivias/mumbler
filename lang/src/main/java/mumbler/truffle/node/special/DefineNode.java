@@ -29,7 +29,7 @@ public abstract class DefineNode extends MumblerNode {
 		return value;
 	}
 
-	@Specialization(contains = {"writeLong", "writeBoolean"})
+	@Specialization(replaces = {"writeLong", "writeBoolean"})
 	protected Object write(VirtualFrame virtualFrame, Object value) {
 		FrameSlot slot = this.getSlot();
 		if (slot.getKind() != FrameSlotKind.Object) {

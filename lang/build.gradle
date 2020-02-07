@@ -2,29 +2,33 @@ plugins {
     id 'java'
     id 'antlr'
     id 'application'
+    id "net.ltgt.apt-idea" version "0.21"
+    id "net.ltgt.apt-eclipse" version "0.21"
     id 'eclipse'
-    id "net.ltgt.apt" version "0.3"
 }
 
 repositories {
-    maven {
-        url "http://lafo.ssw.uni-linz.ac.at/nexus/content/repositories/releases/"
-    }
-    jcenter()
+    mavenCentral()
+}
+
+configurations {
+    apt
 }
 
 dependencies {
-    antlr 'org.antlr:antlr4:4.5'
+    antlr 'org.antlr:antlr4:4.7.2'
 
-    compile 'org.antlr:antlr4-runtime:4.5'
-    compile 'com.oracle.truffle:truffle-api:0.12'
-    compile "com.beust:jcommander:1.48"
+    compile 'org.antlr:antlr4-runtime:4.7.2'
+    compile "com.beust:jcommander:1.78"
 
-    apt 'com.oracle.truffle:truffle-api:0.12'
-    apt 'com.oracle.truffle:truffle-dsl-processor:0.12'
+    compileOnly 'org.graalvm.truffle:truffle-api:19.3.1'
+    testImplementation 'org.graalvm.truffle:truffle-api:19.3.1'
+    annotationProcessor 'org.graalvm.truffle:truffle-dsl-processor:19.3.1'
 
     testCompile 'junit:junit:4.12'
 }
+
+applicationDefaultJvmArgs = ["-XX:-UseJVMCIClassLoader"]
 
 applicationName = 'mumbler'
 mainClassName = 'mumbler.truffle.TruffleMumblerMain'

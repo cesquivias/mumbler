@@ -24,7 +24,7 @@ public abstract class LocalSymbolNode extends SymbolNode {
         return virtualFrame.getObject(getSlot());
     }
 
-    @Specialization(contains = { "readLong", "readBoolean", "readObject" })
+    @Specialization(replaces = { "readLong", "readBoolean", "readObject" })
     protected Object read(VirtualFrame virtualFrame) {
         return virtualFrame.getValue(getSlot());
     }

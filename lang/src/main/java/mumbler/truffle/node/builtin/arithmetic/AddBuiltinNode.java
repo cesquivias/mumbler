@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import mumbler.truffle.node.builtin.BuiltinNode;
 
-import com.oracle.truffle.api.ExactMath;
 import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.Specialization;
 import com.oracle.truffle.api.nodes.NodeInfo;
@@ -14,7 +13,7 @@ import com.oracle.truffle.api.nodes.NodeInfo;
 public abstract class AddBuiltinNode extends BuiltinNode {
     @Specialization(rewriteOn = ArithmeticException.class)
     public long add(long value0, long value1) {
-        return ExactMath.addExact(value0, value1);
+        return Math.addExact(value0, value1);
     }
 
     @Specialization

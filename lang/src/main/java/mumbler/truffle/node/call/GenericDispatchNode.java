@@ -12,6 +12,6 @@ public class GenericDispatchNode extends DispatchNode {
     @Override
     protected Object executeDispatch(VirtualFrame virtualFrame,
             CallTarget callTarget, Object[] argumentValues) {
-        return this.callNode.call(virtualFrame, callTarget, argumentValues);
+        return this.callNode.call(callTarget, argumentValues);
     }
 }
