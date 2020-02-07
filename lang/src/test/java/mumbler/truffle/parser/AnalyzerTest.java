@@ -1,5 +1,6 @@
 package mumbler.truffle.parser;
 
+import static mumbler.truffle.MumblerLanguage.ID;
 import static mumbler.truffle.parser.Namespace.TOP_NS;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class AnalyzerTest {
     Namespace fileNs;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         context = new MumblerContext();
         fileNs = new Namespace(TOP_NS, context.getGlobalNamespace());
         analyzer = new Analyzer(this.fileNs);
@@ -83,7 +84,7 @@ public class AnalyzerTest {
 
     private static ListSyntax read(String str) {
         try {
-            return Reader.read(Source.fromText(str, "<junit>"));
+            return Reader.read(Source.newBuilder(ID, str, "<junit>").build());
         } catch (IOException e) {
             throw new RuntimeException();
         }

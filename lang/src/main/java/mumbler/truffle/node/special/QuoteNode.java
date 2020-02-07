@@ -11,7 +11,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 @NodeChild("literalNode")
 @NodeField(name = "kind", type = QuoteKind.class)
 public abstract class QuoteNode extends MumblerNode {
-	public static enum QuoteKind {
+	public enum QuoteKind {
 		LONG,
 		BOOLEAN,
 		STRING,
@@ -31,7 +31,7 @@ public abstract class QuoteNode extends MumblerNode {
 		return value;
 	}
 
-	@Specialization(contains = {"quoteLong", "quoteBoolean"})
+	@Specialization(replaces = {"quoteLong", "quoteBoolean"})
 	protected Object quote(VirtualFrame virtualFrame, Object value) {
 		return value;
 	}

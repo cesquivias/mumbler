@@ -83,15 +83,15 @@ public class Reader extends MumblerBaseVisitor<Syntax<?>> {
     }
 
     private SourceSection createSourceSection(ParserRuleContext ctx) {
-        return source.createSection(MumblerParser.VOCABULARY.getDisplayName(ctx.getRuleIndex()),
+        return source.createSection(
                 ctx.start.getLine(),
-                ctx.start.getCharPositionInLine(),
+                ctx.start.getCharPositionInLine() + 1,
                 ctx.stop.getStopIndex() - ctx.start.getStartIndex());
     }
 
     @Override
     public BooleanSyntax visitBool(MumblerParser.BoolContext ctx) {
-        return new BooleanSyntax("#t".equals(ctx.getText()) ? true : false,
+        return new BooleanSyntax("#t".equals(ctx.getText()),
                 createSourceSection(ctx));
     }
 

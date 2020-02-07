@@ -29,7 +29,7 @@ public abstract class GlobalSymbolNode extends SymbolNode {
         return this.getGlobalFrame().getObject(this.getSlot());
     }
 
-    @Specialization(contains = { "readLong", "readBoolean", "readObject", })
+    @Specialization(replaces = { "readLong", "readBoolean", "readObject", })
     protected Object read(VirtualFrame virtualFrame) {
         return this.getGlobalFrame().getValue(this.getSlot());
     }

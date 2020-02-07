@@ -14,8 +14,8 @@ public abstract class ClosureSymbolNode extends SymbolNode {
     /**
      * Functional interface to get right type out of {@link VirtualFrame}.
      */
-    public static interface FrameGet<T> {
-        public T get(Frame frame, FrameSlot slot) throws FrameSlotTypeException;
+    public interface FrameGet<T> {
+        T get(Frame frame, FrameSlot slot) throws FrameSlotTypeException;
     }
 
     public abstract int getDepth();
@@ -49,7 +49,7 @@ public abstract class ClosureSymbolNode extends SymbolNode {
         return this.readUpStack(Frame::getObject, virtualFrame);
     }
 
-    @Specialization(contains = { "readLong", "readBoolean", "readObject" })
+    @Specialization(replaces = { "readLong", "readBoolean", "readObject" })
     protected Object read(VirtualFrame virtualFrame) {
         try {
             return this.readUpStack(Frame::getValue, virtualFrame);

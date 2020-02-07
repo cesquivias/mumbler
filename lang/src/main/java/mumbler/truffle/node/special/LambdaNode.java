@@ -1,5 +1,7 @@
 package mumbler.truffle.node.special;
 
+import com.oracle.truffle.api.CompilerDirectives;
+import com.oracle.truffle.api.CompilerDirectives.CompilationFinal;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.MumblerRootNode;
 import mumbler.truffle.type.MumblerFunction;
@@ -12,17 +14,16 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 public abstract class LambdaNode extends MumblerNode {
     public abstract MumblerFunction getFunction();
 
-    private boolean scopeSet = false;
+    @CompilationFinal private boolean scopeSet = false;
 
-    @Specialization(guards = "isScopeSet()")
-    public MumblerFunction getScopedFunction(VirtualFrame virtualFrame) {
-        return this.getFunction();
-    }
-
-    @Specialization(contains = { "getScopedFunction" })
+    @Specialization
     public Object getMumblerFunction(VirtualFrame virtualFrame) {
         MumblerFunction function = this.getFunction();
-        function.setLexicalScope(virtualFrame.materialize());
+        if (!isScopeSet()) {
+            CompilerDirectives.transferToInterpreterAndInvalidate();
+            function.setLexicalScope(virtualFrame.materialize());
+            this.scopeSet = true;
+        }
         return function;
     }
 

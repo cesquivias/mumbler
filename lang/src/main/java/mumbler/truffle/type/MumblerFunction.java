@@ -1,5 +1,6 @@
 package mumbler.truffle.type;
 
+import mumbler.truffle.MumblerLanguage;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.MumblerRootNode;
 
@@ -25,10 +26,10 @@ public class MumblerFunction {
         this.lexicalScope = lexicalScope;
     }
 
-    public static MumblerFunction create(FrameSlot[] arguments,
-            MumblerNode[] bodyNodes, FrameDescriptor frameDescriptor) {
+    public static MumblerFunction create(MumblerLanguage lang, FrameSlot[] arguments,
+                                         MumblerNode[] bodyNodes, FrameDescriptor frameDescriptor) {
         return new MumblerFunction(
                 Truffle.getRuntime().createCallTarget(
-                        MumblerRootNode.create(arguments, bodyNodes, frameDescriptor)));
+                        MumblerRootNode.create(lang, arguments, bodyNodes, frameDescriptor)));
     }
 }

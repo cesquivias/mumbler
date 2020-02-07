@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import mumbler.truffle.MumblerLanguage;
 import org.antlr.v4.runtime.misc.Pair;
 
 import com.oracle.truffle.api.frame.FrameSlot;
@@ -49,8 +50,10 @@ public class Converter {
     private MumblerContext context;
     private Analyzer analyzer;
     private final boolean isTailCallOptimizationEnabled;
+    private final MumblerLanguage lang;
 
-    public Converter(boolean tailCallOptimizationEnabled) {
+    public Converter(MumblerLanguage lang, boolean tailCallOptimizationEnabled) {
+        this.lang = lang;
         this.isTailCallOptimizationEnabled = tailCallOptimizationEnabled;
     }
 
@@ -63,7 +66,7 @@ public class Converter {
 
         return StreamSupport.stream(sexp.getValue().spliterator(), false)
                 .map(obj -> this.convert(obj, fileNamespace))
-                .toArray(size -> new MumblerNode[size]);
+                .toArray(MumblerNode[]::new);
     }
 
     public MumblerNode convert(Syntax<?> syntax, Namespace ns) {
@@ -119,12 +122,12 @@ public class Converter {
     }
 
     public MumblerNode convert(ListSyntax syntax, Namespace ns) {
-        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        MumblerList<? extends Syntax<?>> list = syntax.getValue();
         if (list == MumblerList.EMPTY || list.size() == 0) {
             return new LiteralListNode(MumblerList.EMPTY);
         }
 
-        Syntax<? extends Object> car = list.car();
+        Syntax<?> car = list.car();
         if (car instanceof SymbolSyntax) {
             MumblerSymbol sym = ((SymbolSyntax) car).getValue();
             switch (sym.name) {
@@ -143,14 +146,14 @@ public class Converter {
         return convertInvoke(list, syntax.getSourceSection(), ns);
     }
 
-    private InvokeNode convertInvoke(MumblerList<? extends Syntax<? extends Object>> list,
+    private InvokeNode convertInvoke(MumblerList<? extends Syntax<?>> list,
             SourceSection sourceSection, Namespace ns) {
 
         MumblerNode functionNode = convert(list.car(), ns);
         MumblerNode[] arguments = StreamSupport
                 .stream(list.cdr().spliterator(), false)
                 .map(syn-> convert(syn, ns))
-                .toArray(size -> new MumblerNode[size]);
+                .toArray(MumblerNode[]::new);
         if (isTailCallOptimizationEnabled) {
             return new TCOInvokeNode(functionNode, arguments, sourceSection);
         } else {
@@ -159,7 +162,7 @@ public class Converter {
     }
 
     private DefineNode convertDefine(ListSyntax syntax, Namespace ns) {
-        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+        MumblerList<? extends Syntax<?>> list = syntax.getValue();
         SymbolSyntax symSyntax = (SymbolSyntax) list.cdr().car();
         FrameSlot nameSlot = ns.getIdentifier(symSyntax.getValue().name).b;
         MumblerNode valueNode = convert(list.cdr().cdr().car(), ns);
@@ -176,7 +179,7 @@ public class Converter {
 
     @SuppressWarnings("unchecked")
     private LambdaNode convertLambda(ListSyntax syntax, Namespace ns) {
-    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+    	MumblerList<? extends Syntax<?>> list = syntax.getValue();
         Namespace lambdaNs = this.analyzer.getNamespace(syntax);
         List<FrameSlot> formalParameters = new ArrayList<>();
         ListSyntax argsSyntax = (ListSyntax) list.cdr().car();
@@ -184,13 +187,14 @@ public class Converter {
             formalParameters.add(convert(arg, lambdaNs).getSlot());
         }
         List<MumblerNode> bodyNodes = new ArrayList<>();
-        for (Syntax<? extends Object> body : list.cdr().cdr()) {
+        for (Syntax<?> body : list.cdr().cdr()) {
             bodyNodes.add(convert(body, lambdaNs));
         }
 
         bodyNodes.get(bodyNodes.size() - 1).setIsTail();
 
         MumblerFunction function = MumblerFunction.create(
+                lang,
                 formalParameters.toArray(new FrameSlot[] {}),
                 bodyNodes.toArray(new MumblerNode[] {}),
                 lambdaNs.getFrameDescriptor());
@@ -200,7 +204,7 @@ public class Converter {
     }
 
     private IfNode convertIf(ListSyntax syntax, Namespace ns) {
-    	MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
+    	MumblerList<? extends Syntax<?>> list = syntax.getValue();
         return new IfNode(convert(list.cdr().car(), ns),
                 convert(list.cdr().cdr().car(), ns),
                 convert(list.cdr().cdr().cdr().car(), ns),
@@ -209,8 +213,8 @@ public class Converter {
 
     private static QuoteNode convertQuote(ListSyntax syntax,
             Namespace ns) {
-        MumblerList<? extends Syntax<? extends Object>> list = syntax.getValue();
-        Syntax<? extends Object> value = list.cdr().car();
+        MumblerList<? extends Syntax<?>> list = syntax.getValue();
+        Syntax<?> value = list.cdr().car();
         MumblerNode node;
         QuoteKind kind;
         if (value instanceof LongSyntax) {

@@ -28,72 +28,78 @@ public class MumblerContext {
     private final FrameDescriptor globalFrameDescriptor;
     private final Namespace globalNamespace;
     private final MaterializedFrame globalFrame;
+    private final MumblerLanguage lang;
 
     public MumblerContext() {
-        this.globalFrameDescriptor = new FrameDescriptor();
-        this.globalNamespace = new Namespace(this.globalFrameDescriptor);
-        this.globalFrame = this.initGlobalFrame();
+        this(null);
     }
 
-    private MaterializedFrame initGlobalFrame() {
+    public MumblerContext(MumblerLanguage lang) {
+        this.globalFrameDescriptor = new FrameDescriptor();
+        this.globalNamespace = new Namespace(this.globalFrameDescriptor);
+        this.globalFrame = this.initGlobalFrame(lang);
+        this.lang = lang;
+    }
+
+    private MaterializedFrame initGlobalFrame(MumblerLanguage lang) {
         VirtualFrame frame = Truffle.getRuntime().createVirtualFrame(null,
                 this.globalFrameDescriptor);
-        addGlobalFunctions(frame);
+        addGlobalFunctions(lang, frame);
         return frame.materialize();
     }
 
-    private static void addGlobalFunctions(VirtualFrame virtualFrame) {
+    private static void addGlobalFunctions(MumblerLanguage lang, VirtualFrame virtualFrame) {
         FrameDescriptor frameDescriptor = virtualFrame.getFrameDescriptor();
         virtualFrame.setObject(frameDescriptor.addFrameSlot("println"),
-                createBuiltinFunction(PrintlnBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, PrintlnBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("+"),
-                createBuiltinFunction(AddBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, AddBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("-"),
-                createBuiltinFunction(SubBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, SubBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("*"),
-                createBuiltinFunction(MulBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, MulBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("/"),
-                createBuiltinFunction(DivBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, DivBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("%"),
-                createBuiltinFunction(ModBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, ModBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("="),
-                createBuiltinFunction(EqualBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, EqualBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("<"),
-                createBuiltinFunction(LessThanBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, LessThanBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot(">"),
-                createBuiltinFunction(GreaterThanBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, GreaterThanBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("list"),
-                createBuiltinFunction(ListBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, ListBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("cons"),
-                createBuiltinFunction(ConsBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, ConsBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("car"),
-                createBuiltinFunction(CarBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, CarBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("cdr"),
-                createBuiltinFunction(CdrBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, CdrBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("now"),
-                createBuiltinFunction(NowBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, NowBuiltinNodeFactory.getInstance(),
                         virtualFrame));
 //        virtualFrame.setObject(frameDescriptor.addFrameSlot("eval"),
 //                createBuiltinFunction(EvalBuiltinNodeFactory.getInstance(),
 //                        virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("read"),
-                createBuiltinFunction(ReadBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, ReadBuiltinNodeFactory.getInstance(),
                         virtualFrame));
         virtualFrame.setObject(frameDescriptor.addFrameSlot("sleep"),
-                createBuiltinFunction(SleepBuiltinNodeFactory.getInstance(),
+                createBuiltinFunction(lang, SleepBuiltinNodeFactory.getInstance(),
                         virtualFrame));
     }
 

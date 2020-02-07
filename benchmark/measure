@@ -19,26 +19,30 @@ if not MUMBLER_HOME:
     raise Exception('MUMBLER_HOME environment variable not set')
 
 
-def run(name, lang_args, suffix):
+def run(name, lang_args, suffix, params):
     print suffix
     print '--------------'
-    print filename
+    print name
     start = int(time.time() * 1000)
-    subprocess.call(lang_args + [filename])
+    filename = name + '.' + suffix
+    subprocess.call(lang_args + ([filename] + params))
     end = int(time.time() * 1000)
     print 'total time: %s\n' % (end - start)
 
 def run_truffle_mumbler(name):
-    run(name, [os.path.join(MUMBLER_HOME, 'bin/mumbler')], 'mumbler')
+    run(name, [os.path.join(MUMBLER_HOME, 'bin/mumbler')], 'mumbler', ['--tco=false'])
 
 def run_racket(name):
-    run(name, ['racket'], 'rkt')
+    run(name, ['racket'], 'rkt', [])
 
 def run_node(name):
-    run(name, ['nodejs'], 'js')
+    run(name, ['nodejs'], 'js', [])
 
 def run_python(name):
-    run(name, ['python'], 'py')
+    run(name, ['python'], 'py', [])
+
+def run_simple_language(name):
+    run(name, ['sl'], 'sl', [])
 
 parser = ArgumentParser(description='Take benchmark measurements')
 parser.add_argument('benchmark', type=str,
@@ -46,7 +50,8 @@ parser.add_argument('benchmark', type=str,
 
 args = parser.parse_args()
 
-run_racket(args.benchmark)
-run_node(args.benchmark)
+#run_racket(args.benchmark)
+#run_node(args.benchmark)
+#run_simple_language(args.benchmark)
 run_python(args.benchmark)
 run_truffle_mumbler(args.benchmark)

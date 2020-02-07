@@ -18,9 +18,9 @@ public class MumblerRootNode extends RootNode {
     @Children private final MumblerNode[] bodyNodes;
     @CompilationFinal public String name;
 
-    public MumblerRootNode(MumblerNode[] bodyNodes,
+    public MumblerRootNode(MumblerLanguage lang, MumblerNode[] bodyNodes,
             FrameDescriptor frameDescriptor) {
-        super(MumblerLanguage.class, null, frameDescriptor);
+        super(lang, frameDescriptor);
         this.bodyNodes = bodyNodes;
     }
 
@@ -35,7 +35,7 @@ public class MumblerRootNode extends RootNode {
         return this.bodyNodes[last].execute(virtualFrame);
     }
 
-    public static MumblerRootNode create(FrameSlot[] argumentNames,
+    public static MumblerRootNode create(MumblerLanguage lang, FrameSlot[] argumentNames,
             MumblerNode[] bodyNodes, FrameDescriptor frameDescriptor) {
         MumblerNode[] allNodes = new MumblerNode[argumentNames.length
                                                  + bodyNodes.length];
@@ -45,7 +45,7 @@ public class MumblerRootNode extends RootNode {
         }
         System.arraycopy(bodyNodes, 0, allNodes,
                 argumentNames.length, bodyNodes.length);
-        return new MumblerRootNode(allNodes, frameDescriptor);
+        return new MumblerRootNode(lang, allNodes, frameDescriptor);
     }
 
     public void setName(String name) {

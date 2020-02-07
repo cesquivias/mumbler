@@ -1,5 +1,6 @@
 package mumbler.truffle.node.builtin;
 
+import mumbler.truffle.MumblerLanguage;
 import mumbler.truffle.node.MumblerNode;
 import mumbler.truffle.node.MumblerRootNode;
 import mumbler.truffle.node.read.ReadArgumentNode;
@@ -14,6 +15,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
 @NodeChild(value = "arguments", type = MumblerNode[].class)
 public abstract class BuiltinNode extends MumblerNode {
     public static MumblerFunction createBuiltinFunction(
+            MumblerLanguage lang,
             NodeFactory<? extends BuiltinNode> factory,
             VirtualFrame outerFrame) {
         int argumentCount = factory.getExecutionSignature().size();
@@ -23,7 +25,7 @@ public abstract class BuiltinNode extends MumblerNode {
         }
         BuiltinNode node = factory.createNode((Object) argumentNodes);
         return new MumblerFunction(Truffle.getRuntime().createCallTarget(
-                new MumblerRootNode(new MumblerNode[] {node},
+                new MumblerRootNode(lang, new MumblerNode[] {node},
                         new FrameDescriptor())));
     }
 }

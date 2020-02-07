@@ -1,19 +1,24 @@
 package mumbler.truffle;
 
 import java.io.Console;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.frame.MaterializedFrame;
-import com.oracle.truffle.api.source.Source;
 
+import com.oracle.truffle.api.source.Source;
 import mumbler.truffle.node.MumblerNode;
+import mumbler.truffle.node.MumblerRootNode;
 import mumbler.truffle.parser.Converter;
 import mumbler.truffle.parser.Reader;
 import mumbler.truffle.syntax.ListSyntax;
 import mumbler.truffle.type.MumblerFunction;
 import mumbler.truffle.type.MumblerList;
+
+import static mumbler.truffle.MumblerLanguage.ID;
 
 public class TruffleMumblerMain {
     private static final String PROMPT = "\u27AB ";
@@ -46,10 +51,9 @@ public class TruffleMumblerMain {
                 break;
             }
             MumblerContext context = new MumblerContext();
-            Source source = Source.fromText(data, "<console>");
+            Source source = Source.newBuilder(ID, data, "<console>").build();
             ListSyntax sexp = Reader.read(source);
-            // TODO : replace with MumblerLanguage#parse
-            Converter converter = new Converter(flags.tailCallOptimizationEnabled);
+            Converter converter = new Converter(null, flags.tailCallOptimizationEnabled);
             MumblerNode[] nodes = converter.convertSexp(context, sexp);
 
             // EVAL
@@ -63,19 +67,19 @@ public class TruffleMumblerMain {
     }
 
     private static void runMumbler(String filename) throws IOException {
-        Source source = Source.fromFileName(filename);
+        Source source = Source.newBuilder(ID, new FileReader(new File(filename)), filename).build();
         MumblerContext context = new MumblerContext();
         ListSyntax sexp = Reader.read(source);
-        // TODO : replace with MumblerLanguage#parse
-        Converter converter = new Converter(flags.tailCallOptimizationEnabled);
+        Converter converter = new Converter(null, flags.tailCallOptimizationEnabled);
         MumblerNode[] nodes = converter.convertSexp(context, sexp);
         execute(nodes, context.getGlobalFrame());
     }
 
     private static Object execute(MumblerNode[] nodes, MaterializedFrame globalFrame) {
-        MumblerFunction function = MumblerFunction.create(new FrameSlot[] {},
+        MumblerFunction function = MumblerFunction.create(null, new FrameSlot[] {},
                 nodes, globalFrame.getFrameDescriptor());
+        ((MumblerRootNode) function.callTarget.getRootNode()).setName("main");
 
-        return function.callTarget.call(new Object[] {globalFrame});
+        return function.callTarget.call(globalFrame);
     }
 }
